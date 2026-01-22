@@ -1,5 +1,6 @@
 
 ###> symfony/framework-bundle ###
+/.env
 /.env.local
 /.env.local.php
 /.env.*.local
@@ -12,9 +13,35 @@
 ###> phpunit/phpunit ###
 /phpunit.xml
 /.phpunit.cache/
+/.phpunit.result.cache
 ###< phpunit/phpunit ###
 
 ###> symfony/asset-mapper ###
 /public/assets/
 /assets/vendor/
 ###< symfony/asset-mapper ###
+
+###> IDE & OS ###
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+###< IDE & OS ###
+
+###> Logs ###
+*.log
+###< Logs ###
+
+###> PHP tools ###
+.php-cs-fixer.cache
+.php_cs.cache
+###< PHP tools ###
+
+###> Node (if used) ###
+node_modules/
+###< Node (if used) ###
+
+###> Serena MCP ###
+.serena/
+###< Serena MCP ###
