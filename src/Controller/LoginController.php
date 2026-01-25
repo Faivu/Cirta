@@ -24,4 +24,11 @@ class LoginController extends AbstractController
     {
         return $this->render('home/index.html.twig');
     }
+
+    #[Route('/logout', name: 'app_logout')]
+    public function logout(): void
+    {
+        // This method will be intercepted by the logout key on the firewall
+        throw new \LogicException('This should never be reached!');
+    }
 }
