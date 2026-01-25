@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\TaskRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -18,9 +20,15 @@ class Task
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
-    #[ORM\ManyToOne(targetEntity: Event::class)]
+    #[ORM\ManyToOne(targetEntity: Event::class, inversedBy: 'tasks')]
     #[ORM\JoinColumn(nullable: true)]
     private ?Event $event = null;
+
+    /**
+     * @var Collection<int, Session>
+     */
+    #[ORM\OneToMany(targetEntity: Session::class, mappedBy: 'task')]
+    private Collection $sessions;
 
     #[ORM\Column(length: 255)]
     private ?string $title = null;
@@ -107,6 +115,41 @@ class Task
     public function setDeadline(?\DateTimeInterface $deadline): static
     {
         $this->deadline = $deadline;
+
+        return $this;
+    }
+
+    public function __construct()
+    {
+        $this->sessions = new ArrayCollection();
+    }
+
+    /**
+     * @return Collection<int, Session>
+     */
+    public function getSessions(): Collection
+    {
+        return $this->sessions;
+    }
+
+    public function addSession(Session $session): static
+    {
+        if (!$this->sessions->contains($session)) {
+            $this->sessions->add($session);
+            $session->setTask($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSession(Session $session): static
+    {
+        if ($this->sessions->removeElement($session)) {
+            // set the owning side to null (unless already changed)
+            if ($session->getTask() === $this) {
+                $session->setTask(null);
+            }
+        }
 
         return $this;
     }
