@@ -13,24 +13,6 @@ use Doctrine\ORM\Mapping as ORM;
 class FreeSession extends Session
 {
     /**
-     * Optional notes about what was accomplished during the session
-     */
-    #[ORM\Column(type: 'text', nullable: true)]
-    private ?string $notes = null;
-
-    public function getNotes(): ?string
-    {
-        return $this->notes;
-    }
-
-    public function setNotes(?string $notes): static
-    {
-        $this->notes = $notes;
-
-        return $this;
-    }
-
-    /**
      * Get elapsed working time in minutes (for real-time display)
      */
     public function getElapsedTime(): int

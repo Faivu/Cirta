@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Focus Session - Cirta{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('session') }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('session') }}
+{% endblock %}
+
+{% block body %}
+    <div id="session-app">
+        <!-- React mount -->
+        <div style="text-align: center; padding: 100px 20px; color: #666;">
+            Loading session...
+        </div>
+    </div>
+{% endblock %}

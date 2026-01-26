@@ -12,31 +12,37 @@ class Pomodoro extends Session
      * Target duration in minutes (default: 25 minutes for standard Pomodoro)
      */
     #[ORM\Column]
-    private ?int $targetDuration = 25;
+    private int $targetDuration = 25;
 
     /**
-     * Timestamp when the session was paused (used to calculate pause duration)
+     * Total time spent paused in minutes (calculated on end)
      */
-    #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?\DateTimeInterface $pausedAt = null;
+    #[ORM\Column]
+    private int $pauseDuration = 0;
 
     /**
-     * Total time spent paused in minutes
+     * Number of times the session was paused
+     */
+    #[ORM\Column]
+    private int $pauseCount = 0;
+
+    /**
+     * Suggested break duration in minutes (5 for short, 15 for long break)
+     */
+    #[ORM\Column]
+    private int $breakDuration = 5;
+
+    /**
+     * Actual break taken in minutes (null if not yet taken or skipped)
      */
     #[ORM\Column(nullable: true)]
-    private ?int $totalPausedDuration = 0;
+    private ?int $breakTaken = null;
 
-    /**
-     * Get target duration in minutes
-     */
-    public function getTargetDuration(): ?int
+    public function getTargetDuration(): int
     {
         return $this->targetDuration;
     }
 
-    /**
-     * Set target duration in minutes
-     */
     public function setTargetDuration(int $targetDuration): static
     {
         $this->targetDuration = $targetDuration;
@@ -44,32 +50,50 @@ class Pomodoro extends Session
         return $this;
     }
 
-    public function getPausedAt(): ?\DateTimeInterface
+    public function getPauseDuration(): int
     {
-        return $this->pausedAt;
+        return $this->pauseDuration;
     }
 
-    public function setPausedAt(?\DateTimeInterface $pausedAt): static
+    public function setPauseDuration(int $pauseDuration): static
     {
-        $this->pausedAt = $pausedAt;
+        $this->pauseDuration = $pauseDuration;
 
         return $this;
     }
 
-    /**
-     * Get total paused duration in minutes
-     */
-    public function getTotalPausedDuration(): ?int
+    public function getPauseCount(): int
     {
-        return $this->totalPausedDuration;
+        return $this->pauseCount;
     }
 
-    /**
-     * Set total paused duration in minutes
-     */
-    public function setTotalPausedDuration(?int $totalPausedDuration): static
+    public function setPauseCount(int $pauseCount): static
     {
-        $this->totalPausedDuration = $totalPausedDuration;
+        $this->pauseCount = $pauseCount;
+
+        return $this;
+    }
+
+    public function getBreakDuration(): int
+    {
+        return $this->breakDuration;
+    }
+
+    public function setBreakDuration(int $breakDuration): static
+    {
+        $this->breakDuration = $breakDuration;
+
+        return $this;
+    }
+
+    public function getBreakTaken(): ?int
+    {
+        return $this->breakTaken;
+    }
+
+    public function setBreakTaken(?int $breakTaken): static
+    {
+        $this->breakTaken = $breakTaken;
 
         return $this;
     }
@@ -80,7 +104,7 @@ class Pomodoro extends Session
     public function pause(): static
     {
         if ($this->status === self::STATUS_IN_PROGRESS) {
-            $this->pausedAt = new \DateTime();
+            $this->pauseCount++;
             $this->status = self::STATUS_PAUSED;
         }
 
@@ -92,13 +116,7 @@ class Pomodoro extends Session
      */
     public function resume(): static
     {
-        if ($this->status === self::STATUS_PAUSED && $this->pausedAt !== null) {
-            $now = new \DateTime();
-            $interval = $this->pausedAt->diff($now);
-            $pauseMinutes = ($interval->days * 24 * 60) + ($interval->h * 60) + $interval->i;
-
-            $this->totalPausedDuration = ($this->totalPausedDuration ?? 0) + $pauseMinutes;
-            $this->pausedAt = null;
+        if ($this->status === self::STATUS_PAUSED) {
             $this->status = self::STATUS_IN_PROGRESS;
         }
 
@@ -110,84 +128,37 @@ class Pomodoro extends Session
      */
     public function interrupt(): static
     {
-        $this->endedAt = new \DateTime();
         $this->status = self::STATUS_INTERRUPTED;
 
-        if ($this->startedAt !== null) {
-            $interval = $this->startedAt->diff($this->endedAt);
-            $this->actualDuration = ($interval->days * 24 * 60) + ($interval->h * 60) + $interval->i;
-
-            // Subtract paused time from actual duration
-            $this->actualDuration -= ($this->totalPausedDuration ?? 0);
-        }
-
         return $this;
     }
 
     /**
-     * Override end() to account for paused time
+     * Complete the Pomodoro session
+     *
+     * @param int $actualDuration The actual working time in minutes (sent from frontend)
      */
-    public function end(): static
+    public function complete(int $actualDuration): static
     {
-        // If currently paused, add the current pause duration before ending
-        if ($this->status === self::STATUS_PAUSED && $this->pausedAt !== null) {
-            $now = new \DateTime();
-            $interval = $this->pausedAt->diff($now);
-            $pauseMinutes = ($interval->days * 24 * 60) + ($interval->h * 60) + $interval->i;
-            $this->totalPausedDuration = ($this->totalPausedDuration ?? 0) + $pauseMinutes;
-            $this->pausedAt = null;
-        }
-
         $this->endedAt = new \DateTime();
         $this->status = self::STATUS_COMPLETED;
+        $this->actualDuration = $actualDuration;
 
+        // Calculate pause duration: total wall time - actual working time
         if ($this->startedAt !== null) {
             $interval = $this->startedAt->diff($this->endedAt);
-            $totalMinutes = ($interval->days * 24 * 60) + ($interval->h * 60) + $interval->i;
-
-            // Subtract paused time from actual working duration
-            $this->actualDuration = $totalMinutes - ($this->totalPausedDuration ?? 0);
+            $wallTimeMinutes = ($interval->days * 24 * 60) + ($interval->h * 60) + $interval->i;
+            $this->pauseDuration = max(0, $wallTimeMinutes - $actualDuration);
         }
 
         return $this;
     }
 
     /**
-     * Calculate remaining time in minutes
+     * Check if the Pomodoro has reached its target duration
      */
-    public function getRemainingTime(): int
+    public function hasReachedTarget(int $elapsedMinutes): bool
     {
-        if ($this->status === self::STATUS_COMPLETED || $this->status === self::STATUS_INTERRUPTED) {
-            return 0;
-        }
-
-        if ($this->startedAt === null) {
-            return $this->targetDuration ?? 25;
-        }
-
-        $now = new \DateTime();
-
-        // If paused, calculate from pausedAt instead of now
-        if ($this->status === self::STATUS_PAUSED && $this->pausedAt !== null) {
-            $now = $this->pausedAt;
-        }
-
-        $interval = $this->startedAt->diff($now);
-        $elapsedMinutes = ($interval->days * 24 * 60) + ($interval->h * 60) + $interval->i;
-
-        // Subtract already accumulated pause time
-        $elapsedMinutes -= ($this->totalPausedDuration ?? 0);
-
-        $remaining = ($this->targetDuration ?? 25) - $elapsedMinutes;
-
-        return max(0, $remaining);
-    }
-
-    /**
-     * Check if the Pomodoro timer has reached its target duration
-     */
-    public function isTimeUp(): bool
-    {
-        return $this->getRemainingTime() <= 0;
+        return $elapsedMinutes >= $this->targetDuration;
     }
 }

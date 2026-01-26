@@ -2,7 +2,7 @@
 services:
 ###> doctrine/doctrine-bundle ###
     app:
-      image: dunglas/frankenphp:1-php8.3
+      image: dunglas/frankenphp:1-php8.4
       volumes:
         - ./:/app
       ports:
