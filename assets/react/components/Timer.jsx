@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 /**
  * Timer - Displays the session timer
@@ -82,5 +83,17 @@ function Timer({ elapsedSeconds, remainingSeconds, strategy, isPaused }) {
         </div>
     );
 }
+
+Timer.propTypes = {
+    elapsedSeconds: PropTypes.number.isRequired,
+    remainingSeconds: PropTypes.number,
+    strategy: PropTypes.oneOf(['pomodoro', 'flowtime', 'free_session']).isRequired,
+    isPaused: PropTypes.bool,
+};
+
+Timer.defaultProps = {
+    remainingSeconds: null,
+    isPaused: false,
+};
 
 export default Timer;

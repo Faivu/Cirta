@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 /**
  * SessionControls - Buttons to control the session (pause, resume, complete, interrupt)
@@ -60,5 +61,19 @@ function SessionControls({ strategy, status, loading, onPause, onResume, onCompl
         </div>
     );
 }
+
+SessionControls.propTypes = {
+    strategy: PropTypes.oneOf(['pomodoro', 'flowtime', 'free_session']).isRequired,
+    status: PropTypes.oneOf(['running', 'paused']).isRequired,
+    loading: PropTypes.bool,
+    onPause: PropTypes.func.isRequired,
+    onResume: PropTypes.func.isRequired,
+    onComplete: PropTypes.func.isRequired,
+    onInterrupt: PropTypes.func.isRequired,
+};
+
+SessionControls.defaultProps = {
+    loading: false,
+};
 
 export default SessionControls;

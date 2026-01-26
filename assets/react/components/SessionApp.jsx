@@ -1,7 +1,35 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import StrategySelector from './StrategySelector';
 import Timer from './Timer';
 import SessionControls from './SessionControls';
+import ConfirmModal from './ConfirmModal';
+
+/**
+ * API call helper - moved outside component to avoid recreation on each render
+ */
+const apiCall = async (url, method = 'GET', body = null) => {
+    const options = {
+        method,
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+        },
+    };
+
+    if (body) {
+        options.body = JSON.stringify(body);
+    }
+
+    const response = await fetch(url, options);
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `HTTP error ${response.status}`);
+    }
+
+    return response.json();
+};
 
 /**
  * SessionApp - Main component for the session timer
@@ -13,8 +41,10 @@ import SessionControls from './SessionControls';
  * 4. Timer runs until completed or user stops it
  * 5. Session completes -> user can take break or skip
  * 6. Break timer runs (if taken) -> user can start next session
+ *
+ * @param {boolean} compact - Whether to render in compact sidebar mode
  */
-function SessionApp() {
+function SessionApp({ compact = false }) {
     // Session state
     const [strategy, setStrategy] = useState(null); // 'pomodoro', 'flowtime', 'free_session'
     const [status, setStatus] = useState('idle'); // 'idle', 'running', 'paused', 'completed', 'break'
@@ -37,6 +67,12 @@ function SessionApp() {
 
     // Completion results (for displaying stats after session ends)
     const [completionData, setCompletionData] = useState(null);
+
+    // Confirm modal state
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+
+    // Guard to prevent duplicate auto-complete calls
+    const [isAutoCompleting, setIsAutoCompleting] = useState(false);
 
     // Timer effect - runs every second when session is active
     useEffect(() => {
@@ -76,37 +112,28 @@ function SessionApp() {
 
     // Check if Pomodoro time is up
     useEffect(() => {
-        if (strategy === 'pomodoro' && status === 'running') {
+        if (strategy === 'pomodoro' && status === 'running' && sessionId && !isAutoCompleting) {
             const targetSeconds = targetMinutes * 60;
             if (elapsedSeconds >= targetSeconds) {
-                handleComplete();
+                // Prevent duplicate calls
+                setIsAutoCompleting(true);
+                // Complete the session
+                const actualDuration = Math.floor(elapsedSeconds / 60);
+                setLoading(true);
+                apiCall(`/api/session/${sessionId}/end`, 'POST', { actualDuration })
+                    .then(data => {
+                        setCompletionData(data);
+                        setBreakDuration(data.breakDuration || 0);
+                        setStatus('completed');
+                    })
+                    .catch(err => setError(err.message))
+                    .finally(() => {
+                        setLoading(false);
+                        setIsAutoCompleting(false);
+                    });
             }
         }
-    }, [elapsedSeconds, strategy, status, targetMinutes]);
-
-    // API call helper
-    const apiCall = async (url, method = 'GET', body = null) => {
-        const options = {
-            method,
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            },
-        };
-
-        if (body) {
-            options.body = JSON.stringify(body);
-        }
-
-        const response = await fetch(url, options);
-
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.error || `HTTP error ${response.status}`);
-        }
-
-        return response.json();
-    };
+    }, [elapsedSeconds, strategy, status, targetMinutes, sessionId, isAutoCompleting]);
 
     // Start a new session
     const handleStart = async () => {
@@ -191,14 +218,15 @@ function SessionApp() {
         }
     };
 
-    // Interrupt/cancel the session
-    const handleInterrupt = async () => {
+    // Show interrupt confirmation modal
+    const handleInterrupt = () => {
         if (!sessionId) return;
+        setShowConfirmModal(true);
+    };
 
-        if (!confirm('Are you sure you want to stop this session?')) {
-            return;
-        }
-
+    // Actually interrupt the session after confirmation
+    const confirmInterrupt = async () => {
+        setShowConfirmModal(false);
         setLoading(true);
         try {
             // Send actual working time in minutes
@@ -223,11 +251,6 @@ function SessionApp() {
 
     // Skip break and continue with next session
     const handleSkipBreak = async () => {
-        await handleContinue();
-    };
-
-    // End break early and continue
-    const handleEndBreak = async () => {
         await handleContinue();
     };
 
@@ -290,7 +313,7 @@ function SessionApp() {
     };
 
     return (
-        <div className="session-container">
+        <div className={`session-container${compact ? ' compact' : ''}`}>
             <h1 className="session-title">Focus Session</h1>
 
             {error && (
@@ -461,8 +484,26 @@ function SessionApp() {
                     </div>
                 </div>
             )}
+
+            <ConfirmModal
+                isOpen={showConfirmModal}
+                title="Stop Session"
+                message="Are you sure you want to stop this session? Your progress will be saved."
+                confirmText="Stop"
+                cancelText="Continue Working"
+                onConfirm={confirmInterrupt}
+                onCancel={() => setShowConfirmModal(false)}
+            />
         </div>
     );
 }
+
+SessionApp.propTypes = {
+    compact: PropTypes.bool,
+};
+
+SessionApp.defaultProps = {
+    compact: false,
+};
 
 export default SessionApp;

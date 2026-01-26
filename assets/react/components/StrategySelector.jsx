@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 /**
  * StrategySelector - Allows user to choose between session strategies
@@ -48,5 +49,14 @@ function StrategySelector({ selected, onSelect }) {
         </div>
     );
 }
+
+StrategySelector.propTypes = {
+    selected: PropTypes.oneOf(['pomodoro', 'flowtime', 'free_session', null]),
+    onSelect: PropTypes.func.isRequired,
+};
+
+StrategySelector.defaultProps = {
+    selected: null,
+};
 
 export default StrategySelector;

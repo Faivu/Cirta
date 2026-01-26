@@ -83,7 +83,7 @@ final class SessionController extends AbstractController
     }
 
     /**
-     * Continue with a new Pomodoro session based on a previous one
+     * Continue with a new session based on a previous one
      */
     #[Route('/{id}/continue', name: 'continue', methods: ['POST'])]
     public function continue(int $id): JsonResponse
@@ -93,19 +93,51 @@ final class SessionController extends AbstractController
             return $this->json(['error' => 'Not authenticated'], Response::HTTP_UNAUTHORIZED);
         }
 
-        $previousSession = $this->pomodoroService->findForUser($id, $user);
+        // Try Pomodoro first
+        $previousPomodoro = $this->pomodoroService->findForUser($id, $user);
 
-        if (!$previousSession) {
-            return $this->json(['error' => 'Session not found'], Response::HTTP_NOT_FOUND);
+        if ($previousPomodoro) {
+            $newSession = $this->pomodoroService->continueSession($previousPomodoro);
+
+            return $this->json([
+                'id' => $newSession->getId(),
+                'status' => $newSession->getStatus(),
+                'startedAt' => $newSession->getStartedAt()?->format('c'),
+                'targetDuration' => $newSession->getTargetDuration(),
+                'customGoal' => $newSession->getCustomGoal(),
+            ], Response::HTTP_CREATED);
         }
 
-        $newSession = $this->pomodoroService->continueSession($previousSession);
+        // Handle other session types
+        $previousSession = $this->findUserSession($id);
+
+        if ($previousSession instanceof JsonResponse) {
+            return $previousSession;
+        }
+
+        // Create a new session of the same type
+        if ($previousSession instanceof Flowtime) {
+            $newSession = new Flowtime();
+            $newSession->setBreakRatio($previousSession->getBreakRatio());
+        } elseif ($previousSession instanceof FreeSession) {
+            $newSession = new FreeSession();
+        } else {
+            return $this->json(['error' => 'Cannot continue this session type'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $newSession->setUser($user);
+        $newSession->setCustomGoal($previousSession->getCustomGoal());
+        $newSession->setTask($previousSession->getTask());
+        $newSession->setEvent($previousSession->getEvent());
+        $newSession->start();
+
+        $this->entityManager->persist($newSession);
+        $this->entityManager->flush();
 
         return $this->json([
             'id' => $newSession->getId(),
             'status' => $newSession->getStatus(),
             'startedAt' => $newSession->getStartedAt()?->format('c'),
-            'targetDuration' => $newSession->getTargetDuration(),
             'customGoal' => $newSession->getCustomGoal(),
         ], Response::HTTP_CREATED);
     }
