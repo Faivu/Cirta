@@ -56,7 +56,7 @@ function SessionControls({ strategy, status, loading, onPause, onResume, onCompl
                 onClick={onInterrupt}
                 disabled={loading}
             >
-                Stop
+                End
             </button>
         </div>
     );

@@ -2,15 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 /**
- * Timer - Displays the session timer
+ * Timer - Displays the session timer with circular progress
  *
  * Props:
  * - elapsedSeconds: total seconds elapsed
- * - remainingSeconds: seconds remaining (for Pomodoro, null for others)
- * - strategy: current strategy type
- * - isPaused: whether the session is paused
+ * - remainingSeconds: seconds remaining (for countdown modes)
+ * - mode: 'pomodoro', 'flowtime', 'free_session', or 'break'
+ * - isPaused: whether the timer is paused
  */
-function Timer({ elapsedSeconds, remainingSeconds, strategy, isPaused }) {
+function Timer({ elapsedSeconds, remainingSeconds, mode, isPaused }) {
     // Format seconds into MM:SS or HH:MM:SS
     const formatTime = (totalSeconds) => {
         const hours = Math.floor(totalSeconds / 3600);
@@ -23,9 +23,11 @@ function Timer({ elapsedSeconds, remainingSeconds, strategy, isPaused }) {
         return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     };
 
-    // Calculate progress percentage for Pomodoro
+    const hasCountdown = mode === 'pomodoro' || mode === 'break';
+
+    // Calculate progress percentage for countdown modes
     const getProgress = () => {
-        if (strategy !== 'pomodoro' || remainingSeconds === null) return null;
+        if (!hasCountdown || remainingSeconds === null) return null;
         const total = elapsedSeconds + remainingSeconds;
         return total > 0 ? (elapsedSeconds / total) * 100 : 0;
     };
@@ -33,18 +35,19 @@ function Timer({ elapsedSeconds, remainingSeconds, strategy, isPaused }) {
     const progress = getProgress();
 
     // Determine which time to display prominently
-    const displayTime = strategy === 'pomodoro' && remainingSeconds !== null
+    const displayTime = hasCountdown && remainingSeconds !== null
         ? remainingSeconds
         : elapsedSeconds;
 
-    const displayLabel = strategy === 'pomodoro'
-        ? 'Remaining'
-        : 'Elapsed';
+    const displayLabel = hasCountdown ? 'Remaining' : 'Elapsed';
+
+    // Determine CSS class for the timer (for different colors)
+    const timerClass = `timer ${mode === 'break' ? 'break-mode' : ''} ${isPaused ? 'paused' : ''}`;
 
     return (
-        <div className={`timer ${isPaused ? 'paused' : ''}`}>
-            {/* Progress ring for Pomodoro */}
-            {strategy === 'pomodoro' && progress !== null && (
+        <div className={timerClass}>
+            {/* Progress ring for countdown modes */}
+            {hasCountdown && progress !== null && (
                 <svg className="timer-progress" viewBox="0 0 100 100">
                     <circle
                         className="timer-progress-bg"
@@ -55,7 +58,7 @@ function Timer({ elapsedSeconds, remainingSeconds, strategy, isPaused }) {
                         strokeWidth="8"
                     />
                     <circle
-                        className="timer-progress-bar"
+                        className={`timer-progress-bar ${mode === 'break' ? 'break' : ''}`}
                         cx="50"
                         cy="50"
                         r="45"
@@ -69,17 +72,10 @@ function Timer({ elapsedSeconds, remainingSeconds, strategy, isPaused }) {
             )}
 
             <div className="timer-display">
-                <span className="timer-label">{displayLabel}</span>
                 <span className="timer-time">{formatTime(displayTime)}</span>
                 {isPaused && <span className="timer-paused-indicator">PAUSED</span>}
             </div>
 
-            {/* Show elapsed time for Pomodoro as secondary info */}
-            {strategy === 'pomodoro' && (
-                <div className="timer-secondary">
-                    Elapsed: {formatTime(elapsedSeconds)}
-                </div>
-            )}
         </div>
     );
 }
@@ -87,7 +83,7 @@ function Timer({ elapsedSeconds, remainingSeconds, strategy, isPaused }) {
 Timer.propTypes = {
     elapsedSeconds: PropTypes.number.isRequired,
     remainingSeconds: PropTypes.number,
-    strategy: PropTypes.oneOf(['pomodoro', 'flowtime', 'free_session']).isRequired,
+    mode: PropTypes.oneOf(['pomodoro', 'flowtime', 'free_session', 'break']).isRequired,
     isPaused: PropTypes.bool,
 };
 

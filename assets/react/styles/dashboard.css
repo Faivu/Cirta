@@ -21,6 +21,14 @@
     min-width: 48px;
 }
 
+.sidebar-content {
+    height: 100%;
+}
+
+.sidebar-content.hidden {
+    display: none;
+}
+
 /* Main Content */
 .dashboard-main {
     flex: 1;
@@ -58,10 +66,22 @@
     transform: translateX(-50%);
 }
 
+
+
 /* Compact Session Styles */
 .session-container.compact {
-    padding: 20px 15px;
+    padding: 60px 15px 20px;
     max-width: 100%;
+}
+
+.session-container.compact .pomodoro-mode-selector {
+    gap: 4px;
+    margin-bottom: 15px;
+}
+
+.session-container.compact .pomodoro-mode-btn {
+    padding: 6px 10px;
+    font-size: 0.75rem;
 }
 
 .session-container.compact .session-title {
@@ -83,34 +103,60 @@
     font-size: 2.5rem;
 }
 
-.session-container.compact .timer {
-    margin: 15px 0;
+
+.session-container.compact .timer.preview .timer-progress {
+    width: 180px;
+    height: 180px;
 }
 
-.session-container.compact .strategy-cards {
-    flex-direction: column;
+.session-container.compact .timer.preview .timer-display {
+    width: 180px;
+    height: 180px;
 }
 
-.session-container.compact .strategy-card {
-    padding: 12px;
+.session-container.compact .timer,
+.session-container.compact .timer.preview,
+.session-container.compact .timer.break-mode {
+    margin: 0 0 20px 0;
 }
 
-.session-container.compact .strategy-icon {
-    font-size: 1.5rem;
-    margin-bottom: 4px;
+.session-container.compact .session-idle {
+    min-height: calc(100vh - 120px);
 }
 
-.session-container.compact .strategy-card h3 {
-    font-size: 0.95rem;
+.session-container.compact .start-session-sticky.compact {
+    position: fixed;
+    bottom: 70px;
+    left: 0;
+    width: 320px;
+    padding: 0 15px;
+    box-sizing: border-box;
+    z-index: 51;
 }
 
-.session-container.compact .strategy-card p {
-    font-size: 0.75rem;
+.session-container.compact .start-session-sticky.compact .btn {
+    max-width: 100%;
+}
+
+.session-container.compact .strategy-selector.compact {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 320px;
+    padding: 15px;
+    background: #f9fafb;
+    border-top: 1px solid #e5e7eb;
+    box-sizing: border-box;
+    z-index: 50;
+}
+
+.dashboard-sidebar.collapsed .strategy-selector.compact {
+    display: none;
 }
 
 .session-container.compact .session-config {
     padding: 15px;
-    margin-top: 15px;
+    margin-top: 0;
 }
 
 .session-container.compact .btn {
@@ -346,6 +392,38 @@
 
 .toolbar-views button.active:hover {
     background: #2563eb;
+}
+
+/* Session Fullscreen Mode */
+.session-fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100;
+    background: #f9fafb;
+}
+
+.exit-fullscreen-btn {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    width: 28px;
+    height: 28px;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    z-index: 101;
+}
+
+.exit-fullscreen-btn:hover {
+    background: #f3f4f6;
 }
 
 /* Full screen mode for calendar */
