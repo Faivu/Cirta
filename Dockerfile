@@ -1,5 +1,13 @@
 FROM dunglas/frankenphp:latest
 
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    unzip \
+    nodejs \
+    npm \
+    && rm -rf /var/lib/apt/lists/*
+
 # Install PHP extensions
 RUN install-php-extensions \
     pdo_mysql \
@@ -16,8 +24,7 @@ COPY . /app
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 RUN composer install --no-dev --optimize-autoloader
 
-# Install Node and build assets
-RUN apt-get update && apt-get install -y nodejs npm
+# Build assets
 RUN npm ci && npm run build
 
 # Set permissions
