@@ -20,15 +20,18 @@ WORKDIR /app
 # Copy application
 COPY . /app
 
-# Install composer dependencies
+# Create minimal .env for build (real values come from Railway env vars)
+RUN echo "APP_ENV=prod" > /app/.env
+
+# Install composer dependencies (skip scripts to avoid cache:clear during build)
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader --no-scripts
 
 # Build assets
 RUN npm ci && npm run build
 
 # Set permissions
-RUN chown -R www-data:www-data /app/var
+RUN mkdir -p /app/var && chown -R www-data:www-data /app/var
 
 # Configure Caddy for Symfony
 RUN echo '{\n\
