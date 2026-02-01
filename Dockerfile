@@ -33,19 +33,21 @@ RUN npm ci && npm run build
 # Set permissions
 RUN mkdir -p /app/var && chown -R www-data:www-data /app/var
 
-# Configure Caddy for Symfony
-RUN echo '{\n\
+# Create startup script that generates Caddyfile with actual PORT
+RUN echo '#!/bin/sh\n\
+echo "{\n\
     auto_https off\n\
     admin off\n\
     frankenphp\n\
 }\n\
 \n\
-:${PORT} {\n\
+:${PORT:-8080} {\n\
     root * /app/public\n\
     encode zstd gzip\n\
     php_server\n\
-}' > /etc/caddy/Caddyfile
+}" > /etc/caddy/Caddyfile\n\
+exec frankenphp run --config /etc/caddy/Caddyfile' > /start.sh && chmod +x /start.sh
 
 EXPOSE 8080
 
-CMD ["frankenphp", "run", "--config", "/etc/caddy/Caddyfile"]
+CMD ["/bin/sh", "/start.sh"]
