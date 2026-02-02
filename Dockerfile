@@ -33,8 +33,13 @@ RUN npm ci && npm run build
 # Set permissions
 RUN mkdir -p /app/var && chown -R www-data:www-data /app/var
 
-# Create startup script that generates Caddyfile with actual PORT
+# Create startup script that runs migrations and generates Caddyfile
 RUN echo '#!/bin/sh\n\
+\n\
+# Run database migrations\n\
+php bin/console doctrine:migrations:migrate --no-interaction || true\n\
+\n\
+# Generate Caddyfile\n\
 echo "{\n\
     auto_https off\n\
     admin off\n\
@@ -46,6 +51,7 @@ echo "{\n\
     encode zstd gzip\n\
     php_server\n\
 }" > /etc/caddy/Caddyfile\n\
+\n\
 exec frankenphp run --config /etc/caddy/Caddyfile' > /start.sh && chmod +x /start.sh
 
 EXPOSE 8080
