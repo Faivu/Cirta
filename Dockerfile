@@ -36,8 +36,8 @@ RUN mkdir -p /app/var && chown -R www-data:www-data /app/var
 # Create startup script that runs migrations and generates Caddyfile
 RUN echo '#!/bin/sh\n\
 \n\
-# Run database migrations\n\
-php bin/console doctrine:migrations:migrate --no-interaction || true\n\
+# Create database schema (first deploy) or run migrations (subsequent deploys)\n\
+php bin/console doctrine:schema:update --force || true\n\
 \n\
 # Generate Caddyfile\n\
 echo "{\n\
