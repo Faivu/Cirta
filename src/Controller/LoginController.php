@@ -11,17 +11,18 @@ class LoginController extends AbstractController
     #[Route('/login', name: 'app_login')]
     public function index(): Response
     {
-        // If user is already logged in, redirect to home
-        if ($this->getUser()) {
-            return $this->redirectToRoute('app_home');
-        }
-
-        return $this->render('login/index.html.twig');
+        // Redirect to home page which handles login
+        return $this->redirectToRoute('app_home');
     }
 
     #[Route('/', name: 'app_home')]
     public function home(): Response
     {
+        // If user is already logged in, redirect to dashboard
+        if ($this->getUser()) {
+            return $this->redirectToRoute('app_dashboard');
+        }
+
         return $this->render('home/index.html.twig');
     }
 

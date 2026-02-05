@@ -2,15 +2,17 @@
 framework:
     secret: '%env(APP_SECRET)%'
 
-    # Trust Railway's proxy for HTTPS
-    trusted_proxies: '%env(TRUSTED_PROXIES)%'
-    trusted_headers: ['x-forwarded-for', 'x-forwarded-proto', 'x-forwarded-host']
-
     # Note that the session will be started ONLY if you read or write from it.
     session: true
 
     #esi: true
     #fragments: true
+
+when@prod:
+    framework:
+        # Trust Railway's proxy for HTTPS
+        trusted_proxies: '%env(TRUSTED_PROXIES)%'
+        trusted_headers: ['x-forwarded-for', 'x-forwarded-proto', 'x-forwarded-host']
 
 when@test:
     framework:

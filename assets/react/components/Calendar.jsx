@@ -54,6 +54,12 @@ function CustomToolbar({ label, onNavigate, onView, view }) {
                 >
                     Day
                 </button>
+                <button
+                    className="logout-btn"
+                    onClick={() => window.location.href = '/logout'}
+                >
+                    Logout
+                </button>
             </div>
         </div>
     );

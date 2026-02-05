@@ -23,6 +23,19 @@ final class SessionController extends AbstractController
     ) {}
 
     /**
+     * Check if session is still valid (for tab sync)
+     */
+    #[Route('/check', name: 'check', methods: ['GET'])]
+    public function check(): JsonResponse
+    {
+        if (!$this->getUser()) {
+            return $this->json(['error' => 'Not authenticated'], Response::HTTP_UNAUTHORIZED);
+        }
+
+        return $this->json(['status' => 'ok']);
+    }
+
+    /**
      * Start a new session
      */
     #[Route('/start', name: 'start', methods: ['POST'])]

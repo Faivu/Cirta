@@ -394,6 +394,19 @@
     background: #2563eb;
 }
 
+.toolbar-views .logout-btn {
+    margin-left: 16px;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+    color: #6b7280;
+}
+
+.toolbar-views .logout-btn:hover {
+    background: #fee2e2;
+    border-color: #fca5a5;
+    color: #dc2626;
+}
+
 /* Session Fullscreen Mode */
 .session-fullscreen {
     position: fixed;
