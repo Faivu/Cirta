@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import SessionApp from './SessionApp';
 import Calendar from './Calendar';
+import TopBar from './TopBar';
 import { SessionProvider } from '../context/SessionContext';
 
 /**
- * DashboardLayout - Split view layout with session sidebar and calendar main area
+ * DashboardLayout - Main layout with top bar, session sidebar, and calendar
  */
 function DashboardLayout() {
-    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+    const [sessionVisible, setSessionVisible] = useState(true);
     const [sessionFullscreen, setSessionFullscreen] = useState(false);
 
     return (
@@ -24,21 +25,22 @@ function DashboardLayout() {
                     <SessionApp />
                 </div>
             ) : (
-                <div className="dashboard">
-                    <div className={`dashboard-sidebar${sidebarCollapsed ? ' collapsed' : ''}`}>
-                        <button
-                            className="sidebar-toggle"
-                            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-                            title={sidebarCollapsed ? 'Show timer' : 'Hide timer'}
-                        >
-                            {sidebarCollapsed ? '>' : '<'}
-                        </button>
-                        <div className={`sidebar-content${sidebarCollapsed ? ' hidden' : ''}`}>
-                            <SessionApp compact onFullscreen={() => setSessionFullscreen(true)} />
+                <div className="dashboard-wrapper">
+                    <TopBar
+                        sessionVisible={sessionVisible}
+                        onToggleSession={() => setSessionVisible(!sessionVisible)}
+                    />
+                    <div className="dashboard">
+                        {sessionVisible && (
+                            <div className="dashboard-sidebar">
+                                <div className="sidebar-content">
+                                    <SessionApp compact onFullscreen={() => setSessionFullscreen(true)} />
+                                </div>
+                            </div>
+                        )}
+                        <div className="dashboard-main">
+                            <Calendar />
                         </div>
-                    </div>
-                    <div className="dashboard-main">
-                        <Calendar />
                     </div>
                 </div>
             )}
