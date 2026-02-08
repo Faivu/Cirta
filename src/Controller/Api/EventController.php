@@ -115,4 +115,142 @@ final class EventController extends AbstractController
             'reoccurrenceEndDate' => $event->getReoccurrenceEndDate()?->format('c'),
         ]);
     }
+
+    /**
+     * Create a new event
+     */
+    #[Route('', name: 'create', methods: ['POST'])]
+    public function create(Request $request): JsonResponse
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->json(['error' => 'Not authenticated'], Response::HTTP_UNAUTHORIZED);
+        }
+
+        $data = json_decode($request->getContent(), true);
+
+        if (!isset($data['title']) || !isset($data['startAt']) || !isset($data['endAt'])) {
+            return $this->json(['error' => 'Title, startAt, and endAt are required'], Response::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            $event = new Event();
+            $event->setUser($user);
+            $event->setTitle($data['title']);
+            $event->setStartAt(new \DateTime($data['startAt']));
+            $event->setEndAt(new \DateTime($data['endAt']));
+            $event->setCategory($data['category'] ?? 'default');
+            $event->setColor($data['color'] ?? '#3b82f6');
+            $event->setAllDay($data['allDay'] ?? false);
+            $event->setIsReoccurring($data['isReoccurring'] ?? false);
+
+            if (isset($data['reoccurrencePattern'])) {
+                $event->setReoccurrencePattern($data['reoccurrencePattern']);
+            }
+            if (isset($data['reoccurrenceEndDate'])) {
+                $event->setReoccurrenceEndDate(new \DateTime($data['reoccurrenceEndDate']));
+            }
+
+            $this->entityManager->persist($event);
+            $this->entityManager->flush();
+
+            return $this->json([
+                'id' => $event->getId(),
+                'title' => $event->getTitle(),
+                'category' => $event->getCategory(),
+                'color' => $event->getColor(),
+                'startAt' => $event->getStartAt()?->format('c'),
+                'endAt' => $event->getEndAt()?->format('c'),
+                'allDay' => $event->isAllDay(),
+            ], Response::HTTP_CREATED);
+        } catch (\Exception $e) {
+            return $this->json(['error' => 'Invalid date format'], Response::HTTP_BAD_REQUEST);
+        }
+    }
+
+    /**
+     * Update an event
+     */
+    #[Route('/{id}', name: 'update', methods: ['PUT'])]
+    public function update(int $id, Request $request): JsonResponse
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->json(['error' => 'Not authenticated'], Response::HTTP_UNAUTHORIZED);
+        }
+
+        $event = $this->entityManager->getRepository(Event::class)->find($id);
+
+        if (!$event) {
+            return $this->json(['error' => 'Event not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        if ($event->getUser() !== $user) {
+            return $this->json(['error' => 'Access denied'], Response::HTTP_FORBIDDEN);
+        }
+
+        $data = json_decode($request->getContent(), true);
+
+        try {
+            if (isset($data['title'])) {
+                $event->setTitle($data['title']);
+            }
+            if (isset($data['startAt'])) {
+                $event->setStartAt(new \DateTime($data['startAt']));
+            }
+            if (isset($data['endAt'])) {
+                $event->setEndAt(new \DateTime($data['endAt']));
+            }
+            if (isset($data['category'])) {
+                $event->setCategory($data['category']);
+            }
+            if (isset($data['color'])) {
+                $event->setColor($data['color']);
+            }
+            if (isset($data['allDay'])) {
+                $event->setAllDay($data['allDay']);
+            }
+
+            $this->entityManager->flush();
+
+            return $this->json([
+                'id' => $event->getId(),
+                'title' => $event->getTitle(),
+                'category' => $event->getCategory(),
+                'color' => $event->getColor(),
+                'startAt' => $event->getStartAt()?->format('c'),
+                'endAt' => $event->getEndAt()?->format('c'),
+                'allDay' => $event->isAllDay(),
+            ]);
+        } catch (\Exception $e) {
+            return $this->json(['error' => 'Invalid data'], Response::HTTP_BAD_REQUEST);
+        }
+    }
+
+    /**
+     * Delete an event
+     */
+    #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
+    public function delete(int $id): JsonResponse
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->json(['error' => 'Not authenticated'], Response::HTTP_UNAUTHORIZED);
+        }
+
+        $event = $this->entityManager->getRepository(Event::class)->find($id);
+
+        if (!$event) {
+            return $this->json(['error' => 'Event not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        if ($event->getUser() !== $user) {
+            return $this->json(['error' => 'Access denied'], Response::HTTP_FORBIDDEN);
+        }
+
+        $this->entityManager->remove($event);
+        $this->entityManager->flush();
+
+        return $this->json(['success' => true]);
+    }
 }

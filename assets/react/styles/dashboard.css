@@ -377,6 +377,36 @@
     border-radius: 4px;
     padding: 2px 5px;
     font-size: 0.8rem;
+    min-height: 0 !important;
+}
+
+.rbc-day-slot .rbc-event {
+    min-height: 0 !important;
+}
+
+.rbc-day-slot .rbc-events-container {
+    display: block !important;
+    position: absolute !important;
+    left: 0 !important;
+    right: 0 !important;
+}
+
+.rbc-time-content {
+    display: flex !important;
+}
+
+.rbc-time-column {
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.rbc-day-slot {
+    position: relative !important;
+}
+
+/* Drag and drop styling - lower opacity on original event while dragging */
+.rbc-addons-dnd-dragged-event {
+    opacity: 0.5 !important;
 }
 
 /* Custom Toolbar */
@@ -515,3 +545,166 @@
     bottom: 0;
     z-index: 100;
 }
+
+/* Calendar Modal */
+.calendar-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.calendar-modal {
+    background: white;
+    border-radius: 12px;
+    padding: 40px 24px 24px 24px;
+    min-width: 320px;
+    max-width: 400px;
+    position: relative;
+}
+
+.calendar-modal-close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 20px;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.calendar-modal-close:hover {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.calendar-modal h3 {
+    margin: 0 0 16px;
+    font-size: 1.125rem;
+    color: #111827;
+}
+
+.calendar-modal p {
+    margin: 0 0 16px;
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.calendar-modal-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+}
+
+.calendar-modal-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.calendar-modal-time {
+    color: #6b7280;
+    font-size: 0.8rem;
+}
+
+.calendar-modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.calendar-modal-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+}
+
+.calendar-modal-btn.cancel {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.calendar-modal-btn.cancel:hover {
+    background: #e5e7eb;
+}
+
+.calendar-modal-btn.confirm {
+    background: #3b82f6;
+    color: white;
+}
+
+.calendar-modal-btn.confirm:hover:not(:disabled) {
+    background: #2563eb;
+}
+
+.calendar-modal-btn.confirm:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.calendar-modal-btn.delete {
+    background: #ef4444;
+    color: white;
+}
+
+.calendar-modal-btn.delete:hover:not(:disabled) {
+    background: #dc2626;
+}
+
+.calendar-modal-btn.delete:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Custom Event Display */
+.custom-event {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.75rem;
+    line-height: 1.3;
+}
+
+.custom-event-title {
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.custom-event-time {
+    font-size: 0.5rem;
+    opacity: 0.85;
+    white-space: nowrap;
+}
+
+.custom-event-short {
+    font-size: 0.5rem;
+    line-height: 1;
+}
+
+.custom-event-short .custom-event-title {
+    font-size: 0.5rem;
+}
+
