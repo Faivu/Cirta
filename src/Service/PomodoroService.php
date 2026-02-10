@@ -103,9 +103,9 @@ class PomodoroService implements SessionStrategy
         $session->complete($actualDuration);
 
         // Calculate break duration based on completed pomodoros today
+        // Note: Doctrine auto-flushes before the count query, so current session is already included
         $completedToday = $this->countCompletedToday($session->getUser());
-        // completedToday doesn't include current one yet, so add 1
-        $cyclePosition = ($completedToday + 1) % self::POMODOROS_BEFORE_LONG_BREAK;
+        $cyclePosition = $completedToday % self::POMODOROS_BEFORE_LONG_BREAK;
 
         if ($cyclePosition === 0) {
             // Every 4th pomodoro gets a long break

@@ -36,6 +36,84 @@ final class SessionController extends AbstractController
     }
 
     /**
+     * Get session history
+     */
+    #[Route('/history', name: 'history', methods: ['GET'])]
+    public function history(Request $request): JsonResponse
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->json(['error' => 'Not authenticated'], Response::HTTP_UNAUTHORIZED);
+        }
+
+        $page = max(1, $request->query->getInt('page', 1));
+        $limit = min(50, max(1, $request->query->getInt('limit', 20)));
+        $offset = ($page - 1) * $limit;
+
+        $qb = $this->entityManager->getRepository(Session::class)->createQueryBuilder('s');
+        $qb->where('s.user = :user')
+            ->andWhere('s.status IN (:statuses)')
+            ->setParameter('user', $user)
+            ->setParameter('statuses', [Session::STATUS_COMPLETED, Session::STATUS_INTERRUPTED])
+            ->orderBy('s.startedAt', 'DESC')
+            ->setFirstResult($offset)
+            ->setMaxResults($limit);
+
+        $since = $request->query->get('since');
+        if ($since) {
+            $sinceDate = new \DateTime($since);
+            $qb->andWhere('s.startedAt >= :since')
+                ->setParameter('since', $sinceDate);
+        }
+
+        $sessions = $qb->getQuery()->getResult();
+
+        // Get total count
+        $countQb = $this->entityManager->getRepository(Session::class)->createQueryBuilder('s');
+        $countQb->select('COUNT(s.id)')
+            ->where('s.user = :user')
+            ->andWhere('s.status IN (:statuses)')
+            ->setParameter('user', $user)
+            ->setParameter('statuses', [Session::STATUS_COMPLETED, Session::STATUS_INTERRUPTED]);
+
+        if ($since) {
+            $countQb->andWhere('s.startedAt >= :since')
+                ->setParameter('since', $sinceDate);
+        }
+        $total = (int) $countQb->getQuery()->getSingleScalarResult();
+
+        $data = array_map(function (Session $session) {
+            $item = [
+                'id' => $session->getId(),
+                'type' => match (true) {
+                    $session instanceof Pomodoro => 'pomodoro',
+                    $session instanceof Flowtime => 'flowtime',
+                    $session instanceof FreeSession => 'free_session',
+                    default => 'unknown',
+                },
+                'status' => $session->getStatus(),
+                'customGoal' => $session->getCustomGoal(),
+                'startedAt' => $session->getStartedAt()?->format('c'),
+                'endedAt' => $session->getEndedAt()?->format('c'),
+                'actualDuration' => $session->getActualDuration(),
+            ];
+
+            if ($session instanceof Pomodoro) {
+                $item['targetDuration'] = $session->getTargetDuration();
+            }
+
+            return $item;
+        }, $sessions);
+
+        return $this->json([
+            'sessions' => $data,
+            'total' => $total,
+            'page' => $page,
+            'pages' => (int) ceil($total / $limit),
+        ]);
+    }
+
+    /**
      * Start a new session
      */
     #[Route('/start', name: 'start', methods: ['POST'])]

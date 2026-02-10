@@ -127,17 +127,17 @@ export function SessionProvider({ children }) {
         }
     }, [status, breakSeconds]);
 
-    // Suggest break when pomodoro completes
+    // Suggest break when pomodoro completes — use backend's breakDuration as source of truth
     useEffect(() => {
         if (status === 'completed' && strategy === 'pomodoro' && sessionId && lastProcessedSessionRef.current !== sessionId) {
             lastProcessedSessionRef.current = sessionId;
-            setPomodoroCount(prev => {
-                const newCount = prev + 1;
-                setPomodoroMode(newCount % 4 === 0 ? 'longBreak' : 'shortBreak');
-                return newCount;
-            });
+            // Only count and suggest break for successfully completed sessions
+            if (completionData?.breakDuration) {
+                setPomodoroCount(prev => prev + 1);
+                setPomodoroMode(completionData.breakDuration >= 15 ? 'longBreak' : 'shortBreak');
+            }
         }
-    }, [status, strategy, sessionId]);
+    }, [status, strategy, sessionId, completionData]);
 
     // Auto-complete when pomodoro time is up
     useEffect(() => {

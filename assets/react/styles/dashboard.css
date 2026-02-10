@@ -136,8 +136,238 @@
     overflow-y: auto;
 }
 
+.sidebar-tabs {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #e5e7eb;
+    background: white;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.sidebar-tab {
+    flex: 1;
+    padding: 6px 0;
+    border: none;
+    background: transparent;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-bottom: 2px solid transparent;
+}
+
+.sidebar-tab:hover {
+    color: #374151;
+    background: #f9fafb;
+}
+
+.sidebar-tab.active {
+    color: #3b82f6;
+    border-bottom-color: #3b82f6;
+}
+
+.sidebar-expand-btn {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    color: #6b7280;
+    margin-left: 6px;
+    flex-shrink: 0;
+    transition: all 0.2s;
+}
+
+.sidebar-expand-btn:hover {
+    background: #f3f4f6;
+    color: #374151;
+}
+
 .sidebar-content {
-    height: 100%;
+    height: calc(100% - 33px);
+    overflow-y: auto;
+}
+
+/* Session History */
+.session-history {
+    padding: 12px;
+}
+
+.history-filter {
+    display: flex;
+    gap: 2px;
+    background: #f3f4f6;
+    border-radius: 6px;
+    padding: 2px;
+    margin-bottom: 12px;
+}
+
+.history-filter-btn {
+    flex: 1;
+    padding: 4px 0;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.history-filter-btn.active {
+    background: white;
+    color: #1f2937;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.history-loading,
+.history-error {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6b7280;
+    font-size: 0.85rem;
+}
+
+.history-error {
+    color: #ef4444;
+}
+
+.history-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: #9ca3af;
+}
+
+.history-empty p {
+    margin-top: 12px;
+    font-weight: 500;
+    color: #6b7280;
+}
+
+.history-empty span {
+    font-size: 0.8rem;
+}
+
+.history-group {
+    margin-bottom: 16px;
+}
+
+.history-date-header {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 4px 0;
+    margin-bottom: 6px;
+}
+
+.history-item {
+    background: white;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 6px;
+    border: 1px solid #e5e7eb;
+    transition: box-shadow 0.2s;
+}
+
+.history-item:hover {
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.history-item.interrupted {
+    border-left: 3px solid #ef4444;
+}
+
+.history-item-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
+.history-type {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #374151;
+}
+
+.history-type.pomodoro { color: #ef4444; }
+.history-type.flowtime { color: #3b82f6; }
+.history-type.free_session { color: #10b981; }
+
+.history-duration {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.history-goal {
+    font-size: 0.8rem;
+    color: #374151;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.history-item-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.history-time {
+    font-size: 0.7rem;
+    color: #9ca3af;
+}
+
+.history-status {
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.history-status.interrupted {
+    background: #fef2f2;
+    color: #ef4444;
+}
+
+.history-load-more {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    background: white;
+    color: #3b82f6;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 8px;
+}
+
+.history-load-more:hover {
+    background: #f0f7ff;
+    border-color: #3b82f6;
+}
+
+.history-load-more:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 /* Main Content */
