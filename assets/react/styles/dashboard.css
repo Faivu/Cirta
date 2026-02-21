@@ -53,6 +53,11 @@
     color: #374151;
 }
 
+.topbar-view-toggle.active {
+    background: #eff6ff;
+    color: #3b82f6;
+}
+
 .topbar-view-toggle .toggle-label {
     position: absolute;
     top: 100%;
@@ -192,7 +197,9 @@
 
 .sidebar-content {
     height: calc(100% - 33px);
-    overflow-y: auto;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Session History */
@@ -937,4 +944,690 @@
 .custom-event-short .custom-event-title {
     font-size: 0.5rem;
 }
+
+/* Todo List */
+.todo-list {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+.session-fullscreen .todo-list {
+    padding-top: 10px;
+}
+
+.todo-fullscreen {
+    display: flex;
+    flex-direction: column;
+}
+
+.todo-fullscreen-content {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    max-width: 640px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.todo-fullscreen .fullscreen-tabs {
+    max-width: 640px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.todo-fullscreen-content .todo-list {
+    height: 100%;
+}
+
+.fullscreen-tabs {
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.todo-loading {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6b7280;
+    font-size: 1.05rem;
+}
+
+.todo-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: #9ca3af;
+}
+
+.todo-empty p {
+    margin-top: 12px;
+    font-weight: 500;
+    color: #6b7280;
+}
+
+.todo-empty span {
+    font-size: 1rem;
+}
+
+.todo-items-wrapper {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+.todo-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.todo-modal {
+    background: white;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+.todo-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px 0;
+}
+
+.todo-modal-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.todo-modal-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #9ca3af;
+    transition: all 0.2s;
+}
+
+.todo-modal-close:hover {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.todo-modal-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.todo-modal-field label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.todo-modal-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    box-sizing: border-box;
+    background: white;
+    outline: none;
+    color: #374151;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.todo-modal-input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.todo-modal-input::placeholder {
+    color: #9ca3af;
+}
+
+.todo-modal form {
+    padding: 16px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.todo-modal-dates {
+    display: flex;
+    gap: 12px;
+}
+
+.todo-modal-dates .todo-modal-field {
+    flex: 1;
+}
+
+.todo-modal-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding-top: 4px;
+}
+
+.todo-toolbar-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 10px;
+    background: transparent;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #6b7280;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+}
+
+.todo-toolbar-btn:hover {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.todo-toolbar-btn.active {
+    background: #eff6ff;
+    border-color: #3b82f6;
+    color: #3b82f6;
+}
+
+.todo-add-btn {
+    padding: 5px 14px;
+    background: #3b82f6;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.todo-add-btn:hover:not(:disabled) {
+    background: #2563eb;
+}
+
+.todo-add-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.todo-add-options {
+    display: flex;
+    gap: 8px;
+    padding: 0 8px 8px;
+}
+
+.todo-date-field {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.todo-date-field span {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.todo-date-field input {
+    padding: 6px 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    background: white;
+    color: #374151;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.todo-date-field input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.todo-items {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.todo-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 8px 10px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    transition: box-shadow 0.2s;
+}
+
+.todo-item:hover {
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.todo-item.edit-mode {
+    cursor: pointer;
+}
+
+.todo-item.edit-mode:hover {
+    border-color: #3b82f6;
+}
+
+.todo-item.checked .todo-title {
+    text-decoration: line-through;
+    color: #9ca3af;
+}
+
+.todo-checkbox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    color: #d1d5db;
+    padding: 0;
+    transition: color 0.2s;
+}
+
+.todo-checkbox:hover {
+    color: #3b82f6;
+}
+
+.todo-checkbox.checked {
+    color: #3b82f6;
+}
+
+.todo-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.todo-title {
+    font-size: 1.1rem;
+    color: #374151;
+    word-break: break-word;
+}
+
+.todo-dates {
+    display: flex;
+    gap: 8px;
+    margin-top: 3px;
+}
+
+.todo-date {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.todo-date.scheduled {
+    color: #3b82f6;
+}
+
+.todo-date.deadline.overdue {
+    color: #ef4444;
+}
+
+.todo-date.deadline.upcoming {
+    color: #f59e0b;
+}
+
+.todo-delete {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    color: #9ca3af;
+    padding: 0;
+    transition: all 0.2s;
+}
+
+.todo-delete:hover {
+    color: #ef4444;
+    background: #fef2f2;
+}
+
+.todo-item.editing {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    padding: 8px;
+}
+
+.todo-edit-area {
+    flex: 1;
+    min-width: 0;
+}
+
+.todo-edit-input {
+    width: 100%;
+    padding: 4px 0;
+    border: none;
+    outline: none;
+    font-size: 1.1rem;
+    color: #374151;
+    background: transparent;
+    box-sizing: border-box;
+}
+
+.todo-edit-actions {
+    display: flex;
+    gap: 4px;
+}
+
+.todo-cancel-btn {
+    padding: 5px 14px;
+    background: transparent;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #6b7280;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.todo-cancel-btn:hover {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.todo-separator {
+    height: 1px;
+    background: #e5e7eb;
+    margin: 8px 0;
+}
+
+/* Todo Collapsible Sections (All filter) */
+.todo-section {
+    margin-bottom: 4px;
+}
+
+.todo-section-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 4px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #6b7280;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    transition: color 0.15s;
+}
+
+.todo-section-header:hover {
+    color: #374151;
+}
+
+.todo-section-chevron {
+    flex-shrink: 0;
+    transition: transform 0.2s;
+}
+
+.todo-section-chevron.collapsed {
+    transform: rotate(-90deg);
+}
+
+.todo-section-title {
+    flex: 1;
+    text-align: left;
+}
+
+.todo-section-count {
+    font-size: 0.7rem;
+    color: #9ca3af;
+    font-weight: 500;
+    background: #f3f4f6;
+    padding: 1px 6px;
+    border-radius: 10px;
+}
+
+.todo-section-tasks {
+    margin-bottom: 6px;
+}
+
+.todo-bottom-bar {
+    display: flex;
+    gap: 6px;
+    padding-top: 8px;
+    border-top: 1px solid #e5e7eb;
+    margin-top: 8px;
+}
+
+.todo-bottom-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 0;
+    background: transparent;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #6b7280;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.todo-bottom-btn:hover {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.todo-bottom-btn.active {
+    background: #eff6ff;
+    border-color: #3b82f6;
+    color: #3b82f6;
+}
+
+/* DatePicker */
+.datepicker-wrapper {
+    position: relative;
+}
+
+.datepicker-text-input {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    background: white;
+    color: #374151;
+    box-sizing: border-box;
+    min-width: 0;
+}
+
+.datepicker-text-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.datepicker-text-input::placeholder {
+    color: #9ca3af;
+}
+
+.datepicker-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 4px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    z-index: 200;
+    width: 260px;
+    padding: 12px;
+}
+
+.datepicker-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.datepicker-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #6b7280;
+    transition: all 0.2s;
+}
+
+.datepicker-nav:hover {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.datepicker-month-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.datepicker-grid-container {
+    overflow: hidden;
+}
+
+.datepicker-grid {
+    transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.datepicker-grid.slide-out-left {
+    transform: translateX(-15px);
+    opacity: 0;
+}
+
+.datepicker-grid.slide-out-right {
+    transform: translateX(15px);
+    opacity: 0;
+}
+
+.datepicker-grid.slide-in-right {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.datepicker-grid.slide-in-left {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.datepicker-days-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    margin-bottom: 4px;
+}
+
+.datepicker-day-label {
+    text-align: center;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #9ca3af;
+    padding: 4px 0;
+    text-transform: uppercase;
+}
+
+.datepicker-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+}
+
+.datepicker-day {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    margin: 0 auto;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    font-size: 0.85rem;
+    color: #374151;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.datepicker-day.empty {
+    cursor: default;
+}
+
+.datepicker-day:not(.empty):hover {
+    background: #f3f4f6;
+}
+
+.datepicker-day.today {
+    font-weight: 600;
+    color: #3b82f6;
+}
+
+.datepicker-day.selected {
+    background: #3b82f6;
+    color: white;
+    font-weight: 600;
+}
+
+.datepicker-day.selected:hover {
+    background: #2563eb;
+}
+
 
