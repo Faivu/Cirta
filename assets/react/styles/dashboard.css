@@ -1,49 +1,65 @@
 /* Dashboard Wrapper */
 .dashboard-wrapper {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     height: 100vh;
     overflow: hidden;
 }
 
-/* Top Bar */
+/* Left Navigation Sidebar */
 .topbar {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    height: 56px;
-    min-height: 56px;
-    padding: 0 20px;
+    width: 60px;
+    min-width: 60px;
+    height: 100vh;
+    padding: 12px 0;
     background: white;
-    border-bottom: 1px solid #e5e7eb;
+    border-right: 1px solid #e5e7eb;
+    box-sizing: border-box;
 }
 
-.topbar-left {
+.topbar-top {
     display: flex;
     align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
 }
 
 .topbar-logo {
-    height: 48px;
+    height: 36px;
     width: auto;
 }
 
-.topbar-center {
+.topbar-middle {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    gap: 4px;
+    flex: 1;
+}
+
+.topbar-bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
 }
 
 .topbar-view-toggle {
     position: relative;
     display: flex;
     align-items: center;
-    padding: 8px;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
     background: transparent;
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 0.875rem;
     color: #6b7280;
     transition: all 0.2s;
 }
@@ -60,10 +76,10 @@
 
 .topbar-view-toggle .toggle-label {
     position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    margin-top: 6px;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-left: 10px;
     padding: 4px 8px;
     background: #1f2937;
     color: white;
@@ -81,12 +97,6 @@
     opacity: 1;
     visibility: visible;
     transition: opacity 0.2s 0.5s, visibility 0.2s 0.5s;
-}
-
-.topbar-right {
-    display: flex;
-    align-items: center;
-    gap: 8px;
 }
 
 .topbar-settings {
@@ -109,19 +119,21 @@
 }
 
 .topbar-logout {
-    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
     background: transparent;
-    border: 1px solid #e5e7eb;
+    border: none;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 0.875rem;
     color: #6b7280;
     transition: all 0.2s;
 }
 
 .topbar-logout:hover {
     background: #fee2e2;
-    border-color: #fca5a5;
     color: #dc2626;
 }
 
@@ -444,7 +456,7 @@
 .session-container.compact .start-session-sticky.compact {
     position: fixed;
     bottom: 70px;
-    left: 0;
+    left: 60px;
     width: 320px;
     padding: 0 15px;
     box-sizing: border-box;
@@ -458,7 +470,7 @@
 .session-container.compact .strategy-selector.compact {
     position: fixed;
     bottom: 0;
-    left: 0;
+    left: 60px;
     width: 320px;
     padding: 15px;
     background: #f9fafb;

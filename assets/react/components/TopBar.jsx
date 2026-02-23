@@ -2,16 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 /**
- * TopBar - Main navigation bar with logo, view toggles, and settings
+ * TopBar - Vertical left navigation sidebar with logo, panel toggles, and settings
  */
 function TopBar({ activeSidebar, onToggleSidebar }) {
     return (
         <div className="topbar">
-            <div className="topbar-left">
+            <div className="topbar-top">
                 <img src="/images/logo.png" alt="Cirta" className="topbar-logo" />
             </div>
 
-            <div className="topbar-center">
+            <div className="topbar-middle">
                 <button
                     className={`topbar-view-toggle ${activeSidebar === 'session' ? 'active' : ''}`}
                     onClick={() => onToggleSidebar('session')}
@@ -37,7 +37,7 @@ function TopBar({ activeSidebar, onToggleSidebar }) {
                 </button>
             </div>
 
-            <div className="topbar-right">
+            <div className="topbar-bottom">
                 <button className="topbar-settings" title="Settings">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <circle cx="12" cy="12" r="3" />
@@ -49,7 +49,11 @@ function TopBar({ activeSidebar, onToggleSidebar }) {
                     title="Logout"
                     onClick={() => window.location.href = '/logout'}
                 >
-                    Logout
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                        <polyline points="16 17 21 12 16 7" />
+                        <line x1="21" y1="12" x2="9" y2="12" />
+                    </svg>
                 </button>
             </div>
         </div>
