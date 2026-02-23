@@ -21,6 +21,7 @@ Encore
      * and one CSS file (e.g. app.css) if your JavaScript imports CSS.
      */
     .addEntry('app', './assets/app.js')
+    .addEntry('login', './assets/styles/login.css')
     .addEntry('session', './assets/react/session.jsx')
     .addEntry('dashboard', './assets/react/dashboard.jsx')
 
