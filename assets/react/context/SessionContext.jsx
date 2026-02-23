@@ -30,7 +30,7 @@ const playNotificationSound = () => {
             oscillator.stop(startTime + 0.4);
         });
     } catch (e) {
-        // Silently fail if audio not supported
+        // If audio not supported it skips the chime
     }
 };
 
@@ -92,33 +92,69 @@ export function SessionProvider({ children }) {
     const [isAutoCompleting, setIsAutoCompleting] = useState(false);
     const lastProcessedSessionRef = useRef(null);
 
+    // Wall clock refs to ensure accurate timing even if the tab is inactive or the browser throttles the timer
+    const timerStartRef = useRef(null); //When the timer starts or resumes
+    const timerBaseRef = useRef(0); // Elapsed seconds at the last start
+    const breakStartRef = useRef(null); //When the break starts
+    const breakInitialRef = useRef(0); // how much to last when started
+
     // Timer tick effect
     useEffect(() => {
         if (status !== 'running') return;
 
-        const interval = setInterval(() => {
-            setElapsedSeconds(prev => prev + 1);
-        }, 1000);
+        timerStartRef.current = Date.now();
+        timerBaseRef.current = elapsedSeconds;
 
-        return () => clearInterval(interval);
+        const tick = () => {
+            const wallElapsed = Math.floor((Date.now() - timerStartRef.current) / 1000);
+            setElapsedSeconds(timerBaseRef.current + wallElapsed);
+        };
+
+        const interval = setInterval(tick, 500);
+
+        const onVisibilityChange = () => {
+            if (document.visibilityState === 'visible') tick();
+        };
+        document.addEventListener('visibilitychange', onVisibilityChange);
+
+        return () => {
+            clearInterval(interval);
+            document.removeEventListener('visibilitychange', onVisibilityChange);
+        };
     }, [status]);
 
     // Break timer countdown
     useEffect(() => {
-        if (status !== 'break' || breakSeconds <= 0) return;
+        if (status !== 'break') return;
 
-        const interval = setInterval(() => {
-            setBreakSeconds(prev => {
-                if (prev <= 1) {
-                    playNotificationSound();
-                    return 0;
-                }
-                return prev - 1;
-            });
-        }, 1000);
+        breakStartRef.current = Date.now();
+        breakInitialRef.current = breakSeconds;
+        let soundPlayed = false;
 
-        return () => clearInterval(interval);
-    }, [status, breakSeconds]);
+        const tick = () => {
+            const elapsed = Math.floor((Date.now() - breakStartRef.current) / 1000);
+            const remaining = Math.max(0, breakInitialRef.current - elapsed);
+
+            if (remaining === 0 && !soundPlayed) {
+                soundPlayed = true;
+                playNotificationSound();
+            }
+
+            setBreakSeconds(remaining);
+        };
+
+        const interval = setInterval(tick, 500);
+
+        const onVisibilityChange = () => {
+            if (document.visibilityState === 'visible') tick();
+        };
+        document.addEventListener('visibilitychange', onVisibilityChange);
+
+        return () => {
+            clearInterval(interval);
+            document.removeEventListener('visibilitychange', onVisibilityChange);
+        };
+    }, [status]);
 
     // Reset to pomodoro mode when break finishes
     useEffect(() => {
