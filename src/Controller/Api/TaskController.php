@@ -40,7 +40,6 @@ final class TaskController extends AbstractController
                 'title' => $task->getTitle(),
                 'isChecked' => $task->isChecked(),
                 'scheduleDate' => $task->getScheduleDate()?->format('c'),
-                'deadline' => $task->getDeadline()?->format('c'),
             ];
         }, $tasks);
 
@@ -70,10 +69,6 @@ final class TaskController extends AbstractController
             if (!empty($data['scheduleDate'])) {
                 $task->setScheduleDate(new \DateTime($data['scheduleDate']));
             }
-            if (!empty($data['deadline'])) {
-                $task->setDeadline(new \DateTime($data['deadline']));
-            }
-
             $this->entityManager->persist($task);
             $this->entityManager->flush();
         } catch (\Exception $e) {
@@ -85,7 +80,6 @@ final class TaskController extends AbstractController
             'title' => $task->getTitle(),
             'isChecked' => $task->isChecked(),
             'scheduleDate' => $task->getScheduleDate()?->format('c'),
-            'deadline' => $task->getDeadline()?->format('c'),
         ], Response::HTTP_CREATED);
     }
 
@@ -119,10 +113,6 @@ final class TaskController extends AbstractController
             if (array_key_exists('scheduleDate', $data)) {
                 $task->setScheduleDate($data['scheduleDate'] ? new \DateTime($data['scheduleDate']) : null);
             }
-            if (array_key_exists('deadline', $data)) {
-                $task->setDeadline($data['deadline'] ? new \DateTime($data['deadline']) : null);
-            }
-
             $this->entityManager->flush();
         } catch (\Exception $e) {
             return $this->json(['error' => 'Invalid data'], Response::HTTP_BAD_REQUEST);
@@ -133,7 +123,6 @@ final class TaskController extends AbstractController
             'title' => $task->getTitle(),
             'isChecked' => $task->isChecked(),
             'scheduleDate' => $task->getScheduleDate()?->format('c'),
-            'deadline' => $task->getDeadline()?->format('c'),
         ]);
     }
 

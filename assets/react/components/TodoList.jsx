@@ -34,7 +34,6 @@ function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
     const [tasks, setTasks] = useState([]);
     const [newTitle, setNewTitle] = useState('');
     const [scheduleDate, setScheduleDate] = useState('');
-    const [deadline, setDeadline] = useState('');
     const [showAddForm, setShowAddForm] = useState(false);
     const [editMode, setEditMode] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -42,7 +41,6 @@ function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
     const [editingId, setEditingId] = useState(null);
     const [editTitle, setEditTitle] = useState('');
     const [editScheduleDate, setEditScheduleDate] = useState('');
-    const [editDeadline, setEditDeadline] = useState('');
     const [editShowDates, setEditShowDates] = useState(false);
     const [collapsedSections, setCollapsedSections] = useState({});
     const inputRef = useRef(null);
@@ -75,7 +73,6 @@ function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
         try {
             const body = { title };
             if (scheduleDate) body.scheduleDate = scheduleDate;
-            if (deadline) body.deadline = deadline;
 
             const res = await fetch('/api/tasks', {
                 method: 'POST',
@@ -152,7 +149,6 @@ function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
         setEditingId(task.id);
         setEditTitle(task.title);
         setEditScheduleDate(toDateInput(task.scheduleDate));
-        setEditDeadline(toDateInput(task.deadline));
         setEditShowDates(false);
     };
 
@@ -170,7 +166,6 @@ function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
 
         const body = { title };
         body.scheduleDate = editScheduleDate || null;
-        body.deadline = editDeadline || null;
 
         // Optimistic update
         setTasks((prev) =>
@@ -178,7 +173,6 @@ function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
                 ...t,
                 title,
                 scheduleDate: editScheduleDate || null,
-                deadline: editDeadline || null,
             } : t))
         );
         setEditingId(null);
@@ -229,7 +223,6 @@ function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
         setShowAddForm(true);
         setNewTitle('');
         setScheduleDate(filter === 'today' ? new Date().toISOString().split('T')[0] : '');
-        setDeadline('');
         setEditMode(false);
         setEditingId(null);
     };
@@ -238,7 +231,6 @@ function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
         setShowAddForm(false);
         setNewTitle('');
         setScheduleDate('');
-        setDeadline('');
     };
 
     const handleModalKeyDown = (e) => {
@@ -317,19 +309,6 @@ function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
         return d.toLocaleDateString(undefined, opts);
     };
 
-    // Returns null (hide), 'overdue', or 'upcoming' for deadline visibility
-    const getDeadlineUrgency = (deadlineStr) => {
-        if (!deadlineStr) return null;
-        const now = new Date();
-        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        const dl = new Date(deadlineStr);
-        const deadlineDay = new Date(dl.getFullYear(), dl.getMonth(), dl.getDate());
-        const diffDays = (deadlineDay - today) / (1000 * 60 * 60 * 24);
-        if (diffDays < 0) return 'overdue';
-        if (diffDays <= 3) return 'upcoming';
-        return null;
-    };
-
     const renderTask = (task) => {
         const isEditing = editingId === task.id;
         const isChecked = task.isChecked;
@@ -393,10 +372,6 @@ function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
                                     <span>Scheduled</span>
                                     <DatePicker value={editScheduleDate} onChange={setEditScheduleDate} />
                                 </div>
-                                <div className="todo-date-field">
-                                    <span>Deadline</span>
-                                    <DatePicker value={editDeadline} onChange={setEditDeadline} />
-                                </div>
                             </div>
                         )}
                     </div>
@@ -427,18 +402,11 @@ function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
                 </button>
                 <div className="todo-content">
                     <span className="todo-title">{task.title}</span>
-                    {(() => {
-                        const urgency = getDeadlineUrgency(task.deadline);
-                        const showSchedule = !!task.scheduleDate;
-                        const showDeadline = !!urgency;
-                        if (!showSchedule && !showDeadline) return null;
-                        return (
-                            <div className="todo-dates">
-                                {showSchedule && <span className="todo-date scheduled">{formatDate(task.scheduleDate)}</span>}
-                                {showDeadline && <span className={`todo-date deadline ${urgency}`}>{formatDate(task.deadline)}</span>}
-                            </div>
-                        );
-                    })()}
+                    {task.scheduleDate && (
+                        <div className="todo-dates">
+                            <span className="todo-date scheduled">{formatDate(task.scheduleDate)}</span>
+                        </div>
+                    )}
                 </div>
                 {editMode && (
                     <button
@@ -611,10 +579,6 @@ function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
                                 <div className="todo-modal-field">
                                     <label>Scheduled</label>
                                     <DatePicker value={scheduleDate} onChange={setScheduleDate} />
-                                </div>
-                                <div className="todo-modal-field">
-                                    <label>Deadline</label>
-                                    <DatePicker value={deadline} onChange={setDeadline} />
                                 </div>
                             </div>
                             <div className="todo-modal-actions">

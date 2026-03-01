@@ -34,9 +34,6 @@ class Task extends BaseEntity
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $scheduleDate = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $deadline = null;
-
     public function getUser(): ?User
     {
         return $this->user;
@@ -93,18 +90,6 @@ class Task extends BaseEntity
     public function setScheduleDate(?\DateTimeInterface $scheduleDate): static
     {
         $this->scheduleDate = $scheduleDate;
-
-        return $this;
-    }
-
-    public function getDeadline(): ?\DateTimeInterface
-    {
-        return $this->deadline;
-    }
-
-    public function setDeadline(?\DateTimeInterface $deadline): static
-    {
-        $this->deadline = $deadline;
 
         return $this;
     }
