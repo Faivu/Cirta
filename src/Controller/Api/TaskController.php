@@ -2,6 +2,7 @@
 
 namespace App\Controller\Api;
 
+use App\Entity\Event;
 use App\Entity\Task;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -69,6 +70,15 @@ final class TaskController extends AbstractController
             if (!empty($data['scheduleDate'])) {
                 $task->setScheduleDate(new \DateTime($data['scheduleDate']));
             }
+
+            if (!empty($data['eventId'])) {
+                $event = $this->entityManager->getRepository(Event::class)->find($data['eventId']);
+                if (!$event || $event->getUser() !== $user) {
+                    return $this->json(['error' => 'Event not found'], Response::HTTP_NOT_FOUND);
+                }
+                $task->setEvent($event);
+            }
+
             $this->entityManager->persist($task);
             $this->entityManager->flush();
         } catch (\Exception $e) {
@@ -112,6 +122,17 @@ final class TaskController extends AbstractController
             }
             if (array_key_exists('scheduleDate', $data)) {
                 $task->setScheduleDate($data['scheduleDate'] ? new \DateTime($data['scheduleDate']) : null);
+            }
+            if (array_key_exists('eventId', $data)) {
+                if ($data['eventId']) {
+                    $event = $this->entityManager->getRepository(Event::class)->find($data['eventId']);
+                    if (!$event || $event->getUser() !== $user) {
+                        return $this->json(['error' => 'Event not found'], Response::HTTP_NOT_FOUND);
+                    }
+                    $task->setEvent($event);
+                } else {
+                    $task->setEvent(null);
+                }
             }
             $this->entityManager->flush();
         } catch (\Exception $e) {

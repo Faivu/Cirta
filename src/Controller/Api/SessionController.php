@@ -2,10 +2,12 @@
 
 namespace App\Controller\Api;
 
+use App\Entity\Event;
 use App\Entity\Flowtime;
 use App\Entity\FreeSession;
 use App\Entity\Pomodoro;
 use App\Entity\Session;
+use App\Entity\Task;
 use App\Service\PomodoroService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -130,12 +132,29 @@ final class SessionController extends AbstractController
             return $this->json(['error' => 'Strategy is required'], Response::HTTP_BAD_REQUEST);
         }
 
+        $event = null;
+        $task = null;
+
+        if (!empty($data['eventId'])) {
+            $event = $this->entityManager->getRepository(Event::class)->find($data['eventId']);
+            if (!$event || $event->getUser() !== $user) {
+                return $this->json(['error' => 'Event not found'], Response::HTTP_NOT_FOUND);
+            }
+        }
+
+        if (!empty($data['taskId'])) {
+            $task = $this->entityManager->getRepository(Task::class)->find($data['taskId']);
+            if (!$task || $task->getUser() !== $user) {
+                return $this->json(['error' => 'Task not found'], Response::HTTP_NOT_FOUND);
+            }
+        }
+
         // Use service for Pomodoro
         if ($data['strategy'] === 'pomodoro') {
             $targetDuration = isset($data['targetDuration']) ? (int) $data['targetDuration'] : 25;
             $customGoal = $data['customGoal'] ?? null;
 
-            $session = $this->pomodoroService->startSession($user, $customGoal, null, null, $targetDuration);
+            $session = $this->pomodoroService->startSession($user, $customGoal, $task, $event, $targetDuration);
 
             return $this->json([
                 'id' => $session->getId(),
@@ -156,6 +175,8 @@ final class SessionController extends AbstractController
         }
 
         $session->setUser($user);
+        $session->setEvent($event);
+        $session->setTask($task);
 
         if (isset($data['customGoal'])) {
             $session->setCustomGoal($data['customGoal']);
