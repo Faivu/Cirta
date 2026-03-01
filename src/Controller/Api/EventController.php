@@ -35,7 +35,7 @@ final class EventController extends AbstractController
         $qb = $this->entityManager->getRepository(Event::class)
             ->createQueryBuilder('e')
             ->where('e.user = :user')
-            ->setParameter('user', $user)
+            ->setParameter('user', $user->getId(), 'uuid')
             ->orderBy('e.startAt', 'ASC');
 
         // Optional date range filtering
@@ -85,7 +85,7 @@ final class EventController extends AbstractController
      * Get a single event
      */
     #[Route('/{id}', name: 'get', methods: ['GET'])]
-    public function get(int $id): JsonResponse
+    public function get(string $id): JsonResponse
     {
         $user = $this->getUser();
         if (!$user) {
@@ -172,7 +172,7 @@ final class EventController extends AbstractController
      * Update an event
      */
     #[Route('/{id}', name: 'update', methods: ['PUT'])]
-    public function update(int $id, Request $request): JsonResponse
+    public function update(string $id, Request $request): JsonResponse
     {
         $user = $this->getUser();
         if (!$user) {
@@ -231,7 +231,7 @@ final class EventController extends AbstractController
      * Delete an event
      */
     #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
-    public function delete(int $id): JsonResponse
+    public function delete(string $id): JsonResponse
     {
         $user = $this->getUser();
         if (!$user) {

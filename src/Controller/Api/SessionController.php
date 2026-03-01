@@ -53,7 +53,7 @@ final class SessionController extends AbstractController
         $qb = $this->entityManager->getRepository(Session::class)->createQueryBuilder('s');
         $qb->where('s.user = :user')
             ->andWhere('s.status IN (:statuses)')
-            ->setParameter('user', $user)
+            ->setParameter('user', $user->getId(), 'uuid')
             ->setParameter('statuses', [Session::STATUS_COMPLETED, Session::STATUS_INTERRUPTED])
             ->orderBy('s.startedAt', 'DESC')
             ->setFirstResult($offset)
@@ -73,7 +73,7 @@ final class SessionController extends AbstractController
         $countQb->select('COUNT(s.id)')
             ->where('s.user = :user')
             ->andWhere('s.status IN (:statuses)')
-            ->setParameter('user', $user)
+            ->setParameter('user', $user->getId(), 'uuid')
             ->setParameter('statuses', [Session::STATUS_COMPLETED, Session::STATUS_INTERRUPTED]);
 
         if ($since) {
@@ -177,7 +177,7 @@ final class SessionController extends AbstractController
      * Continue with a new session based on a previous one
      */
     #[Route('/{id}/continue', name: 'continue', methods: ['POST'])]
-    public function continue(int $id): JsonResponse
+    public function continue(string $id): JsonResponse
     {
         $user = $this->getUser();
         if (!$user) {
@@ -237,7 +237,7 @@ final class SessionController extends AbstractController
      * Pause a session (Pomodoro only)
      */
     #[Route('/{id}/pause', name: 'pause', methods: ['POST'])]
-    public function pause(int $id): JsonResponse
+    public function pause(string $id): JsonResponse
     {
         $user = $this->getUser();
         if (!$user) {
@@ -263,7 +263,7 @@ final class SessionController extends AbstractController
      * Resume a paused session (Pomodoro only)
      */
     #[Route('/{id}/resume', name: 'resume', methods: ['POST'])]
-    public function resume(int $id): JsonResponse
+    public function resume(string $id): JsonResponse
     {
         $user = $this->getUser();
         if (!$user) {
@@ -288,7 +288,7 @@ final class SessionController extends AbstractController
      * End/complete a session normally
      */
     #[Route('/{id}/end', name: 'end', methods: ['POST'])]
-    public function end(int $id, Request $request): JsonResponse
+    public function end(string $id, Request $request): JsonResponse
     {
         $user = $this->getUser();
         if (!$user) {
@@ -342,7 +342,7 @@ final class SessionController extends AbstractController
      * Interrupt/cancel a session
      */
     #[Route('/{id}/interrupt', name: 'interrupt', methods: ['POST'])]
-    public function interrupt(int $id, Request $request): JsonResponse
+    public function interrupt(string $id, Request $request): JsonResponse
     {
         $user = $this->getUser();
         if (!$user) {
@@ -394,7 +394,7 @@ final class SessionController extends AbstractController
      * Get session details
      */
     #[Route('/{id}', name: 'get', methods: ['GET'])]
-    public function get(int $id): JsonResponse
+    public function get(string $id): JsonResponse
     {
         $session = $this->findUserSession($id);
 
@@ -451,7 +451,7 @@ final class SessionController extends AbstractController
     /**
      * Find a session that belongs to the current user
      */
-    private function findUserSession(int $id): Session|JsonResponse
+    private function findUserSession(string $id): Session|JsonResponse
     {
         $user = $this->getUser();
         if (!$user) {

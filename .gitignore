@@ -1,4 +1,6 @@
 
+/memory/
+
 ###> symfony/framework-bundle ###
 /.env
 /.env.local

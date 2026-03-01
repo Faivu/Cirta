@@ -28,7 +28,7 @@ final class TaskController extends AbstractController
         $tasks = $this->entityManager->getRepository(Task::class)
             ->createQueryBuilder('t')
             ->where('t.user = :user')
-            ->setParameter('user', $user)
+            ->setParameter('user', $user->getId(), 'uuid')
             ->orderBy('t.isChecked', 'ASC')
             ->addOrderBy('t.id', 'DESC')
             ->getQuery()
@@ -90,7 +90,7 @@ final class TaskController extends AbstractController
     }
 
     #[Route('/{id}', name: 'update', methods: ['PUT'])]
-    public function update(int $id, Request $request): JsonResponse
+    public function update(string $id, Request $request): JsonResponse
     {
         $user = $this->getUser();
         if (!$user) {
@@ -138,7 +138,7 @@ final class TaskController extends AbstractController
     }
 
     #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
-    public function delete(int $id): JsonResponse
+    public function delete(string $id): JsonResponse
     {
         $user = $this->getUser();
         if (!$user) {

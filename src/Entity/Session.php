@@ -13,18 +13,13 @@ use Doctrine\ORM\Mapping as ORM;
     'flowtime' => Flowtime::class,
     'free_session' => FreeSession::class,
 ])]
-abstract class Session
+abstract class Session extends BaseEntity
 {
     public const STATUS_PENDING = 'pending';
     public const STATUS_IN_PROGRESS = 'in_progress';
     public const STATUS_PAUSED = 'paused';
     public const STATUS_COMPLETED = 'completed';
     public const STATUS_INTERRUPTED = 'interrupted';
-
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    protected ?int $id = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
@@ -55,11 +50,6 @@ abstract class Session
      */
     #[ORM\Column(nullable: true)]
     protected ?int $actualDuration = null;
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
 
     public function getUser(): ?User
     {

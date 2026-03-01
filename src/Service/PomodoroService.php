@@ -161,7 +161,7 @@ class PomodoroService implements SessionStrategy
     /**
      * Find a Pomodoro by ID that belongs to the user
      */
-    public function findForUser(int $id, User $user): ?Pomodoro
+    public function findForUser(string $id, User $user): ?Pomodoro
     {
         $pomodoro = $this->entityManager->getRepository(Pomodoro::class)->find($id);
 
@@ -187,7 +187,7 @@ class PomodoroService implements SessionStrategy
             ->andWhere('p.status = :status')
             ->andWhere('p.endedAt >= :today')
             ->andWhere('p.endedAt < :tomorrow')
-            ->setParameter('user', $user)
+            ->setParameter('user', $user->getId(), 'uuid')
             ->setParameter('status', Session::STATUS_COMPLETED)
             ->setParameter('today', $today)
             ->setParameter('tomorrow', $tomorrow)
