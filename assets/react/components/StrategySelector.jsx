@@ -15,8 +15,8 @@ const strategies = [
         icon: '🌊',
     },
     {
-        id: 'free_session',
-        name: 'Free Session',
+        id: 'time_blocking',
+        name: 'Time Blocking',
         description: 'No time constraints. Just track when you start and stop.',
         icon: '⏱️',
     },
@@ -26,7 +26,7 @@ const strategies = [
  * StrategySelector - Allows user to choose between session strategies
  *
  * Props:
- * - selected: currently selected strategy ('pomodoro', 'flowtime', 'free_session')
+ * - selected: currently selected strategy ('pomodoro', 'flowtime', 'time_blocking')
  * - onSelect: callback when a strategy is selected
  * - compact: whether to show compact mode with arrows
  */
@@ -83,7 +83,7 @@ function StrategySelector({ selected, onSelect, compact }) {
 }
 
 StrategySelector.propTypes = {
-    selected: PropTypes.oneOf(['pomodoro', 'flowtime', 'free_session', null]),
+    selected: PropTypes.oneOf(['pomodoro', 'flowtime', 'time_blocking', null]),
     onSelect: PropTypes.func.isRequired,
     compact: PropTypes.bool,
 };

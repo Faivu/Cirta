@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\DiscriminatorMap([
     'pomodoro' => Pomodoro::class,
     'flowtime' => Flowtime::class,
-    'free_session' => FreeSession::class,
+    'time_blocking' => TimeBlocking::class,
 ])]
 abstract class Session extends BaseEntity
 {

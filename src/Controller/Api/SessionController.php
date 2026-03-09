@@ -4,7 +4,7 @@ namespace App\Controller\Api;
 
 use App\Entity\Event;
 use App\Entity\Flowtime;
-use App\Entity\FreeSession;
+use App\Entity\TimeBlocking;
 use App\Entity\Pomodoro;
 use App\Entity\Session;
 use App\Entity\Task;
@@ -90,7 +90,7 @@ final class SessionController extends AbstractController
                 'type' => match (true) {
                     $session instanceof Pomodoro => 'pomodoro',
                     $session instanceof Flowtime => 'flowtime',
-                    $session instanceof FreeSession => 'free_session',
+                    $session instanceof TimeBlocking => 'time_blocking',
                     default => 'unknown',
                 },
                 'status' => $session->getStatus(),
@@ -166,7 +166,7 @@ final class SessionController extends AbstractController
         // Handle other session types
         $session = match ($data['strategy']) {
             'flowtime' => $this->createFlowtime($data),
-            'free_session' => $this->createFreeSession($data),
+            'time_blocking' => $this->createTimeBlocking($data),
             default => null,
         };
 
@@ -231,8 +231,8 @@ final class SessionController extends AbstractController
         if ($previousSession instanceof Flowtime) {
             $newSession = new Flowtime();
             $newSession->setBreakRatio($previousSession->getBreakRatio());
-        } elseif ($previousSession instanceof FreeSession) {
-            $newSession = new FreeSession();
+        } elseif ($previousSession instanceof TimeBlocking) {
+            $newSession = new TimeBlocking();
         } else {
             return $this->json(['error' => 'Cannot continue this session type'], Response::HTTP_BAD_REQUEST);
         }
@@ -441,7 +441,7 @@ final class SessionController extends AbstractController
             $response['type'] = 'flowtime';
             $response['suggestedBreakDuration'] = $session->getSuggestedBreakDuration();
         } else {
-            $response['type'] = 'free_session';
+            $response['type'] = 'time_blocking';
         }
 
         return $this->json($response);
@@ -462,11 +462,11 @@ final class SessionController extends AbstractController
     }
 
     /**
-     * Create a FreeSession
+     * Create a TimeBlocking session
      */
-    private function createFreeSession(array $data): FreeSession
+    private function createTimeBlocking(array $data): TimeBlocking
     {
-        return new FreeSession();
+        return new TimeBlocking();
     }
 
     /**

@@ -39,8 +39,8 @@ function SessionControls({ strategy, status, loading, onPause, onResume, onCompl
                 </>
             )}
 
-            {/* Flowtime and FreeSession can complete anytime */}
-            {(strategy === 'flowtime' || strategy === 'free_session') && (
+            {/* Flowtime and TimeBlocking can complete anytime */}
+            {(strategy === 'flowtime' || strategy === 'time_blocking') && (
                 <button
                     className="btn btn-success"
                     onClick={onComplete}
@@ -63,7 +63,7 @@ function SessionControls({ strategy, status, loading, onPause, onResume, onCompl
 }
 
 SessionControls.propTypes = {
-    strategy: PropTypes.oneOf(['pomodoro', 'flowtime', 'free_session']).isRequired,
+    strategy: PropTypes.oneOf(['pomodoro', 'flowtime', 'time_blocking']).isRequired,
     status: PropTypes.oneOf(['running', 'paused']).isRequired,
     loading: PropTypes.bool,
     onPause: PropTypes.func.isRequired,

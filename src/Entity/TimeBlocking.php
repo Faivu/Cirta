@@ -2,15 +2,15 @@
 
 namespace App\Entity;
 
-use App\Repository\FreeSessionRepository;
+use App\Repository\TimeBlockingRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * FreeSession is an unstructured work session with no time constraints.
+ * TimeBlocking is an unstructured work session with no time constraints.
  * Simply track when you start and stop working.
  */
-#[ORM\Entity(repositoryClass: FreeSessionRepository::class)]
-class FreeSession extends Session
+#[ORM\Entity(repositoryClass: TimeBlockingRepository::class)]
+class TimeBlocking extends Session
 {
     /**
      * Get elapsed working time in minutes (for real-time display)

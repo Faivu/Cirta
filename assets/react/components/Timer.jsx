@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
  * Props:
  * - elapsedSeconds: total seconds elapsed
  * - remainingSeconds: seconds remaining (for countdown modes)
- * - mode: 'pomodoro', 'flowtime', 'free_session', or 'break'
+ * - mode: 'pomodoro', 'flowtime', 'time_blocking', or 'break'
  * - isPaused: whether the timer is paused
  */
 function Timer({ elapsedSeconds, remainingSeconds, mode, isPaused }) {
@@ -83,7 +83,7 @@ function Timer({ elapsedSeconds, remainingSeconds, mode, isPaused }) {
 Timer.propTypes = {
     elapsedSeconds: PropTypes.number.isRequired,
     remainingSeconds: PropTypes.number,
-    mode: PropTypes.oneOf(['pomodoro', 'flowtime', 'free_session', 'break']).isRequired,
+    mode: PropTypes.oneOf(['pomodoro', 'flowtime', 'time_blocking', 'break']).isRequired,
     isPaused: PropTypes.bool,
 };
 

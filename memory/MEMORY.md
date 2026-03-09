@@ -7,7 +7,7 @@
 - Located at `/Users/safir/VScode/Projects/Symfony/Cirta`
 - Symfony 8 backend, React 19 frontend, Webpack Encore
 - Google OAuth authentication (KnpU OAuth2 bundle)
-- Key features: Pomodoro/Flowtime/Free sessions, Todo list, Calendar
+- Key features: Pomodoro/Flowtime/TimeBlocking sessions, Todo list, Calendar
 - Task entity has both `scheduleDate` and `deadline` fields (kept separate)
 
 ## Architecture: UUIDs
@@ -18,8 +18,13 @@
 - Route `{id}` params must be `string`, not `int`.
 
 ## Architecture: Sessions
-- `Session` is abstract with JOINED inheritance (`Pomodoro`, `Flowtime`, `FreeSession`)
-- `PomodoroService` handles all Pomodoro business logic
+- `Session` is abstract with JOINED inheritance (`Pomodoro`, `Flowtime`, `TimeBlocking`)
+- `PomodoroService` handles all Pomodoro business logic (only strategy fully implemented)
+- `SessionStrategy` interface exists but is only implemented by `PomodoroService` — Flowtime and TimeBlocking are handled inline in the controller (tech debt)
+
+## Pending Work (next session)
+1. **Implement FlowtimeService and TimeBlockingService** implementing `SessionStrategy`, and refactor `SessionController` to use them instead of inline logic.
+2. **Fix LSP violation in `SessionStrategy` interface:** `pauseSession` and `resumeSession` are Pomodoro-only but sit on the base interface. Fix by extracting a `PausableSessionStrategy` sub-interface (or removing them from the base interface), so Flowtime and TimeBlocking don't have to implement no-op/throw stubs.
 
 ## Deployment
 - Railway (production), FrankenPHP + Caddy
