@@ -154,6 +154,40 @@ abstract class Session extends BaseEntity
     }
 
     /**
+     * Pause the session
+     */
+    public function pause(): static
+    {
+        if ($this->status === self::STATUS_IN_PROGRESS) {
+            $this->status = self::STATUS_PAUSED;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Resume the session from pause
+     */
+    public function resume(): static
+    {
+        if ($this->status === self::STATUS_PAUSED) {
+            $this->status = self::STATUS_IN_PROGRESS;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Interrupt/cancel the session before completion
+     */
+    public function interrupt(): static
+    {
+        $this->status = self::STATUS_INTERRUPTED;
+
+        return $this;
+    }
+
+    /**
      * Start the session
      */
     public function start(): static
