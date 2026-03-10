@@ -21,3 +21,19 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    App\Service\PomodoroService:
+        tags:
+            - { name: 'app.session_strategy', key: 'pomodoro' }
+
+    App\Service\FlowtimeService:
+        tags:
+            - { name: 'app.session_strategy', key: 'flowtime' }
+
+    App\Service\TimeBlockingService:
+        tags:
+            - { name: 'app.session_strategy', key: 'time_blocking' }
+
+    App\Controller\Api\SessionController:
+        arguments:
+            $strategies: !tagged_locator { tag: 'app.session_strategy', index_by: 'key' }

@@ -4,13 +4,14 @@ namespace App\Controller\Api;
 
 use App\Entity\Event;
 use App\Entity\Flowtime;
-use App\Entity\TimeBlocking;
 use App\Entity\Pomodoro;
 use App\Entity\Session;
 use App\Entity\Task;
-use App\Service\PomodoroService;
+use App\Entity\TimeBlocking;
+use App\Service\SessionStrategy;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,7 +22,7 @@ final class SessionController extends AbstractController
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private PomodoroService $pomodoroService
+        private ServiceLocator $strategies,
     ) {}
 
     /**
@@ -70,7 +71,6 @@ final class SessionController extends AbstractController
 
         $sessions = $qb->getQuery()->getResult();
 
-        // Get total count
         $countQb = $this->entityManager->getRepository(Session::class)->createQueryBuilder('s');
         $countQb->select('COUNT(s.id)')
             ->where('s.user = :user')
@@ -127,9 +127,10 @@ final class SessionController extends AbstractController
         }
 
         $data = json_decode($request->getContent(), true);
+        $strategyKey = $data['strategy'] ?? null;
 
-        if (!isset($data['strategy'])) {
-            return $this->json(['error' => 'Strategy is required'], Response::HTTP_BAD_REQUEST);
+        if (!$strategyKey || !$this->strategies->has($strategyKey)) {
+            return $this->json(['error' => 'Invalid strategy'], Response::HTTP_BAD_REQUEST);
         }
 
         $event = null;
@@ -149,43 +150,10 @@ final class SessionController extends AbstractController
             }
         }
 
-        // Use service for Pomodoro
-        if ($data['strategy'] === 'pomodoro') {
-            $targetDuration = isset($data['targetDuration']) ? (int) $data['targetDuration'] : 25;
-            $customGoal = $data['customGoal'] ?? null;
+        $targetDuration = isset($data['targetDuration']) ? (int) $data['targetDuration'] : null;
+        $customGoal = $data['customGoal'] ?? null;
 
-            $session = $this->pomodoroService->startSession($user, $customGoal, $task, $event, $targetDuration);
-
-            return $this->json([
-                'id' => $session->getId(),
-                'status' => $session->getStatus(),
-                'startedAt' => $session->getStartedAt()?->format('c'),
-            ], Response::HTTP_CREATED);
-        }
-
-        // Handle other session types
-        $session = match ($data['strategy']) {
-            'flowtime' => $this->createFlowtime($data),
-            'time_blocking' => $this->createTimeBlocking($data),
-            default => null,
-        };
-
-        if (!$session) {
-            return $this->json(['error' => 'Invalid strategy'], Response::HTTP_BAD_REQUEST);
-        }
-
-        $session->setUser($user);
-        $session->setEvent($event);
-        $session->setTask($task);
-
-        if (isset($data['customGoal'])) {
-            $session->setCustomGoal($data['customGoal']);
-        }
-
-        $session->start();
-
-        $this->entityManager->persist($session);
-        $this->entityManager->flush();
+        $session = $this->strategies->get($strategyKey)->startSession($user, $customGoal, $task, $event, $targetDuration);
 
         return $this->json([
             'id' => $session->getId(),
@@ -198,110 +166,64 @@ final class SessionController extends AbstractController
      * Continue with a new session based on a previous one
      */
     #[Route('/{id}/continue', name: 'continue', methods: ['POST'])]
-    public function continue(string $id): JsonResponse
+    public function continueSession(string $id): JsonResponse
     {
-        $user = $this->getUser();
-        if (!$user) {
-            return $this->json(['error' => 'Not authenticated'], Response::HTTP_UNAUTHORIZED);
+        $session = $this->findUserSession($id);
+        if ($session instanceof JsonResponse) {
+            return $session;
         }
 
-        // Try Pomodoro first
-        $previousPomodoro = $this->pomodoroService->findForUser($id, $user);
+        $newSession = $this->strategyForSession($session)->continueSession($session);
 
-        if ($previousPomodoro) {
-            $newSession = $this->pomodoroService->continueSession($previousPomodoro);
-
-            return $this->json([
-                'id' => $newSession->getId(),
-                'status' => $newSession->getStatus(),
-                'startedAt' => $newSession->getStartedAt()?->format('c'),
-                'targetDuration' => $newSession->getTargetDuration(),
-                'customGoal' => $newSession->getCustomGoal(),
-            ], Response::HTTP_CREATED);
-        }
-
-        // Handle other session types
-        $previousSession = $this->findUserSession($id);
-
-        if ($previousSession instanceof JsonResponse) {
-            return $previousSession;
-        }
-
-        // Create a new session of the same type
-        if ($previousSession instanceof Flowtime) {
-            $newSession = new Flowtime();
-            $newSession->setBreakRatio($previousSession->getBreakRatio());
-        } elseif ($previousSession instanceof TimeBlocking) {
-            $newSession = new TimeBlocking();
-        } else {
-            return $this->json(['error' => 'Cannot continue this session type'], Response::HTTP_BAD_REQUEST);
-        }
-
-        $newSession->setUser($user);
-        $newSession->setCustomGoal($previousSession->getCustomGoal());
-        $newSession->setTask($previousSession->getTask());
-        $newSession->setEvent($previousSession->getEvent());
-        $newSession->start();
-
-        $this->entityManager->persist($newSession);
-        $this->entityManager->flush();
-
-        return $this->json([
+        $response = [
             'id' => $newSession->getId(),
             'status' => $newSession->getStatus(),
             'startedAt' => $newSession->getStartedAt()?->format('c'),
             'customGoal' => $newSession->getCustomGoal(),
-        ], Response::HTTP_CREATED);
+        ];
+
+        if ($newSession instanceof Pomodoro) {
+            $response['targetDuration'] = $newSession->getTargetDuration();
+        }
+
+        return $this->json($response, Response::HTTP_CREATED);
     }
 
     /**
-     * Pause a session (Pomodoro only)
+     * Pause a session
      */
     #[Route('/{id}/pause', name: 'pause', methods: ['POST'])]
     public function pause(string $id): JsonResponse
     {
-        $user = $this->getUser();
-        if (!$user) {
-            return $this->json(['error' => 'Not authenticated'], Response::HTTP_UNAUTHORIZED);
+        $session = $this->findUserSession($id);
+        if ($session instanceof JsonResponse) {
+            return $session;
         }
 
-        $pomodoro = $this->pomodoroService->findForUser($id, $user);
-
-        if (!$pomodoro) {
-            return $this->json(['error' => 'Session not found'], Response::HTTP_NOT_FOUND);
-        }
-
-        $this->pomodoroService->pauseSession($pomodoro);
+        $this->strategyForSession($session)->pauseSession($session);
 
         return $this->json([
-            'id' => $pomodoro->getId(),
-            'status' => $pomodoro->getStatus(),
-            'pauseCount' => $pomodoro->getPauseCount(),
+            'id' => $session->getId(),
+            'status' => $session->getStatus(),
         ]);
     }
 
     /**
-     * Resume a paused session (Pomodoro only)
+     * Resume a paused session
      */
     #[Route('/{id}/resume', name: 'resume', methods: ['POST'])]
     public function resume(string $id): JsonResponse
     {
-        $user = $this->getUser();
-        if (!$user) {
-            return $this->json(['error' => 'Not authenticated'], Response::HTTP_UNAUTHORIZED);
+        $session = $this->findUserSession($id);
+        if ($session instanceof JsonResponse) {
+            return $session;
         }
 
-        $pomodoro = $this->pomodoroService->findForUser($id, $user);
-
-        if (!$pomodoro) {
-            return $this->json(['error' => 'Session not found'], Response::HTTP_NOT_FOUND);
-        }
-
-        $this->pomodoroService->resumeSession($pomodoro);
+        $this->strategyForSession($session)->resumeSession($session);
 
         return $this->json([
-            'id' => $pomodoro->getId(),
-            'status' => $pomodoro->getStatus(),
+            'id' => $session->getId(),
+            'status' => $session->getStatus(),
         ]);
     }
 
@@ -311,40 +233,20 @@ final class SessionController extends AbstractController
     #[Route('/{id}/end', name: 'end', methods: ['POST'])]
     public function end(string $id, Request $request): JsonResponse
     {
-        $user = $this->getUser();
-        if (!$user) {
-            return $this->json(['error' => 'Not authenticated'], Response::HTTP_UNAUTHORIZED);
-        }
-
-        $data = json_decode($request->getContent(), true) ?? [];
-
-        // Check if it's a Pomodoro first
-        $pomodoro = $this->pomodoroService->findForUser($id, $user);
-
-        if ($pomodoro) {
-            if (!isset($data['actualDuration'])) {
-                return $this->json(['error' => 'actualDuration is required for Pomodoro'], Response::HTTP_BAD_REQUEST);
-            }
-
-            $this->pomodoroService->endSession($pomodoro, (int) $data['actualDuration']);
-
-            return $this->json([
-                'id' => $pomodoro->getId(),
-                'status' => $pomodoro->getStatus(),
-                'actualDuration' => $pomodoro->getActualDuration(),
-                'breakDuration' => $pomodoro->getBreakDuration(),
-            ]);
-        }
-
-        // Handle other session types
         $session = $this->findUserSession($id);
-
         if ($session instanceof JsonResponse) {
             return $session;
         }
 
-        $session->end();
-        $this->entityManager->flush();
+        $data = json_decode($request->getContent(), true) ?? [];
+        $actualDuration = isset($data['actualDuration']) ? (int) $data['actualDuration'] : null;
+
+        $this->strategyForSession($session)->endSession($session, $actualDuration);
+
+        // Session may have been deleted (< 1 min)
+        if ($session->getId() === null) {
+            return $this->json(['deleted' => true]);
+        }
 
         $response = [
             'id' => $session->getId(),
@@ -352,7 +254,9 @@ final class SessionController extends AbstractController
             'actualDuration' => $session->getActualDuration(),
         ];
 
-        if ($session instanceof Flowtime) {
+        if ($session instanceof Pomodoro) {
+            $response['breakDuration'] = $session->getBreakDuration();
+        } elseif ($session instanceof Flowtime) {
             $response['suggestedBreakDuration'] = $session->getSuggestedBreakDuration();
         }
 
@@ -365,44 +269,19 @@ final class SessionController extends AbstractController
     #[Route('/{id}/interrupt', name: 'interrupt', methods: ['POST'])]
     public function interrupt(string $id, Request $request): JsonResponse
     {
-        $user = $this->getUser();
-        if (!$user) {
-            return $this->json(['error' => 'Not authenticated'], Response::HTTP_UNAUTHORIZED);
+        $session = $this->findUserSession($id);
+        if ($session instanceof JsonResponse) {
+            return $session;
         }
 
         $data = json_decode($request->getContent(), true) ?? [];
         $actualDuration = isset($data['actualDuration']) ? (int) $data['actualDuration'] : null;
 
-        // Check if it's a Pomodoro first
-        $pomodoro = $this->pomodoroService->findForUser($id, $user);
+        $this->strategyForSession($session)->interruptSession($session, $actualDuration);
 
-        if ($pomodoro) {
-            $this->pomodoroService->interruptSession($pomodoro, $actualDuration);
-
-            return $this->json([
-                'id' => $pomodoro->getId(),
-                'status' => $pomodoro->getStatus(),
-                'actualDuration' => $pomodoro->getActualDuration(),
-            ]);
+        if ($session->getId() === null) {
+            return $this->json(['deleted' => true]);
         }
-
-        // Handle other session types
-        $session = $this->findUserSession($id);
-
-        if ($session instanceof JsonResponse) {
-            return $session;
-        }
-
-        $session->setEndedAt(new \DateTime());
-        $session->setStatus(Session::STATUS_INTERRUPTED);
-
-        if ($session->getStartedAt()) {
-            $interval = $session->getStartedAt()->diff($session->getEndedAt());
-            $minutes = ($interval->days * 24 * 60) + ($interval->h * 60) + $interval->i;
-            $session->setActualDuration($minutes);
-        }
-
-        $this->entityManager->flush();
 
         return $this->json([
             'id' => $session->getId(),
@@ -418,7 +297,6 @@ final class SessionController extends AbstractController
     public function get(string $id): JsonResponse
     {
         $session = $this->findUserSession($id);
-
         if ($session instanceof JsonResponse) {
             return $session;
         }
@@ -448,25 +326,17 @@ final class SessionController extends AbstractController
     }
 
     /**
-     * Create a Flowtime session
+     * Get the strategy service for a given session
      */
-    private function createFlowtime(array $data): Flowtime
+    private function strategyForSession(Session $session): SessionStrategy
     {
-        $flowtime = new Flowtime();
+        $key = match (true) {
+            $session instanceof Pomodoro => 'pomodoro',
+            $session instanceof Flowtime => 'flowtime',
+            $session instanceof TimeBlocking => 'time_blocking',
+        };
 
-        if (isset($data['breakRatio'])) {
-            $flowtime->setBreakRatio((int) $data['breakRatio']);
-        }
-
-        return $flowtime;
-    }
-
-    /**
-     * Create a TimeBlocking session
-     */
-    private function createTimeBlocking(array $data): TimeBlocking
-    {
-        return new TimeBlocking();
+        return $this->strategies->get($key);
     }
 
     /**

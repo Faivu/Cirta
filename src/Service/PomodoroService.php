@@ -43,8 +43,12 @@ class PomodoroService implements SessionStrategy
     /**
      * Continue with a new session based on a previous one (same settings)
      */
-    public function continueSession(Pomodoro $previous): Pomodoro
+    public function continueSession(Session $previous): Pomodoro
     {
+        if (!$previous instanceof Pomodoro) {
+            throw new \InvalidArgumentException('Expected Pomodoro session');
+        }
+
         return $this->startSession(
             $previous->getUser(),
             $previous->getCustomGoal(),
@@ -156,20 +160,6 @@ class PomodoroService implements SessionStrategy
     {
         $pomodoro->setBreakTaken($breakTaken);
         $this->entityManager->flush();
-    }
-
-    /**
-     * Find a Pomodoro by ID that belongs to the user
-     */
-    public function findForUser(string $id, User $user): ?Pomodoro
-    {
-        $pomodoro = $this->entityManager->getRepository(Pomodoro::class)->find($id);
-
-        if (!$pomodoro || $pomodoro->getUser() !== $user) {
-            return null;
-        }
-
-        return $pomodoro;
     }
 
     /**

@@ -32,8 +32,12 @@ class FlowtimeService implements SessionStrategy
         return $flowtime;
     }
 
-    public function continueSession(Flowtime $previous): Flowtime
+    public function continueSession(Session $previous): Flowtime
     {
+        if (!$previous instanceof Flowtime) {
+            throw new \InvalidArgumentException('Expected Flowtime session');
+        }
+
         return $this->startSession(
             $previous->getUser(),
             $previous->getCustomGoal(),
@@ -107,14 +111,4 @@ class FlowtimeService implements SessionStrategy
         $this->entityManager->flush();
     }
 
-    public function findForUser(string $id, User $user): ?Flowtime
-    {
-        $flowtime = $this->entityManager->getRepository(Flowtime::class)->find($id);
-
-        if (!$flowtime || $flowtime->getUser() !== $user) {
-            return null;
-        }
-
-        return $flowtime;
-    }
 }

@@ -32,8 +32,12 @@ class TimeBlockingService implements SessionStrategy
         return $timeBlocking;
     }
 
-    public function continueSession(TimeBlocking $previous): TimeBlocking
+    public function continueSession(Session $previous): TimeBlocking
     {
+        if (!$previous instanceof TimeBlocking) {
+            throw new \InvalidArgumentException('Expected TimeBlocking session');
+        }
+
         return $this->startSession(
             $previous->getUser(),
             $previous->getCustomGoal(),
@@ -107,14 +111,4 @@ class TimeBlockingService implements SessionStrategy
         $this->entityManager->flush();
     }
 
-    public function findForUser(string $id, User $user): ?TimeBlocking
-    {
-        $timeBlocking = $this->entityManager->getRepository(TimeBlocking::class)->find($id);
-
-        if (!$timeBlocking || $timeBlocking->getUser() !== $user) {
-            return null;
-        }
-
-        return $timeBlocking;
-    }
 }
