@@ -37,10 +37,12 @@ function BreakState({
                     isPaused={false}
                 />
             ) : (
-                <TimerPreview
-                    mode={pomodoroMode}
-                    minutes={targetMinutes}
-                />
+                strategy === 'pomodoro' && (
+                    <TimerPreview
+                        mode={pomodoroMode}
+                        minutes={targetMinutes}
+                    />
+                )
             )}
 
             {customGoal && (
@@ -66,7 +68,9 @@ function BreakState({
                             disabled={loading}
                         >
                             {loading ? 'Starting...' : (
-                                pomodoroMode === 'pomodoro' ? 'Start Pomodoro' :
+                                strategy === 'flowtime' ? 'Start New Flowtime' :
+                                strategy === 'time_blocking' ? 'Start New Time Block' :
+                                pomodoroMode === 'pomodoro' ? 'Start New Pomodoro' :
                                 pomodoroMode === 'longBreak' ? 'Start Long Break' :
                                 'Start Short Break'
                             )}

@@ -21,6 +21,7 @@ function SessionApp({ compact = false, onFullscreen = null }) {
         pomodoroMode,
         error,
         loading,
+        completionData,
         showConfirmModal,
 
         // Setters
@@ -112,6 +113,7 @@ function SessionApp({ compact = false, onFullscreen = null }) {
                     targetMinutes={targetMinutes}
                     customGoal={customGoal}
                     loading={loading}
+                    completionData={completionData}
                     onModeChange={handleModeChange}
                     onContinue={handleContinue}
                     onGoalFinished={handleGoalFinishedWithFocus}

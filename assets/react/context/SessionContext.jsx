@@ -237,7 +237,7 @@ export function SessionProvider({ children }) {
     };
 
     const handlePause = async () => {
-        if (!sessionId || strategy !== 'pomodoro') return;
+        if (!sessionId) return;
 
         setLoading(true);
         try {
@@ -251,7 +251,7 @@ export function SessionProvider({ children }) {
     };
 
     const handleResume = async () => {
-        if (!sessionId || strategy !== 'pomodoro') return;
+        if (!sessionId) return;
 
         setLoading(true);
         try {
@@ -272,8 +272,15 @@ export function SessionProvider({ children }) {
             const actualDuration = Math.floor(elapsedSeconds / 60);
             const data = await apiCall(`/api/session/${sessionId}/end`, 'POST', { actualDuration });
             setCompletionData(data);
-            setBreakDuration(data.breakDuration || 0);
-            setStatus('completed');
+
+            if (strategy === 'flowtime' && data.suggestedBreakDuration) {
+                setBreakDuration(data.suggestedBreakDuration);
+                setBreakSeconds(data.suggestedBreakDuration * 60);
+                setStatus('break');
+            } else {
+                setBreakDuration(data.breakDuration || 0);
+                setStatus('completed');
+            }
         } catch (err) {
             setError(err.message);
         } finally {
@@ -290,9 +297,17 @@ export function SessionProvider({ children }) {
         setLoading(true);
         try {
             const actualDuration = Math.floor(elapsedSeconds / 60);
-            const data = await apiCall(`/api/session/${sessionId}/interrupt`, 'POST', { actualDuration });
+            const endpoint = strategy === 'pomodoro' ? 'interrupt' : 'end';
+            const data = await apiCall(`/api/session/${sessionId}/${endpoint}`, 'POST', { actualDuration });
             setCompletionData(data);
-            setStatus('completed');
+
+            if (strategy === 'flowtime' && data.suggestedBreakDuration) {
+                setBreakDuration(data.suggestedBreakDuration);
+                setBreakSeconds(data.suggestedBreakDuration * 60);
+                setStatus('break');
+            } else {
+                setStatus('completed');
+            }
         } catch (err) {
             setError(err.message);
         } finally {

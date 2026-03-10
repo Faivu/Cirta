@@ -20,12 +20,14 @@ function ActiveState({
 }) {
     return (
         <div className="session-active">
-            {strategy === 'pomodoro' && (
+            {strategy === 'pomodoro' ? (
                 <PomodoroModeSelector
                     mode={pomodoroMode}
                     onChange={onModeChange}
                     disabled
                 />
+            ) : (
+                <div className="mode-selector-spacer" />
             )}
 
             <Timer

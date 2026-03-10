@@ -16,41 +16,24 @@ import PropTypes from 'prop-types';
 function SessionControls({ strategy, status, loading, onPause, onResume, onComplete, onInterrupt }) {
     return (
         <div className="session-controls">
-            {/* Pomodoro has pause/resume */}
-            {strategy === 'pomodoro' && (
-                <>
-                    {status === 'running' ? (
-                        <button
-                            className="btn btn-secondary"
-                            onClick={onPause}
-                            disabled={loading}
-                        >
-                            Pause
-                        </button>
-                    ) : (
-                        <button
-                            className="btn btn-primary"
-                            onClick={onResume}
-                            disabled={loading}
-                        >
-                            Resume
-                        </button>
-                    )}
-                </>
-            )}
-
-            {/* Flowtime and TimeBlocking can complete anytime */}
-            {(strategy === 'flowtime' || strategy === 'time_blocking') && (
+            {status === 'running' ? (
                 <button
-                    className="btn btn-success"
-                    onClick={onComplete}
+                    className="btn btn-secondary"
+                    onClick={onPause}
                     disabled={loading}
                 >
-                    {loading ? 'Completing...' : 'Complete Session'}
+                    Pause
+                </button>
+            ) : (
+                <button
+                    className="btn btn-primary"
+                    onClick={onResume}
+                    disabled={loading}
+                >
+                    Resume
                 </button>
             )}
 
-            {/* All strategies can be interrupted */}
             <button
                 className="btn btn-danger"
                 onClick={onInterrupt}

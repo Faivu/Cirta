@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import PomodoroModeSelector from '../PomodoroModeSelector';
 import TimerPreview from '../TimerPreview';
 import StrategySelector from '../StrategySelector';
+import SquareTimer from '../SquareTimer';
 
 function IdleState({
     strategy,
@@ -36,7 +37,16 @@ function IdleState({
                 />
             )}
 
-            {pomodoroMode === 'pomodoro' && (
+            {strategy !== 'pomodoro' && <div className="mode-selector-spacer" />}
+
+            {strategy === 'flowtime' && (
+                <SquareTimer chars={['F','L','O','W']} idle />
+            )}
+            {strategy === 'time_blocking' && (
+                <SquareTimer chars={['B','L','O','C']} idle />
+            )}
+
+            {(strategy !== 'pomodoro' || pomodoroMode === 'pomodoro') && (
                 <div className="session-config">
                     <div className="config-field">
                         <label htmlFor="goal">Goal (optional, but very recommended!)</label>
@@ -59,11 +69,11 @@ function IdleState({
 
             <div className={`start-session-sticky${compact ? ' compact' : ''}`}>
                 <button
-                    className={`btn btn-large ${pomodoroMode === 'pomodoro' ? 'btn-primary' : 'btn-success'}`}
+                    className={`btn btn-large ${strategy === 'pomodoro' && pomodoroMode !== 'pomodoro' ? 'btn-success' : 'btn-primary'}`}
                     onClick={onStart}
                     disabled={loading}
                 >
-                    {loading ? 'Starting...' : (pomodoroMode === 'pomodoro' ? 'Start Session' : 'Start Break')}
+                    {loading ? 'Starting...' : (strategy === 'pomodoro' && pomodoroMode !== 'pomodoro' ? 'Start Break' : 'Start Session')}
                 </button>
             </div>
 

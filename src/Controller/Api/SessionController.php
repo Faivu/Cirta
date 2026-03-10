@@ -45,6 +45,7 @@ final class SessionController extends AbstractController
     public function history(Request $request): JsonResponse
     {
         $user = $this->getUser();
+        assert($user instanceof \App\Entity\User);
         if (!$user) {
             return $this->json(['error' => 'Not authenticated'], Response::HTTP_UNAUTHORIZED);
         }

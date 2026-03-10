@@ -9,10 +9,13 @@ function CompletedState({
     targetMinutes,
     customGoal,
     loading,
+    completionData,
     onModeChange,
     onContinue,
     onGoalFinished,
 }) {
+    const noBreakAvailable = strategy === 'flowtime' && !completionData?.suggestedBreakDuration;
+
     return (
         <div className="session-completed">
             {strategy === 'pomodoro' && (
@@ -35,6 +38,10 @@ function CompletedState({
                 </div>
             )}
 
+            {noBreakAvailable && (
+                <p className="no-break-message">Your session was too short for a break.</p>
+            )}
+
             <div className="completion-actions">
                 <button
                     className={`btn ${pomodoroMode === 'pomodoro' ? 'btn-primary' : 'btn-success'}`}
@@ -42,7 +49,9 @@ function CompletedState({
                     disabled={loading}
                 >
                     {loading ? 'Starting...' : (
-                        pomodoroMode === 'pomodoro' ? 'Start Pomodoro' :
+                        strategy === 'flowtime' ? 'Start New Flowtime' :
+                        strategy === 'time_blocking' ? 'Start New Time Block' :
+                        pomodoroMode === 'pomodoro' ? 'Start New Pomodoro' :
                         pomodoroMode === 'longBreak' ? 'Start Long Break' :
                         'Start Short Break'
                     )}
@@ -65,6 +74,7 @@ CompletedState.propTypes = {
     targetMinutes: PropTypes.number.isRequired,
     customGoal: PropTypes.string,
     loading: PropTypes.bool.isRequired,
+    completionData: PropTypes.object,
     onModeChange: PropTypes.func.isRequired,
     onContinue: PropTypes.func.isRequired,
     onGoalFinished: PropTypes.func.isRequired,
@@ -72,6 +82,7 @@ CompletedState.propTypes = {
 
 CompletedState.defaultProps = {
     customGoal: '',
+    completionData: null,
 };
 
 export default CompletedState;

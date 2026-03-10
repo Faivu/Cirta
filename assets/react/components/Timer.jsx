@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import SquareTimer from './SquareTimer';
 
 /**
  * Timer - Displays the session timer with circular progress
@@ -24,6 +25,7 @@ function Timer({ elapsedSeconds, remainingSeconds, mode, isPaused }) {
     };
 
     const hasCountdown = mode === 'pomodoro' || mode === 'break';
+    const isFlow = mode === 'flowtime' || mode === 'time_blocking';
 
     // Calculate progress percentage for countdown modes
     const getProgress = () => {
@@ -39,14 +41,25 @@ function Timer({ elapsedSeconds, remainingSeconds, mode, isPaused }) {
         ? remainingSeconds
         : elapsedSeconds;
 
-    const displayLabel = hasCountdown ? 'Remaining' : 'Elapsed';
+    // Split time string into individual chars for SquareTimer
+    const timeToChars = (totalSeconds) => {
+        const formatted = formatTime(totalSeconds);
+        return formatted.replace(/:/g, '').split('');
+    };
+
+    if (isFlow) {
+        return (
+            <div className={`timer ${isPaused ? 'paused' : ''}`}>
+                <SquareTimer chars={timeToChars(displayTime)} isPaused={isPaused} />
+            </div>
+        );
+    }
 
     // Determine CSS class for the timer (for different colors)
     const timerClass = `timer ${mode === 'break' ? 'break-mode' : ''} ${isPaused ? 'paused' : ''}`;
 
     return (
         <div className={timerClass}>
-            {/* Progress ring for countdown modes */}
             {hasCountdown && progress !== null && (
                 <svg className="timer-progress" viewBox="0 0 100 100">
                     <circle
@@ -75,7 +88,6 @@ function Timer({ elapsedSeconds, remainingSeconds, mode, isPaused }) {
                 <span className="timer-time">{formatTime(displayTime)}</span>
                 {isPaused && <span className="timer-paused-indicator">PAUSED</span>}
             </div>
-
         </div>
     );
 }
