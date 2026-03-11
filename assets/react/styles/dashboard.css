@@ -144,10 +144,33 @@
     overflow: hidden;
 }
 
+/* Resize Handle */
+.panel-resize-handle {
+    width: 4px;
+    flex-shrink: 0;
+    cursor: col-resize;
+    background: #e5e7eb;
+    transition: background 0.15s;
+    position: relative;
+}
+
+.panel-resize-handle::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -4px;
+    right: -4px;
+}
+
+.panel-resize-handle:hover,
+.panel-resize-handle.dragging {
+    background: #3b82f6;
+}
+
 /* Sidebar */
 .dashboard-sidebar {
     width: 320px;
-    min-width: 320px;
     background: #f9fafb;
     border-right: 1px solid #e5e7eb;
     overflow-y: auto;
@@ -482,24 +505,23 @@
     position: fixed;
     bottom: 70px;
     left: 60px;
-    width: 320px;
+    width: var(--sidebar-width, 320px);
     padding: 0 15px;
     box-sizing: border-box;
     z-index: 51;
 }
 
 .session-container.compact .start-session-sticky.compact .btn {
-    max-width: 100%;
+    max-width: 260px;
 }
 
 .session-container.compact .strategy-selector.compact {
     position: fixed;
     bottom: 0;
     left: 60px;
-    width: 320px;
+    width: var(--sidebar-width, 320px);
     padding: 15px;
     background: #f9fafb;
-    border-top: 1px solid #e5e7eb;
     box-sizing: border-box;
     z-index: 50;
 }

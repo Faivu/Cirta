@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import SessionApp from './SessionApp';
 import SessionHistory from './SessionHistory';
 import TodoList from './TodoList';
 import Calendar from './Calendar';
 import TopBar from './TopBar';
+import ResizeHandle from './ResizeHandle';
 import { SessionProvider } from '../context/SessionContext';
 
 /**
@@ -16,6 +17,22 @@ function DashboardLayout() {
     const [sidebarTab, setSidebarTab] = useState('timer');
     const [todoTab, setTodoTab] = useState('tasks');
     const [taskFilter, setTaskFilter] = useState('all');
+
+    const MIN_PANEL_WIDTH = 280;
+    const TOPBAR_WIDTH = 60;
+    const [sidebarWidth, setSidebarWidth] = useState(320);
+    const dragRef = useRef({ startX: 0, startWidth: 320 });
+
+    const handleDragStart = (startX) => {
+        dragRef.current = { startX, startWidth: sidebarWidth };
+    };
+
+    const handleDrag = (currentX) => {
+        const delta = currentX - dragRef.current.startX;
+        const maxWidth = window.innerWidth - TOPBAR_WIDTH - MIN_PANEL_WIDTH;
+        const newWidth = Math.max(MIN_PANEL_WIDTH, Math.min(dragRef.current.startWidth + delta, maxWidth));
+        setSidebarWidth(newWidth);
+    };
 
     const handleToggleSidebar = (sidebar) => {
         if (activeSidebar === sidebar) {
@@ -73,7 +90,7 @@ function DashboardLayout() {
                     />
                     <div className="dashboard">
                         {activeSidebar === 'session' && (
-                            <div className="dashboard-sidebar">
+                            <div className="dashboard-sidebar" style={{ width: sidebarWidth, minWidth: sidebarWidth, '--sidebar-width': `${sidebarWidth}px` }}>
                                 <div className="sidebar-tabs">
                                     <button
                                         className="sidebar-expand-btn"
@@ -105,7 +122,7 @@ function DashboardLayout() {
                             </div>
                         )}
                         {activeSidebar === 'todo' && (
-                            <div className="dashboard-sidebar">
+                            <div className="dashboard-sidebar" style={{ width: sidebarWidth, minWidth: sidebarWidth, '--sidebar-width': `${sidebarWidth}px` }}>
                                 <div className="sidebar-tabs">
                                     <button
                                         className="sidebar-expand-btn"
@@ -131,6 +148,12 @@ function DashboardLayout() {
                                     <TodoList view={todoTab} filter={taskFilter} onFilterChange={setTaskFilter} />
                                 </div>
                             </div>
+                        )}
+                        {activeSidebar && (
+                            <ResizeHandle
+                                onDragStart={handleDragStart}
+                                onDrag={handleDrag}
+                            />
                         )}
                         <div className="dashboard-main">
                             <Calendar />
