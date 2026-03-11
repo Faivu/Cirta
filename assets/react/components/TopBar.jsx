@@ -1,10 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-/**
- * TopBar - Vertical left navigation sidebar with logo, panel toggles, and settings
- */
-function TopBar({ activeSidebar, onToggleSidebar }) {
+function TopBar({ panels, onTogglePanel }) {
+    const isActive = (panelId) => panels.includes(panelId);
+
     return (
         <div className="topbar">
             <div className="topbar-top">
@@ -13,9 +12,9 @@ function TopBar({ activeSidebar, onToggleSidebar }) {
 
             <div className="topbar-middle">
                 <button
-                    className={`topbar-view-toggle ${activeSidebar === 'session' ? 'active' : ''}`}
-                    onClick={() => onToggleSidebar('session')}
-                    title={activeSidebar === 'session' ? 'Hide session' : 'Show session'}
+                    className={`topbar-view-toggle ${isActive('session') ? 'active' : ''}`}
+                    onClick={() => onTogglePanel('session')}
+                    title={isActive('session') ? 'Hide session' : 'Show session'}
                 >
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <circle cx="12" cy="12" r="10" />
@@ -23,10 +22,25 @@ function TopBar({ activeSidebar, onToggleSidebar }) {
                     </svg>
                     <span className="toggle-label">Session</span>
                 </button>
+
                 <button
-                    className={`topbar-view-toggle ${activeSidebar === 'todo' ? 'active' : ''}`}
-                    onClick={() => onToggleSidebar('todo')}
-                    title={activeSidebar === 'todo' ? 'Hide to-do' : 'Show to-do'}
+                    className={`topbar-view-toggle ${isActive('calendar') ? 'active' : ''}`}
+                    onClick={() => onTogglePanel('calendar')}
+                    title={isActive('calendar') ? 'Hide calendar' : 'Show calendar'}
+                >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" />
+                        <line x1="16" y1="2" x2="16" y2="6" />
+                        <line x1="8" y1="2" x2="8" y2="6" />
+                        <line x1="3" y1="10" x2="21" y2="10" />
+                    </svg>
+                    <span className="toggle-label">Calendar</span>
+                </button>
+
+                <button
+                    className={`topbar-view-toggle ${isActive('todo') ? 'active' : ''}`}
+                    onClick={() => onTogglePanel('todo')}
+                    title={isActive('todo') ? 'Hide to-do' : 'Show to-do'}
                 >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
@@ -61,8 +75,8 @@ function TopBar({ activeSidebar, onToggleSidebar }) {
 }
 
 TopBar.propTypes = {
-    activeSidebar: PropTypes.string,
-    onToggleSidebar: PropTypes.func.isRequired,
+    panels: PropTypes.arrayOf(PropTypes.string).isRequired,
+    onTogglePanel: PropTypes.func.isRequired,
 };
 
 export default TopBar;
