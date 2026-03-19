@@ -135,7 +135,7 @@ function DashboardLayout() {
                         </div>
                         <div className="sidebar-content">
                             {sidebarTab === 'timer' ? (
-                                <SessionApp compact={panels.length === 2} />
+                                <SessionApp compact={true} fullPanel={panels.length === 1} />
                             ) : (
                                 <SessionHistory />
                             )}

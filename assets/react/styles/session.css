@@ -205,11 +205,12 @@
 .strategy-selector.compact {
     position: fixed;
     bottom: 20px;
-    left: 0;
-    right: 0;
+    left: var(--panel-left, 60px);
+    width: var(--panel-width, calc(100vw - 60px));
     padding: 10px 15px;
     background: #f9fafb;
     z-index: 50;
+    box-sizing: border-box;
 }
 
 .strategy-nav {
@@ -262,10 +263,11 @@
 .start-session-sticky {
     position: fixed;
     bottom: 75px;
-    left: 0;
-    right: 0;
+    left: var(--panel-left, 60px);
+    width: var(--panel-width, calc(100vw - 60px));
     padding: 0 20px;
     z-index: 51;
+    box-sizing: border-box;
 }
 
 .start-session-sticky .btn {

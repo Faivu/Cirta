@@ -8,7 +8,7 @@ import { useSession } from '../context/SessionContext';
  * SessionApp - Main component for the session timer
  * Now uses SessionContext for state management
  */
-function SessionApp({ compact = false, onFullscreen = null }) {
+function SessionApp({ compact = false, fullPanel = false, onFullscreen = null }) {
     const {
         // State
         strategy,
@@ -72,7 +72,7 @@ function SessionApp({ compact = false, onFullscreen = null }) {
     };
 
     return (
-        <div className={`session-container${compact ? ' compact' : ''}`}>
+        <div className={`session-container${compact ? ' compact' : ''}${fullPanel ? ' full-panel' : ''}`}>
             {compact && onFullscreen && (
                 <button
                     className="session-fullscreen-toggle"
@@ -176,11 +176,13 @@ function SessionApp({ compact = false, onFullscreen = null }) {
 
 SessionApp.propTypes = {
     compact: PropTypes.bool,
+    fullPanel: PropTypes.bool,
     onFullscreen: PropTypes.func,
 };
 
 SessionApp.defaultProps = {
     compact: false,
+    fullPanel: false,
     onFullscreen: null,
 };
 

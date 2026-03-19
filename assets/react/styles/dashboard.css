@@ -453,6 +453,11 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    container-type: inline-size;
+}
+
+.dashboard-main .sidebar-content {
+    overflow-y: auto;
 }
 
 /* Session History */
@@ -801,6 +806,192 @@
 
 .session-container.compact .break-time {
     font-size: 2.5rem;
+}
+
+/* Medium panel (460px+): scale up from compact toward full-panel sizes */
+@container (min-width: 460px) {
+    .session-container.compact {
+        max-width: 520px;
+        margin: 0 auto;
+    }
+
+    .session-container.compact .pomodoro-mode-selector {
+        gap: 6px;
+        margin-bottom: 18px;
+    }
+
+    .session-container.compact .pomodoro-mode-btn {
+        padding: 7px 13px;
+        font-size: 0.8rem;
+    }
+
+    .session-container.compact .mode-selector-spacer {
+        height: 33px;
+        margin-bottom: 18px;
+    }
+
+    .session-container.compact .timer-progress,
+    .session-container.compact .timer.preview .timer-progress {
+        width: 230px;
+        height: 230px;
+    }
+
+    .session-container.compact .timer-display,
+    .session-container.compact .timer.preview .timer-display {
+        width: 230px;
+        height: 230px;
+    }
+
+    .session-container.compact .timer-time {
+        font-size: 3.5rem;
+    }
+
+    .session-container.compact .square-timer {
+        height: 225px;
+        gap: 8px;
+    }
+
+    .session-container.compact .square-timer-group {
+        gap: 7px;
+    }
+
+    .session-container.compact .square-timer-digit {
+        width: 68px;
+        height: 86px;
+        font-size: 2.9rem;
+        border-radius: 11px;
+    }
+
+    .session-container.compact .square-timer-separator {
+        font-size: 2.6rem;
+    }
+
+    .session-container.compact .session-config {
+        padding: 20px;
+    }
+
+    .session-container.compact .btn {
+        padding: 11px 20px;
+        font-size: 0.9rem;
+    }
+
+    .session-container.compact .session-controls {
+        margin-top: 22px;
+    }
+
+    .session-container.compact .session-controls .btn {
+        flex: none;
+        min-width: auto;
+    }
+
+    .session-container.compact .completion-actions,
+    .session-container.compact .break-actions {
+        flex-direction: row;
+    }
+
+    .session-container.compact .completion-actions .btn,
+    .session-container.compact .break-actions .btn {
+        min-width: 120px;
+        width: auto;
+    }
+
+    .session-container.compact .break-time {
+        font-size: 3.25rem;
+    }
+
+    .session-container.compact .start-session-sticky.compact .btn {
+        max-width: 320px;
+    }
+}
+
+/* Full-panel mode: compact layout but restore full element sizes */
+.session-container.compact.full-panel {
+    max-width: 660px;
+    margin: 0 auto;
+}
+
+.session-container.compact.full-panel .pomodoro-mode-selector {
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.session-container.compact.full-panel .pomodoro-mode-btn {
+    padding: 8px 16px;
+    font-size: 0.875rem;
+}
+
+.session-container.compact.full-panel .mode-selector-spacer {
+    height: 37px;
+    margin-bottom: 20px;
+}
+
+.session-container.compact.full-panel .timer-progress,
+.session-container.compact.full-panel .timer.preview .timer-progress {
+    width: 280px;
+    height: 280px;
+}
+
+.session-container.compact.full-panel .timer-display,
+.session-container.compact.full-panel .timer.preview .timer-display {
+    width: 280px;
+    height: 280px;
+}
+
+.session-container.compact.full-panel .timer-time {
+    font-size: 4.5rem;
+}
+
+.session-container.compact.full-panel .square-timer {
+    height: 270px;
+    gap: 10px;
+}
+
+.session-container.compact.full-panel .square-timer-group {
+    gap: 8px;
+}
+
+.session-container.compact.full-panel .square-timer-digit {
+    width: 84px;
+    height: 106px;
+    font-size: 3.5rem;
+    border-radius: 12px;
+}
+
+.session-container.compact.full-panel .square-timer-separator {
+    font-size: 3.25rem;
+}
+
+.session-container.compact.full-panel .session-config {
+    padding: 24px;
+}
+
+.session-container.compact.full-panel .btn {
+    padding: 12px 24px;
+    font-size: 1rem;
+}
+
+.session-container.compact.full-panel .session-controls {
+    margin-top: 30px;
+}
+
+.session-container.compact.full-panel .session-controls .btn {
+    flex: none;
+    min-width: auto;
+}
+
+.session-container.compact.full-panel .completion-actions,
+.session-container.compact.full-panel .break-actions {
+    flex-direction: row;
+}
+
+.session-container.compact.full-panel .completion-actions .btn,
+.session-container.compact.full-panel .break-actions .btn {
+    min-width: 140px;
+    width: auto;
+}
+
+.session-container.compact.full-panel .start-session-sticky.compact .btn {
+    max-width: 400px;
 }
 
 /* Calendar Container */
