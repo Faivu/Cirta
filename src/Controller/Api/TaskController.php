@@ -26,23 +26,28 @@ final class TaskController extends AbstractController
             return $this->json(['error' => 'Not authenticated'], Response::HTTP_UNAUTHORIZED);
         }
 
-        $tasks = $this->entityManager->getRepository(Task::class)
-            ->createQueryBuilder('t')
+        $results = $this->entityManager->createQueryBuilder()
+            ->select('t', 'SUM(s.actualDuration) as totalDuration')
+            ->from(Task::class, 't')
+            ->leftJoin('t.sessions', 's', 'WITH', 's.actualDuration IS NOT NULL')
             ->where('t.user = :user')
             ->setParameter('user', $user->getId(), 'uuid')
+            ->groupBy('t.id')
             ->orderBy('t.isChecked', 'ASC')
             ->addOrderBy('t.id', 'DESC')
             ->getQuery()
             ->getResult();
 
-        $data = array_map(function (Task $task) {
+        $data = array_map(function ($row) {
+            $task = $row[0];
             return [
                 'id' => $task->getId(),
                 'title' => $task->getTitle(),
                 'isChecked' => $task->isChecked(),
                 'scheduleDate' => $task->getScheduleDate()?->format('c'),
+                'totalDuration' => (int) ($row['totalDuration'] ?? 0),
             ];
-        }, $tasks);
+        }, $results);
 
         return $this->json($data);
     }

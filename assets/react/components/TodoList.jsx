@@ -1,36 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import DatePicker from './DatePicker';
+import { useSession } from '../context/SessionContext';
+import { useToast } from '../context/ToastContext';
 
-/**
- * Play a short ding sound when a task is checked using Web Audio API.
- * Generated programmatically — no external files, fully royalty-free.
- */
-const playTickSound = () => {
-    try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const now = ctx.currentTime;
+import { playTickSound } from '../utils/sounds';
 
-        // Bright ding
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-
-        osc.frequency.setValueAtTime(1200, now);
-        osc.type = 'sine';
-
-        gain.gain.setValueAtTime(0.25, now);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
-
-        osc.start(now);
-        osc.stop(now + 0.35);
-    } catch (e) {
-        // Silently fail if audio not supported
-    }
+const formatDuration = (minutes) => {
+    if (!minutes) return null;
+    if (minutes < 60) return `${minutes}m`;
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    return m > 0 ? `${h}h ${m}m` : `${h}h`;
 };
 
 function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
+    const { linkedTask, taskDoneSignal, sessionEndSignal } = useSession();
+    const { showToast } = useToast();
     const [tasks, setTasks] = useState([]);
     const [newTitle, setNewTitle] = useState('');
     const [scheduleDate, setScheduleDate] = useState('');
@@ -49,6 +35,16 @@ function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
     useEffect(() => {
         fetchTasks();
     }, []);
+
+    useEffect(() => {
+        if (!taskDoneSignal) return;
+        fetchTasks();
+    }, [taskDoneSignal]);
+
+    useEffect(() => {
+        if (!sessionEndSignal) return;
+        fetchTasks();
+    }, [sessionEndSignal]);
 
     const fetchTasks = async () => {
         try {
@@ -80,7 +76,7 @@ function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
                 body: JSON.stringify(body),
             });
             if (res.ok) {
-                const task = await res.json();
+                const task = { totalDuration: 0, ...await res.json() };
                 setTasks((prev) => [task, ...prev]);
                 closeAddModal();
             }
@@ -92,6 +88,15 @@ function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
     };
 
     const toggleTask = async (id, currentChecked) => {
+        if (!currentChecked && linkedTask?.id === id) {
+            showToast({
+                title: 'Task is linked to an active session',
+                message: 'Mark it done when you finish a session or unlink it from the session panel.',
+                duration: 4000,
+            });
+            return;
+        }
+
         const newChecked = !currentChecked;
 
         // Confirm before unchecking from history or today view
@@ -124,6 +129,14 @@ function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
     };
 
     const deleteTask = async (id) => {
+        if (linkedTask?.id === id) {
+            showToast({
+                title: 'Task is linked to an active session',
+                message: 'Mark it done when you finish a session or unlink it from the session panel.',
+                duration: 4000,
+            });
+            return;
+        }
         if (!window.confirm('Delete this task?')) return;
 
         const prev = tasks;
@@ -142,6 +155,14 @@ function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
 
     const startEditing = (task) => {
         if (!editMode) return;
+        if (linkedTask?.id === task.id) {
+            showToast({
+                title: 'Task is linked to an active session',
+                message: 'Mark it done when you finish a session or unlink it from the session panel.',
+                duration: 4000,
+            });
+            return;
+        }
         const toDateInput = (dateStr) => {
             if (!dateStr) return '';
             return new Date(dateStr).toISOString().split('T')[0];
@@ -379,11 +400,19 @@ function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
             );
         }
 
+        const draggable = !editMode && !isChecked;
+
         return (
             <div
                 key={task.id}
-                className={`todo-item ${isChecked ? 'checked' : ''} ${editMode ? 'edit-mode' : ''}`}
+                className={`todo-item ${isChecked ? 'checked' : ''} ${editMode ? 'edit-mode' : ''} ${draggable ? 'draggable' : ''} ${linkedTask?.id === task.id ? 'session-linked' : ''}`}
                 onClick={() => startEditing(task)}
+                draggable={draggable}
+                onDragStart={draggable ? (e) => {
+                    e.dataTransfer.setData('taskId', task.id);
+                    e.dataTransfer.setData('taskTitle', task.title);
+                    e.dataTransfer.effectAllowed = 'link';
+                } : undefined}
             >
                 <button
                     className={`todo-checkbox ${isChecked ? 'checked' : ''}`}
@@ -402,9 +431,20 @@ function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
                 </button>
                 <div className="todo-content">
                     <span className="todo-title">{task.title}</span>
-                    {task.scheduleDate && (
+                    {(task.scheduleDate || task.totalDuration > 0) && (
                         <div className="todo-dates">
-                            <span className="todo-date scheduled">{formatDate(task.scheduleDate)}</span>
+                            {task.scheduleDate && (
+                                <span className="todo-date scheduled">{formatDate(task.scheduleDate)}</span>
+                            )}
+                            {task.totalDuration > 0 && (
+                                <span className="todo-duration">
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <polyline points="12 6 12 12 16 14" />
+                                    </svg>
+                                    {formatDuration(task.totalDuration)}
+                                </span>
+                            )}
                         </div>
                     )}
                 </div>

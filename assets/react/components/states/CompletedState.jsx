@@ -8,11 +8,13 @@ function CompletedState({
     pomodoroMode,
     targetMinutes,
     customGoal,
+    linkedTask,
     loading,
     completionData,
     onModeChange,
     onContinue,
     onGoalFinished,
+    onMarkTaskDone,
 }) {
     const noBreakAvailable = strategy === 'flowtime' && !completionData?.suggestedBreakDuration;
 
@@ -56,13 +58,23 @@ function CompletedState({
                         'Start Short Break'
                     )}
                 </button>
-                <button
-                    className="btn btn-secondary"
-                    onClick={onGoalFinished}
-                    disabled={loading}
-                >
-                    Goal Finished
-                </button>
+                {linkedTask ? (
+                    <button
+                        className="btn btn-success"
+                        onClick={onMarkTaskDone}
+                        disabled={loading}
+                    >
+                        ✓ Task Done
+                    </button>
+                ) : (
+                    <button
+                        className="btn btn-secondary"
+                        onClick={onGoalFinished}
+                        disabled={loading}
+                    >
+                        Goal Finished
+                    </button>
+                )}
             </div>
         </div>
     );
@@ -73,15 +85,18 @@ CompletedState.propTypes = {
     pomodoroMode: PropTypes.string.isRequired,
     targetMinutes: PropTypes.number.isRequired,
     customGoal: PropTypes.string,
+    linkedTask: PropTypes.shape({ id: PropTypes.string, title: PropTypes.string }),
     loading: PropTypes.bool.isRequired,
     completionData: PropTypes.object,
     onModeChange: PropTypes.func.isRequired,
     onContinue: PropTypes.func.isRequired,
     onGoalFinished: PropTypes.func.isRequired,
+    onMarkTaskDone: PropTypes.func.isRequired,
 };
 
 CompletedState.defaultProps = {
     customGoal: '',
+    linkedTask: null,
     completionData: null,
 };
 

@@ -142,6 +142,7 @@
     flex: 1;
     margin-top: 0;
     width: 100%;
+    box-sizing: border-box;
 }
 
 .session-idle .strategy-selector {
@@ -311,6 +312,78 @@
 .config-field input[type="number"] {
     width: 120px;
 }
+
+/* Task Drop Zone */
+.task-drop-zone {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px;
+    border: 2px dashed #d1d5db;
+    border-radius: 8px;
+    color: #9ca3af;
+    font-size: 0.875rem;
+    box-sizing: border-box;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+    margin-top: 8px;
+    cursor: default;
+}
+
+.task-drop-zone.drag-over {
+    border-color: #3b82f6;
+    background: #eff6ff;
+    color: #3b82f6;
+}
+
+.task-drop-zone.hidden {
+    visibility: hidden;
+}
+
+/* Goal input wrapper — becomes chip when task is linked */
+.goal-input-wrapper {
+    position: relative;
+}
+
+.goal-input-wrapper input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.goal-input-wrapper.linked input {
+    background: #eff6ff;
+    border-color: #3b82f6;
+    color: #1d4ed8;
+    font-weight: 500;
+    cursor: default;
+    padding-right: 38px;
+}
+
+.linked-task-unlink {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    color: #6b7280;
+    padding: 0;
+    transition: all 0.15s;
+}
+
+.linked-task-unlink:hover {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
 
 /* Buttons */
 .btn {

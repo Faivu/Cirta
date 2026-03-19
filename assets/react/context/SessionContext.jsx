@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
+import { playTickSound } from '../utils/sounds';
+import { useToast } from './ToastContext';
 import PropTypes from 'prop-types';
 
 const SessionContext = createContext(null);
@@ -63,7 +65,14 @@ const apiCall = async (url, method = 'GET', body = null) => {
 /**
  * SessionProvider - Provides session state to the entire app
  */
+const STRATEGY_LABEL = {
+    pomodoro:      'Pomodoro',
+    flowtime:      'Flowtime Session',
+    time_blocking: 'Time Block',
+};
+
 export function SessionProvider({ children }) {
+    const { showToast } = useToast();
     // Session state
     const [strategy, setStrategy] = useState('pomodoro');
     const [status, setStatus] = useState('idle');
@@ -81,6 +90,11 @@ export function SessionProvider({ children }) {
     const [customGoal, setCustomGoal] = useState('');
     const [pomodoroMode, setPomodoroMode] = useState('pomodoro');
     const [pomodoroCount, setPomodoroCount] = useState(0);
+
+    // Linked task (dragged from To-Do list)
+    const [linkedTask, setLinkedTask] = useState(null); // { id, title } | null
+    const [taskDoneSignal, setTaskDoneSignal] = useState(0);
+    const [sessionEndSignal, setSessionEndSignal] = useState(0);
 
     // UI state
     const [error, setError] = useState(null);
@@ -192,6 +206,7 @@ export function SessionProvider({ children }) {
                 setCompletionData(data);
                 setBreakDuration(data.breakDuration || 0);
                 setStatus('completed');
+                setSessionEndSignal(prev => prev + 1);
             })
             .catch(err => setError(err.message))
             .finally(() => {
@@ -222,6 +237,7 @@ export function SessionProvider({ children }) {
             const payload = {
                 strategy,
                 customGoal: customGoal || null,
+                taskId: linkedTask?.id ?? null,
                 ...(strategy === 'pomodoro' && { targetDuration: targetMinutes }),
             };
 
@@ -281,6 +297,7 @@ export function SessionProvider({ children }) {
                 setBreakDuration(data.breakDuration || 0);
                 setStatus('completed');
             }
+            setSessionEndSignal(prev => prev + 1);
         } catch (err) {
             setError(err.message);
         } finally {
@@ -308,6 +325,7 @@ export function SessionProvider({ children }) {
             } else {
                 setStatus('completed');
             }
+            setSessionEndSignal(prev => prev + 1);
         } catch (err) {
             setError(err.message);
         } finally {
@@ -335,6 +353,7 @@ export function SessionProvider({ children }) {
             const payload = {
                 strategy,
                 customGoal: customGoal || null,
+                taskId: linkedTask?.id ?? null,
                 ...(strategy === 'pomodoro' && { targetDuration: targetMinutes }),
             };
 
@@ -360,6 +379,7 @@ export function SessionProvider({ children }) {
         setBreakSeconds(0);
         setBreakDuration(0);
         setCustomGoal('');
+        setLinkedTask(null);
         setError(null);
         setCompletionData(null);
     };
@@ -389,8 +409,31 @@ export function SessionProvider({ children }) {
         setBreakSeconds(0);
         setBreakDuration(0);
         setCustomGoal('');
+        setLinkedTask(null);
         setError(null);
         setCompletionData(null);
+    };
+
+    const handleMarkTaskDone = async () => {
+        if (linkedTask) {
+            try {
+                await fetch(`/api/tasks/${linkedTask.id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ isChecked: true }),
+                });
+                playTickSound();
+                setTaskDoneSignal(prev => prev + 1);
+                showToast({
+                    title: `${STRATEGY_LABEL[strategy] ?? 'Session'} Complete`,
+                    message: `"${linkedTask.title}" marked as done`,
+                    strategy,
+                });
+            } catch {
+                // silently fail — session still resets
+            }
+        }
+        handleGoalFinished();
     };
 
     const getRemainingSeconds = () => {
@@ -422,6 +465,11 @@ export function SessionProvider({ children }) {
         setStrategy,
         setTargetMinutes,
         setCustomGoal,
+        linkedTask,
+        setLinkedTask,
+        taskDoneSignal,
+        sessionEndSignal,
+        handleMarkTaskDone,
 
         // Handlers
         handleStart,

@@ -28,6 +28,9 @@ function SessionApp({ compact = false, onFullscreen = null }) {
         setStrategy,
         setTargetMinutes,
         setCustomGoal,
+        linkedTask,
+        setLinkedTask,
+        handleMarkTaskDone,
 
         // Handlers
         handleStart,
@@ -50,6 +53,21 @@ function SessionApp({ compact = false, onFullscreen = null }) {
     // Focus goal input after finishing
     const handleGoalFinishedWithFocus = () => {
         handleGoalFinished();
+        setTimeout(() => goalInputRef.current?.focus(), 0);
+    };
+
+    const handleTaskDrop = (task) => {
+        setLinkedTask(task);
+        setCustomGoal(task.title);
+    };
+
+    const handleUnlinkTask = () => {
+        setLinkedTask(null);
+        setCustomGoal('');
+    };
+
+    const handleMarkTaskDoneWithFocus = async () => {
+        await handleMarkTaskDone();
         setTimeout(() => goalInputRef.current?.focus(), 0);
     };
 
@@ -78,12 +96,15 @@ function SessionApp({ compact = false, onFullscreen = null }) {
                     pomodoroMode={pomodoroMode}
                     targetMinutes={targetMinutes}
                     customGoal={customGoal}
+                    linkedTask={linkedTask}
                     loading={loading}
                     goalInputRef={goalInputRef}
                     compact={compact}
                     onModeChange={handleModeChange}
                     onMinutesChange={setTargetMinutes}
                     onGoalChange={setCustomGoal}
+                    onTaskDrop={handleTaskDrop}
+                    onUnlinkTask={handleUnlinkTask}
                     onStart={handleStart}
                     onStrategyChange={setStrategy}
                 />
@@ -112,11 +133,13 @@ function SessionApp({ compact = false, onFullscreen = null }) {
                     pomodoroMode={pomodoroMode}
                     targetMinutes={targetMinutes}
                     customGoal={customGoal}
+                    linkedTask={linkedTask}
                     loading={loading}
                     completionData={completionData}
                     onModeChange={handleModeChange}
                     onContinue={handleContinue}
                     onGoalFinished={handleGoalFinishedWithFocus}
+                    onMarkTaskDone={handleMarkTaskDoneWithFocus}
                 />
             )}
 
@@ -128,11 +151,13 @@ function SessionApp({ compact = false, onFullscreen = null }) {
                     breakSeconds={breakSeconds}
                     breakDuration={breakDuration}
                     customGoal={customGoal}
+                    linkedTask={linkedTask}
                     loading={loading}
                     onModeChange={handleModeChange}
                     onSkipBreak={handleSkipBreak}
                     onContinue={handleContinue}
                     onGoalFinished={handleGoalFinishedWithFocus}
+                    onMarkTaskDone={handleMarkTaskDoneWithFocus}
                 />
             )}
 

@@ -11,11 +11,13 @@ function BreakState({
     breakSeconds,
     breakDuration,
     customGoal,
+    linkedTask,
     loading,
     onModeChange,
     onSkipBreak,
     onContinue,
     onGoalFinished,
+    onMarkTaskDone,
 }) {
     const isBreakActive = breakSeconds > 0;
 
@@ -75,13 +77,23 @@ function BreakState({
                                 'Start Short Break'
                             )}
                         </button>
-                        <button
-                            className="btn btn-secondary"
-                            onClick={onGoalFinished}
-                            disabled={loading}
-                        >
-                            Goal Finished
-                        </button>
+                        {linkedTask ? (
+                            <button
+                                className="btn btn-success"
+                                onClick={onMarkTaskDone}
+                                disabled={loading}
+                            >
+                                ✓ Task Done
+                            </button>
+                        ) : (
+                            <button
+                                className="btn btn-secondary"
+                                onClick={onGoalFinished}
+                                disabled={loading}
+                            >
+                                Goal Finished
+                            </button>
+                        )}
                     </>
                 )}
             </div>
@@ -96,15 +108,18 @@ BreakState.propTypes = {
     breakSeconds: PropTypes.number.isRequired,
     breakDuration: PropTypes.number.isRequired,
     customGoal: PropTypes.string,
+    linkedTask: PropTypes.shape({ id: PropTypes.string, title: PropTypes.string }),
     loading: PropTypes.bool.isRequired,
     onModeChange: PropTypes.func.isRequired,
     onSkipBreak: PropTypes.func.isRequired,
     onContinue: PropTypes.func.isRequired,
     onGoalFinished: PropTypes.func.isRequired,
+    onMarkTaskDone: PropTypes.func.isRequired,
 };
 
 BreakState.defaultProps = {
     customGoal: '',
+    linkedTask: null,
 };
 
 export default BreakState;

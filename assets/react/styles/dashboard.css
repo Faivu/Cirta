@@ -1,3 +1,82 @@
+/* Toast Notifications */
+.toast-container {
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    pointer-events: none;
+}
+
+.toast {
+    display: flex;
+    align-items: stretch;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12), 0 1px 4px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    min-width: 260px;
+    max-width: 400px;
+    pointer-events: all;
+    opacity: 0;
+    transform: translateY(-12px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.toast.toast-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.toast-accent {
+    display: none;
+}
+
+.toast-body {
+    flex: 1;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.toast-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+.toast-message {
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+.toast-close {
+    align-self: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    margin-right: 8px;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #9ca3af;
+    flex-shrink: 0;
+    transition: background 0.15s, color 0.15s;
+}
+
+.toast-close:hover {
+    background: #f3f4f6;
+    color: #374151;
+}
+
 /* Dashboard Wrapper */
 .dashboard-wrapper {
     display: flex;
@@ -1436,6 +1515,18 @@
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
 }
 
+.todo-item.draggable {
+    cursor: grab;
+}
+
+.todo-item.draggable:active {
+    cursor: grabbing;
+}
+
+.todo-item.draggable:hover {
+    border-color: #93c5fd;
+}
+
 .todo-item.edit-mode {
     cursor: pointer;
 }
@@ -1476,6 +1567,24 @@
 .todo-content {
     flex: 1;
     min-width: 0;
+}
+
+.todo-item.session-linked {
+    background: #fefce8;
+    border-color: #fde68a;
+}
+
+.todo-item.session-linked.draggable:hover {
+    border-color: #fbbf24;
+}
+
+.todo-duration {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: #9ca3af;
 }
 
 .todo-title {

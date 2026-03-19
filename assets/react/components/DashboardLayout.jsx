@@ -6,6 +6,8 @@ import Calendar from './Calendar';
 import TopBar from './TopBar';
 import ResizeHandle from './ResizeHandle';
 import { SessionProvider } from '../context/SessionContext';
+import { ToastProvider } from '../context/ToastContext';
+import ToastContainer from './ToastContainer';
 
 const MIN_PANEL_WIDTH = 280;
 const TOPBAR_WIDTH = 60;
@@ -148,6 +150,7 @@ function DashboardLayout() {
     };
 
     return (
+        <ToastProvider>
         <SessionProvider>
             {sessionFullscreen ? (
                 <div className="session-fullscreen">
@@ -228,6 +231,8 @@ function DashboardLayout() {
                 </div>
             )}
         </SessionProvider>
+        <ToastContainer />
+        </ToastProvider>
     );
 }
 
