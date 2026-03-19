@@ -16,7 +16,7 @@ class Task extends BaseEntity
     private ?User $user = null;
 
     #[ORM\ManyToOne(targetEntity: Event::class, inversedBy: 'tasks')]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?Event $event = null;
 
     /**
