@@ -89,7 +89,10 @@ function DashboardLayout() {
 
     // --- Swap panel positions ---
     const handleSwap = () => {
-        if (primaryPanel && secondaryPanel) setIsPrimaryLeft(prev => !prev);
+        if (primaryPanel && secondaryPanel) {
+            setIsPrimaryLeft(prev => !prev);
+            setSidebarWidth(window.innerWidth - TOPBAR_WIDTH - sidebarWidth);
+        }
     };
 
     // --- Resize ---
