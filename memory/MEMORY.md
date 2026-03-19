@@ -22,6 +22,12 @@
 - `PomodoroService` handles all Pomodoro business logic (only strategy fully implemented)
 - `SessionStrategy` interface exists but is only implemented by `PomodoroService` — Flowtime and TimeBlocking are handled inline in the controller (tech debt)
 
+## Rename TopBar → MainBar (Codebase Task)
+- See `project_rename_topbar.md` — rename component, imports, CSS classes, and `TOPBAR_WIDTH` constant
+
+## Time Blocking Redesign (Priority)
+- See `project_time_blocking_redesign.md` — brown color, hour/minute stepper input, wall-clock end-time behavior under consideration
+
 ## Pending Work (next session)
 1. **Implement FlowtimeService and TimeBlockingService** implementing `SessionStrategy`, and refactor `SessionController` to use them instead of inline logic.
 2. **Fix LSP violation in `SessionStrategy` interface:** `pauseSession` and `resumeSession` are Pomodoro-only but sit on the base interface. Fix by extracting a `PausableSessionStrategy` sub-interface (or removing them from the base interface), so Flowtime and TimeBlocking don't have to implement no-op/throw stubs.

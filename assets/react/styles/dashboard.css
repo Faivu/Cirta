@@ -220,6 +220,231 @@
     color: #dc2626;
 }
 
+.topbar-feedback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    color: #6b7280;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+
+.topbar-feedback:hover,
+.topbar-feedback.active {
+    background: #ede9fe;
+    color: #7c3aed;
+}
+
+/* Feedback Panel */
+.feedback-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 199;
+}
+
+.feedback-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    width: 360px;
+    background: white;
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.12);
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.25s ease;
+}
+
+.feedback-panel.open {
+    transform: translateX(0);
+}
+
+.feedback-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid #f3f4f6;
+    flex-shrink: 0;
+}
+
+.feedback-panel-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+.feedback-panel-anon {
+    font-size: 0.75rem;
+    color: #16a34a;
+    margin-top: 2px;
+}
+
+.feedback-panel-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: #9ca3af;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+
+.feedback-panel-close:hover {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.feedback-form {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.feedback-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.feedback-label {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: #374151;
+}
+
+.feedback-optional {
+    font-weight: 400;
+    color: #9ca3af;
+}
+
+.feedback-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.feedback-category-btn {
+    padding: 6px 14px;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 20px;
+    background: white;
+    font-size: 0.8125rem;
+    color: #374151;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.feedback-category-btn:hover {
+    border-color: #7c3aed;
+    color: #7c3aed;
+}
+
+.feedback-category-btn.active {
+    border-color: #7c3aed;
+    background: #ede9fe;
+    color: #7c3aed;
+    font-weight: 500;
+}
+
+.feedback-stars {
+    display: flex;
+    gap: 4px;
+}
+
+.feedback-star {
+    background: transparent;
+    border: none;
+    font-size: 1.75rem;
+    color: #d1d5db;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    transition: color 0.1s, transform 0.1s;
+}
+
+.feedback-star:hover,
+.feedback-star.active {
+    color: #f59e0b;
+}
+
+.feedback-star:hover {
+    transform: scale(1.15);
+}
+
+.feedback-textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    color: #374151;
+    resize: vertical;
+    box-sizing: border-box;
+    font-family: inherit;
+    transition: border-color 0.15s;
+    min-height: 100px;
+}
+
+.feedback-textarea:focus {
+    outline: none;
+    border-color: #7c3aed;
+}
+
+.feedback-textarea::placeholder {
+    color: #9ca3af;
+}
+
+.feedback-submit {
+    width: 100%;
+}
+
+.feedback-error {
+    font-size: 0.8125rem;
+    color: #dc2626;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 6px;
+    padding: 8px 12px;
+}
+
+.feedback-success {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.feedback-success p {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+}
+
+.feedback-success span {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
 .topbar-swap-btn {
     grid-row: 3;
     position: relative;
