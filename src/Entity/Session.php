@@ -30,7 +30,7 @@ abstract class Session extends BaseEntity
     protected ?Event $event = null;
 
     #[ORM\ManyToOne(targetEntity: Task::class, inversedBy: 'sessions')]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     protected ?Task $task = null;
 
     #[ORM\Column(length: 255, nullable: true)]
