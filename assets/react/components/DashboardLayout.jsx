@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import SessionApp from './SessionApp';
 import SessionHistory from './SessionHistory';
 import TodoList from './TodoList';
@@ -12,20 +12,46 @@ import ToastContainer from './ToastContainer';
 const MIN_PANEL_WIDTH = 280;
 const TOPBAR_WIDTH = 60;
 const DEFAULT_SIDEBAR_WIDTH = 320;
+const LAYOUT_STORAGE_KEY = 'cirta_layout';
+
+function loadLayout() {
+    try {
+        const saved = localStorage.getItem(LAYOUT_STORAGE_KEY);
+        if (saved) return JSON.parse(saved);
+    } catch {}
+    return null;
+}
 
 function DashboardLayout() {
-    const [primaryPanel, setPrimaryPanel] = useState('session');
-    const [secondaryPanel, setSecondaryPanel] = useState('calendar');
-    const [isPrimaryLeft, setIsPrimaryLeft] = useState(true);
+    const saved = loadLayout();
+    const get = (key, defaultValue) => (saved && key in saved) ? saved[key] : defaultValue;
+
+    const [primaryPanel, setPrimaryPanel] = useState(get('primaryPanel', 'session'));
+    const [secondaryPanel, setSecondaryPanel] = useState(get('secondaryPanel', 'calendar'));
+    const [isPrimaryLeft, setIsPrimaryLeft] = useState(get('isPrimaryLeft', true));
 
     const [sessionFullscreen, setSessionFullscreen] = useState(false);
     const [todoFullscreen, setTodoFullscreen] = useState(false);
-    const [sidebarTab, setSidebarTab] = useState('timer');
-    const [todoTab, setTodoTab] = useState('tasks');
-    const [taskFilter, setTaskFilter] = useState('all');
+    const [sidebarTab, setSidebarTab] = useState(get('sidebarTab', 'timer'));
+    const [todoTab, setTodoTab] = useState(get('todoTab', 'tasks'));
+    const [taskFilter, setTaskFilter] = useState(get('taskFilter', 'all'));
 
-    const [sidebarWidth, setSidebarWidth] = useState(DEFAULT_SIDEBAR_WIDTH);
+    const [sidebarWidth, setSidebarWidth] = useState(get('sidebarWidth', DEFAULT_SIDEBAR_WIDTH));
     const dragRef = useRef(null);
+
+    useEffect(() => {
+        try {
+            localStorage.setItem(LAYOUT_STORAGE_KEY, JSON.stringify({
+                primaryPanel,
+                secondaryPanel,
+                isPrimaryLeft,
+                sidebarTab,
+                todoTab,
+                taskFilter,
+                sidebarWidth,
+            }));
+        } catch {}
+    }, [primaryPanel, secondaryPanel, isPrimaryLeft, sidebarTab, todoTab, taskFilter, sidebarWidth]);
 
     // Derived layout
     const leftPanel  = isPrimaryLeft ? primaryPanel  : secondaryPanel;
