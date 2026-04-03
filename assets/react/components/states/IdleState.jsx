@@ -70,7 +70,7 @@ function IdleState({
                 <SquareTimer chars={['F','L','O','W']} idle />
             )}
             {strategy === 'time_blocking' && (
-                <SquareTimer chars={['B','L','O','C']} idle />
+                <SquareTimer chars={['B','L','O','C']} idle color="#a07040" bgColor="#fdf5ee" />
             )}
 
             {(strategy !== 'pomodoro' || pomodoroMode === 'pomodoro') && (

@@ -234,6 +234,16 @@ function Calendar() {
         };
     };
 
+    const hideTooltip = useCallback(() => {
+        setTooltip({ visible: false, event: null, x: 0, y: 0 });
+    }, []);
+
+    // Hide tooltip on any mousedown (covers drag start and clicks)
+    useEffect(() => {
+        document.addEventListener('mousedown', hideTooltip);
+        return () => document.removeEventListener('mousedown', hideTooltip);
+    }, [hideTooltip]);
+
     // Tooltip handlers
     const handleEventMouseEnter = (event, e) => {
         const rect = e.currentTarget.getBoundingClientRect();
@@ -245,9 +255,7 @@ function Calendar() {
         });
     };
 
-    const handleEventMouseLeave = () => {
-        setTooltip({ visible: false, event: null, x: 0, y: 0 });
-    };
+    const handleEventMouseLeave = hideTooltip;
 
     // Handle event click - show event details modal
     const handleSelectEvent = (event) => {
@@ -456,7 +464,7 @@ function Calendar() {
     }
 
     return (
-        <div className="calendar-container">
+        <div className="calendar-container" onMouseLeave={hideTooltip}>
             {error && (
                 <div style={{ color: '#ef4444', fontSize: '0.875rem', marginBottom: '10px' }}>
                     {error}

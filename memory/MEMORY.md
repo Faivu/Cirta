@@ -22,6 +22,10 @@
 - `PomodoroService` handles all Pomodoro business logic (only strategy fully implemented)
 - `SessionStrategy` interface exists but is only implemented by `PomodoroService` — Flowtime and TimeBlocking are handled inline in the controller (tech debt)
 
+## Logbook Summaries
+- See `feedback_logbook_summary.md` for the workflow
+- Last save point: `project_logbook_savepoint.md` — currently 2026-03-21
+
 ## Rename TopBar → MainBar (Codebase Task)
 - See `project_rename_topbar.md` — rename component, imports, CSS classes, and `TOPBAR_WIDTH` constant
 

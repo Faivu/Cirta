@@ -48,9 +48,11 @@ function Timer({ elapsedSeconds, remainingSeconds, mode, isPaused }) {
     };
 
     if (isFlow) {
+        const squareColor = mode === 'time_blocking' ? '#a07040' : null;
+        const squareBg = mode === 'time_blocking' ? '#fdf5ee' : null;
         return (
-            <div className={`timer ${isPaused ? 'paused' : ''}`}>
-                <SquareTimer chars={timeToChars(displayTime)} isPaused={isPaused} />
+            <div className={`timer mode-${mode} ${isPaused ? 'paused' : ''}`}>
+                <SquareTimer chars={timeToChars(displayTime)} isPaused={isPaused} color={squareColor} bgColor={squareBg} />
             </div>
         );
     }
