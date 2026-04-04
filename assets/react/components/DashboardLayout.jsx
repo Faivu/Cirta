@@ -166,7 +166,7 @@ function DashboardLayout() {
                                 History
                             </button>
                         </div>
-                        <div className="sidebar-content">
+                        <div className="sidebar-content todo-sidebar-content">
                             <TodoList view={todoTab} filter={taskFilter} onFilterChange={setTaskFilter} />
                         </div>
                     </>

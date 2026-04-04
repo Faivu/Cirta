@@ -682,6 +682,27 @@
     container-type: inline-size;
 }
 
+/* Wide panel (single panel or main slot) — center and cap content */
+.dashboard-main .sidebar-tabs {
+    justify-content: center;
+}
+
+.dashboard-main .sidebar-tab {
+    flex: 0 0 auto;
+    padding: 6px 48px;
+}
+
+.dashboard-main .sidebar-expand-btn {
+    position: absolute;
+    left: 8px;
+}
+
+.dashboard-main .todo-sidebar-content {
+    max-width: 640px;
+    width: 100%;
+    margin: 0 auto;
+}
+
 /* Session History */
 .session-history {
     padding: 12px;
