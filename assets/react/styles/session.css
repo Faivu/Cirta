@@ -433,6 +433,24 @@
     background: #059669;
 }
 
+.btn-pomodoro {
+    background: #ef4444;
+    color: white;
+}
+
+.btn-pomodoro:hover:not(:disabled) {
+    background: #dc2626;
+}
+
+.btn-timeblock {
+    background: #a07040;
+    color: white;
+}
+
+.btn-timeblock:hover:not(:disabled) {
+    background: #8a5f30;
+}
+
 .btn-danger {
     background: #ef4444;
     color: white;
@@ -513,6 +531,95 @@
     color: #16a34a;
 }
 
+/* Time Blocking Duration Picker — same shell as .square-timer */
+.time-block-picker {
+    height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin: 0 0 20px 0;
+}
+
+.tbp-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.tbp-arrow-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.tbp-spacer {
+    width: 76px;
+    flex-shrink: 0;
+}
+
+.time-block-step {
+    width: 76px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #a07040;
+    padding: 3px 0;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.1s;
+}
+
+.time-block-step:hover {
+    background: rgba(160, 112, 64, 0.1);
+}
+
+.tbp-clickable {
+    cursor: pointer;
+}
+
+.tbp-clickable:hover .square-timer-digit {
+    box-shadow: 0 0 0 2px rgba(160, 112, 64, 0.3);
+}
+
+.tbp-edit-hint {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #a07040;
+    opacity: 0.4;
+    transition: opacity 0.15s;
+    user-select: none;
+}
+
+.tbp-group:hover .tbp-edit-hint {
+    opacity: 0.75;
+}
+
+.tbp-edit-input {
+    width: calc(76px * 2 + 8px);
+    height: 96px;
+    background: #fdf5ee;
+    border: 2px solid #a07040;
+    border-radius: 12px;
+    text-align: center;
+    font-size: 3.25rem;
+    font-weight: 700;
+    color: #a07040;
+    outline: none;
+    padding: 0;
+    -moz-appearance: textfield;
+}
+
+.tbp-edit-input::-webkit-inner-spin-button,
+.tbp-edit-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+}
+
 /* Square Timer (Flowtime / Time Blocking) */
 .square-timer {
     height: 250px;
@@ -538,6 +645,7 @@
 
 .square-timer-group {
     display: flex;
+    align-items: center;
     gap: 8px;
 }
 
@@ -602,6 +710,7 @@
     outline: none;
     padding: 0;
     appearance: textfield;
+    cursor: pointer;
 }
 
 .timer-time-input::-webkit-outer-spin-button,
@@ -611,6 +720,7 @@
 }
 
 .timer-time-input:focus {
+    cursor: text;
     background: rgba(239, 68, 68, 0.1);
     border-radius: 4px;
 }

@@ -921,6 +921,11 @@
     margin: 0 0 20px 0;
 }
 
+.session-container.compact .time-block-picker {
+    height: 180px;
+    gap: 5px;
+}
+
 .session-container.compact .square-timer {
     height: 180px;
     gap: 6px;
@@ -932,6 +937,22 @@
 
 .session-container.compact .square-timer-digit {
     width: 52px;
+    height: 66px;
+    font-size: 2.25rem;
+    border-radius: 9px;
+}
+
+.session-container.compact .tbp-spacer,
+.session-container.compact .time-block-step {
+    width: 52px;
+}
+
+.session-container.compact .tbp-arrow-row {
+    gap: 5px;
+}
+
+.session-container.compact .tbp-edit-input {
+    width: calc(52px * 2 + 5px);
     height: 66px;
     font-size: 2.25rem;
     border-radius: 9px;
@@ -1056,6 +1077,11 @@
         margin-bottom: 18px;
     }
 
+    .session-container.compact .time-block-picker {
+        height: 225px;
+        gap: 8px;
+    }
+
     .session-container.compact .timer-progress,
     .session-container.compact .timer.preview .timer-progress {
         width: 230px;
@@ -1167,6 +1193,11 @@
     font-size: 4.5rem;
 }
 
+.session-container.compact.full-panel .time-block-picker {
+    height: 270px;
+    gap: 10px;
+}
+
 .session-container.compact.full-panel .square-timer {
     height: 270px;
     gap: 10px;
@@ -1178,6 +1209,22 @@
 
 .session-container.compact.full-panel .square-timer-digit {
     width: 84px;
+    height: 106px;
+    font-size: 3.5rem;
+    border-radius: 12px;
+}
+
+.session-container.compact.full-panel .tbp-spacer,
+.session-container.compact.full-panel .time-block-step {
+    width: 84px;
+}
+
+.session-container.compact.full-panel .tbp-arrow-row {
+    gap: 8px;
+}
+
+.session-container.compact.full-panel .tbp-edit-input {
+    width: calc(84px * 2 + 8px);
     height: 106px;
     font-size: 3.5rem;
     border-radius: 12px;

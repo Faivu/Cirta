@@ -189,9 +189,15 @@ export function SessionProvider({ children }) {
         }
     }, [status, strategy, sessionId, completionData]);
 
-    // Auto-complete when pomodoro time is up
+    // Reset targetMinutes to a sensible default when switching strategies
     useEffect(() => {
-        if (strategy !== 'pomodoro' || status !== 'running' || !sessionId || isAutoCompleting) return;
+        if (strategy === 'time_blocking') setTargetMinutes(60);
+        else if (strategy === 'pomodoro') setTargetMinutes(25);
+    }, [strategy]);
+
+    // Auto-complete when pomodoro or time_blocking time is up
+    useEffect(() => {
+        if ((strategy !== 'pomodoro' && strategy !== 'time_blocking') || status !== 'running' || !sessionId || isAutoCompleting) return;
 
         const targetSeconds = targetMinutes * 60;
         if (elapsedSeconds < targetSeconds) return;
@@ -238,7 +244,7 @@ export function SessionProvider({ children }) {
                 strategy,
                 customGoal: customGoal || null,
                 taskId: linkedTask?.id ?? null,
-                ...(strategy === 'pomodoro' && { targetDuration: targetMinutes }),
+                ...((strategy === 'pomodoro' || strategy === 'time_blocking') && { targetDuration: targetMinutes }),
             };
 
             const data = await apiCall('/api/session/start', 'POST', payload);
@@ -354,7 +360,7 @@ export function SessionProvider({ children }) {
                 strategy,
                 customGoal: customGoal || null,
                 taskId: linkedTask?.id ?? null,
-                ...(strategy === 'pomodoro' && { targetDuration: targetMinutes }),
+                ...((strategy === 'pomodoro' || strategy === 'time_blocking') && { targetDuration: targetMinutes }),
             };
 
             const data = await apiCall('/api/session/start', 'POST', payload);

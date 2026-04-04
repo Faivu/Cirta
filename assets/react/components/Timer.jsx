@@ -24,8 +24,9 @@ function Timer({ elapsedSeconds, remainingSeconds, mode, isPaused }) {
         return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     };
 
-    const hasCountdown = mode === 'pomodoro' || mode === 'break';
-    const isFlow = mode === 'flowtime' || mode === 'time_blocking';
+    const hasCountdown = mode === 'pomodoro' || mode === 'break' || mode === 'time_blocking';
+    const isFlow = mode === 'flowtime';
+    const isTimeBlocking = mode === 'time_blocking';
 
     // Calculate progress percentage for countdown modes
     const getProgress = () => {
@@ -48,11 +49,17 @@ function Timer({ elapsedSeconds, remainingSeconds, mode, isPaused }) {
     };
 
     if (isFlow) {
-        const squareColor = mode === 'time_blocking' ? '#a07040' : null;
-        const squareBg = mode === 'time_blocking' ? '#fdf5ee' : null;
         return (
-            <div className={`timer mode-${mode} ${isPaused ? 'paused' : ''}`}>
-                <SquareTimer chars={timeToChars(displayTime)} isPaused={isPaused} color={squareColor} bgColor={squareBg} />
+            <div className={`timer mode-flowtime ${isPaused ? 'paused' : ''}`}>
+                <SquareTimer chars={timeToChars(displayTime)} isPaused={isPaused} />
+            </div>
+        );
+    }
+
+    if (isTimeBlocking) {
+        return (
+            <div className={`timer mode-time_blocking ${isPaused ? 'paused' : ''}`}>
+                <SquareTimer chars={timeToChars(displayTime)} isPaused={isPaused} color="#a07040" bgColor="#fdf5ee" />
             </div>
         );
     }

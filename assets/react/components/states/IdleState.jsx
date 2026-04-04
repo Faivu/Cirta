@@ -5,6 +5,132 @@ import TimerPreview from '../TimerPreview';
 import StrategySelector from '../StrategySelector';
 import SquareTimer from '../SquareTimer';
 
+const TB_DIGIT_STYLE = { color: '#a07040', borderColor: '#a07040', background: '#fdf5ee' };
+const TB_SEP_STYLE   = { color: '#a07040' };
+
+const START_ACTIONS = {
+    pomodoro:      { label: 'Start Pomodoro',   btnClass: 'btn-pomodoro'  },
+    flowtime:      { label: 'Start Flowtime',    btnClass: 'btn-primary'   },
+    time_blocking: { label: 'Start Time Block',  btnClass: 'btn-timeblock' },
+};
+const BREAK_ACTION = { label: 'Start Break', btnClass: 'btn-success' };
+
+function getStartAction(strategy, pomodoroMode) {
+    if (strategy === 'pomodoro' && pomodoroMode !== 'pomodoro') return BREAK_ACTION;
+    return START_ACTIONS[strategy] ?? { label: 'Start Session', btnClass: 'btn-primary' };
+}
+
+function TimeBlockingPicker({ targetMinutes, onMinutesChange }) {
+    const hours = Math.floor(targetMinutes / 60);
+    const mins  = targetMinutes % 60;
+
+    const [editingH, setEditingH] = useState(false);
+    const [editingM, setEditingM] = useState(false);
+    const [hVal, setHVal] = useState('');
+    const [mVal, setMVal] = useState('');
+
+    const changeHours = (delta) => {
+        const h = Math.max(0, Math.min(23, hours + delta));
+        onMinutesChange(Math.max(1, h * 60 + mins));
+    };
+
+    const changeMins = (delta) => {
+        let m = mins + delta;
+        let h = hours;
+        if (m >= 60) { h = Math.min(23, h + 1); m -= 60; }
+        if (m < 0)   { if (h > 0) { h -= 1; m += 60; } else { m = 0; } }
+        onMinutesChange(Math.max(1, h * 60 + m));
+    };
+
+    const startEditH = () => { setHVal(String(hours)); setEditingH(true); };
+    const commitH = () => {
+        const h = Math.max(0, Math.min(23, parseInt(hVal, 10) || 0));
+        onMinutesChange(Math.max(1, h * 60 + mins));
+        setEditingH(false);
+    };
+
+    const startEditM = () => { setMVal(String(mins)); setEditingM(true); };
+    const commitM = () => {
+        const m = Math.max(0, Math.min(59, parseInt(mVal, 10) || 0));
+        onMinutesChange(Math.max(1, hours * 60 + m));
+        setEditingM(false);
+    };
+
+    const chevUp   = <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="18 15 12 9 6 15"/></svg>;
+    const chevDown = <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg>;
+
+    return (
+        <div className="time-block-picker">
+            {/* Hours group */}
+            <div className="tbp-group">
+                <div className="tbp-arrow-row" style={editingH ? {visibility:'hidden'} : undefined}>
+                    <div className="tbp-spacer" />
+                    <button type="button" className="time-block-step" onClick={() => changeHours(1)}>{chevUp}</button>
+                </div>
+                {editingH ? (
+                    <input
+                        type="number"
+                        className="tbp-edit-input"
+                        value={hVal}
+                        min="0" max="23"
+                        onChange={e => setHVal(e.target.value)}
+                        onBlur={commitH}
+                        onKeyDown={e => { if (e.key === 'Enter') commitH(); if (e.key === 'Escape') setEditingH(false); }}
+                        autoFocus
+                    />
+                ) : (
+                    <div className="square-timer-group tbp-clickable" onClick={startEditH}>
+                        <div className="square-timer-digit" style={TB_DIGIT_STYLE}>{Math.floor(hours / 10)}</div>
+                        <div className="square-timer-digit" style={TB_DIGIT_STYLE}>{hours % 10}</div>
+                    </div>
+                )}
+                <div className="tbp-arrow-row" style={editingH ? {visibility:'hidden'} : undefined}>
+                    <div className="tbp-spacer" />
+                    <button type="button" className="time-block-step" onClick={() => changeHours(-1)}>{chevDown}</button>
+                </div>
+                {!editingH && <span className="tbp-edit-hint">hrs</span>}
+            </div>
+
+            <span className="square-timer-separator" style={TB_SEP_STYLE}>:</span>
+
+            {/* Minutes group */}
+            <div className="tbp-group">
+                <div className="tbp-arrow-row" style={editingM ? {visibility:'hidden'} : undefined}>
+                    <div className="tbp-spacer" />
+                    <button type="button" className="time-block-step" onClick={() => changeMins(1)}>{chevUp}</button>
+                </div>
+                {editingM ? (
+                    <input
+                        type="number"
+                        className="tbp-edit-input"
+                        value={mVal}
+                        min="0" max="59"
+                        onChange={e => setMVal(e.target.value)}
+                        onBlur={commitM}
+                        onKeyDown={e => { if (e.key === 'Enter') commitM(); if (e.key === 'Escape') setEditingM(false); }}
+                        autoFocus
+                    />
+                ) : (
+                    <div className="square-timer-group tbp-clickable" onClick={startEditM}>
+                        <div className="square-timer-digit" style={TB_DIGIT_STYLE}>{Math.floor(mins / 10)}</div>
+                        <div className="square-timer-digit" style={TB_DIGIT_STYLE}>{mins % 10}</div>
+                    </div>
+                )}
+                <div className="tbp-arrow-row" style={editingM ? {visibility:'hidden'} : undefined}>
+                    <div className="tbp-spacer" />
+                    <button type="button" className="time-block-step" onClick={() => changeMins(-1)}>{chevDown}</button>
+                </div>
+                {!editingM && <span className="tbp-edit-hint">min</span>}
+            </div>
+        </div>
+    );
+}
+
+TimeBlockingPicker.propTypes = {
+    targetMinutes: PropTypes.number.isRequired,
+    onMinutesChange: PropTypes.func.isRequired,
+};
+
 function IdleState({
     strategy,
     pomodoroMode,
@@ -70,7 +196,7 @@ function IdleState({
                 <SquareTimer chars={['F','L','O','W']} idle />
             )}
             {strategy === 'time_blocking' && (
-                <SquareTimer chars={['B','L','O','C']} idle color="#a07040" bgColor="#fdf5ee" />
+                <TimeBlockingPicker targetMinutes={targetMinutes} onMinutesChange={onMinutesChange} />
             )}
 
             {(strategy !== 'pomodoro' || pomodoroMode === 'pomodoro') && (
@@ -115,13 +241,18 @@ function IdleState({
             )}
 
             <div className={`start-session-sticky${compact ? ' compact' : ''}`}>
-                <button
-                    className={`btn btn-large ${strategy === 'pomodoro' && pomodoroMode !== 'pomodoro' ? 'btn-success' : 'btn-primary'}`}
-                    onClick={onStart}
-                    disabled={loading}
-                >
-                    {loading ? 'Starting...' : (strategy === 'pomodoro' && pomodoroMode !== 'pomodoro' ? 'Start Break' : 'Start Session')}
-                </button>
+                {(() => {
+                    const { label, btnClass } = getStartAction(strategy, pomodoroMode);
+                    return (
+                        <button
+                            className={`btn btn-large ${btnClass}`}
+                            onClick={onStart}
+                            disabled={loading || (strategy === 'time_blocking' && targetMinutes < 1)}
+                        >
+                            {loading ? 'Starting...' : label}
+                        </button>
+                    );
+                })()}
             </div>
 
             <StrategySelector

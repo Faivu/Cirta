@@ -22,6 +22,14 @@
 - `PomodoroService` handles all Pomodoro business logic (only strategy fully implemented)
 - `SessionStrategy` interface exists but is only implemented by `PomodoroService` — Flowtime and TimeBlocking are handled inline in the controller (tech debt)
 
+## Feature Priorities
+1. Time Blocking redesign (high) — stepper input, end-time behavior TBD — see `project_time_blocking_redesign.md`
+2. FlowtimeService + TimeBlockingService refactor (high) — logic inline in controller
+3. "Change goal" mid-session (medium)
+4. Rename TopBar → MainBar (medium) — see `project_rename_topbar.md`
+5. Settings page (medium) — button exists, does nothing
+6. Two-tab bypass, double fetchTasks, task title drift (low)
+
 ## Logbook Summaries
 - See `feedback_logbook_summary.md` for the workflow
 - Last save point: `project_logbook_savepoint.md` — currently 2026-03-21

@@ -39,9 +39,9 @@ function TimerPreview({ mode, minutes, editable, onMinutesChange }) {
                             type="number"
                             className="timer-time-input"
                             value={minutes}
-                            onChange={(e) => onMinutesChange(Math.max(1, Math.min(120, parseInt(e.target.value) || 1)))}
+                            onChange={(e) => onMinutesChange(Math.max(1, Math.min(99, parseInt(e.target.value) || 1)))}
                             min="1"
-                            max="120"
+                            max="99"
                         />
                         <span className="timer-time-separator">:</span>
                         <span className="timer-time-seconds">00</span>
