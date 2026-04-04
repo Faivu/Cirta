@@ -405,6 +405,8 @@ export function SessionProvider({ children }) {
 
     const handleSkipBreak = () => {
         setBreakSeconds(0);
+        setBreakDuration(0);
+        setStatus(completionData ? 'completed' : 'idle');
     };
 
     const handleGoalFinished = () => {

@@ -48,6 +48,10 @@ node_modules/
 .serena/
 ###< Serena MCP ###
 
+###> Claude Code ###
+.claude/
+###< Claude Code ###
+
 ###> symfony/webpack-encore-bundle ###
 /node_modules/
 /public/build/
