@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import SessionApp from './SessionApp';
 import SessionHistory from './SessionHistory';
 import TodoList from './TodoList';
@@ -8,55 +8,99 @@ import ResizeHandle from './ResizeHandle';
 import { SessionProvider } from '../context/SessionContext';
 import { ToastProvider } from '../context/ToastContext';
 import ToastContainer from './ToastContainer';
+import { useLayoutStorage } from '../hooks/useLayoutStorage';
+import { useResize } from '../hooks/useResize';
 
-const MIN_PANEL_WIDTH = 280;
 const TOPBAR_WIDTH = 60;
 const DEFAULT_SIDEBAR_WIDTH = 320;
 const LAYOUT_STORAGE_KEY = 'cirta_layout';
 
-function loadLayout() {
-    try {
-        const saved = localStorage.getItem(LAYOUT_STORAGE_KEY);
-        if (saved) return JSON.parse(saved);
-    } catch {}
-    return null;
+const LAYOUT_DEFAULTS = {
+    primaryPanel: 'session',
+    secondaryPanel: 'calendar',
+    isPrimaryLeft: true,
+    sidebarTab: 'timer',
+    todoTab: 'tasks',
+    taskFilter: 'today',
+    sidebarWidth: DEFAULT_SIDEBAR_WIDTH,
+};
+
+function PanelContent({ panelId, sidebarTab, setSidebarTab, todoTab, setTodoTab, taskFilter, setTaskFilter, fullPanel }) {
+    switch (panelId) {
+        case 'session':
+            return (
+                <>
+                    <div className="sidebar-tabs">
+                        <button
+                            className={`sidebar-tab ${sidebarTab === 'timer' ? 'active' : ''}`}
+                            onClick={() => setSidebarTab('timer')}
+                        >
+                            Timer
+                        </button>
+                        <button
+                            className={`sidebar-tab ${sidebarTab === 'history' ? 'active' : ''}`}
+                            onClick={() => setSidebarTab('history')}
+                        >
+                            History
+                        </button>
+                    </div>
+                    <div className="sidebar-content">
+                        {sidebarTab === 'timer' ? (
+                            <SessionApp compact={true} fullPanel={fullPanel} />
+                        ) : (
+                            <SessionHistory />
+                        )}
+                    </div>
+                </>
+            );
+        case 'todo':
+            return (
+                <>
+                    <div className="sidebar-tabs">
+                        <button
+                            className={`sidebar-tab ${todoTab === 'tasks' ? 'active' : ''}`}
+                            onClick={() => setTodoTab('tasks')}
+                        >
+                            Tasks
+                        </button>
+                        <button
+                            className={`sidebar-tab ${todoTab === 'history' ? 'active' : ''}`}
+                            onClick={() => setTodoTab('history')}
+                        >
+                            History
+                        </button>
+                    </div>
+                    <div className="sidebar-content todo-sidebar-content">
+                        <TodoList view={todoTab} filter={taskFilter} onFilterChange={setTaskFilter} />
+                    </div>
+                </>
+            );
+        case 'calendar':
+            return <Calendar />;
+        default:
+            return null;
+    }
 }
 
 function DashboardLayout() {
-    const saved = loadLayout();
-    const get = (key, defaultValue) => (saved && key in saved) ? saved[key] : defaultValue;
+    const [layout, setField] = useLayoutStorage(LAYOUT_STORAGE_KEY, LAYOUT_DEFAULTS);
+    const { primaryPanel, secondaryPanel, isPrimaryLeft, sidebarTab, todoTab, taskFilter, sidebarWidth } = layout;
 
-    const [primaryPanel, setPrimaryPanel] = useState(get('primaryPanel', 'session'));
-    const [secondaryPanel, setSecondaryPanel] = useState(get('secondaryPanel', 'calendar'));
-    const [isPrimaryLeft, setIsPrimaryLeft] = useState(get('isPrimaryLeft', true));
+    const setPrimaryPanel   = setField('primaryPanel');
+    const setSecondaryPanel = setField('secondaryPanel');
+    const setIsPrimaryLeft  = setField('isPrimaryLeft');
+    const setSidebarTab     = setField('sidebarTab');
+    const setTodoTab        = setField('todoTab');
+    const setTaskFilter     = setField('taskFilter');
+    const setSidebarWidth   = setField('sidebarWidth');
 
-    const [sidebarTab, setSidebarTab] = useState(get('sidebarTab', 'timer'));
-    const [todoTab, setTodoTab] = useState(get('todoTab', 'tasks'));
-    const [taskFilter, setTaskFilter] = useState(get('taskFilter', 'today'));
-
-    const [sidebarWidth, setSidebarWidth] = useState(get('sidebarWidth', DEFAULT_SIDEBAR_WIDTH));
-    const dragRef = useRef(null);
-
-    useEffect(() => {
-        try {
-            localStorage.setItem(LAYOUT_STORAGE_KEY, JSON.stringify({
-                primaryPanel,
-                secondaryPanel,
-                isPrimaryLeft,
-                sidebarTab,
-                todoTab,
-                taskFilter,
-                sidebarWidth,
-            }));
-        } catch {}
-    }, [primaryPanel, secondaryPanel, isPrimaryLeft, sidebarTab, todoTab, taskFilter, sidebarWidth]);
+    const { handleDragStart, handleDrag } = useResize(sidebarWidth, setSidebarWidth);
 
     // Derived layout
     const leftPanel  = isPrimaryLeft ? primaryPanel  : secondaryPanel;
     const rightPanel = isPrimaryLeft ? secondaryPanel : primaryPanel;
     const panels = [leftPanel, rightPanel].filter(Boolean);
 
-    // --- Panel toggle (clicking icons below the slot) ---
     const handleTogglePanel = (panelId) => {
         if (panelId === primaryPanel) return;
         if (primaryPanel) {
@@ -66,7 +110,6 @@ function DashboardLayout() {
         }
     };
 
-    // --- Drag into primary slot ---
     const handleSetPrimary = (panelId) => {
         if (panelId === primaryPanel) return;
         setPrimaryPanel(panelId);
@@ -78,86 +121,15 @@ function DashboardLayout() {
         setIsPrimaryLeft(true);
     };
 
-    // --- Drag out of primary slot ---
     const handleRemoveFromSlot = () => {
         setSecondaryPanel(primaryPanel);
         setPrimaryPanel(null);
     };
 
-    // --- Swap panel positions ---
     const handleSwap = () => {
         if (primaryPanel && secondaryPanel) {
             setIsPrimaryLeft(prev => !prev);
             setSidebarWidth(window.innerWidth - TOPBAR_WIDTH - sidebarWidth);
-        }
-    };
-
-    // --- Resize ---
-    const handleDragStart = (startX) => {
-        dragRef.current = { startX, startWidth: sidebarWidth };
-    };
-
-    const handleDrag = (currentX) => {
-        const delta = currentX - dragRef.current.startX;
-        const maxWidth = window.innerWidth - TOPBAR_WIDTH - MIN_PANEL_WIDTH;
-        const newWidth = Math.max(MIN_PANEL_WIDTH, Math.min(dragRef.current.startWidth + delta, maxWidth));
-        setSidebarWidth(newWidth);
-    };
-
-    const renderPanelContent = (panelId) => {
-        switch (panelId) {
-            case 'session':
-                return (
-                    <>
-                        <div className="sidebar-tabs">
-                            <button
-                                className={`sidebar-tab ${sidebarTab === 'timer' ? 'active' : ''}`}
-                                onClick={() => setSidebarTab('timer')}
-                            >
-                                Timer
-                            </button>
-                            <button
-                                className={`sidebar-tab ${sidebarTab === 'history' ? 'active' : ''}`}
-                                onClick={() => setSidebarTab('history')}
-                            >
-                                History
-                            </button>
-                        </div>
-                        <div className="sidebar-content">
-                            {sidebarTab === 'timer' ? (
-                                <SessionApp compact={true} fullPanel={panels.length === 1} />
-                            ) : (
-                                <SessionHistory />
-                            )}
-                        </div>
-                    </>
-                );
-            case 'todo':
-                return (
-                    <>
-                        <div className="sidebar-tabs">
-                            <button
-                                className={`sidebar-tab ${todoTab === 'tasks' ? 'active' : ''}`}
-                                onClick={() => setTodoTab('tasks')}
-                            >
-                                Tasks
-                            </button>
-                            <button
-                                className={`sidebar-tab ${todoTab === 'history' ? 'active' : ''}`}
-                                onClick={() => setTodoTab('history')}
-                            >
-                                History
-                            </button>
-                        </div>
-                        <div className="sidebar-content todo-sidebar-content">
-                            <TodoList view={todoTab} filter={taskFilter} onFilterChange={setTaskFilter} />
-                        </div>
-                    </>
-                );
-            case 'calendar':
-                return <Calendar />;
-            default:
-                return null;
         }
     };
 
@@ -195,7 +167,16 @@ function DashboardLayout() {
                                     />
                                 )}
                                 <div className={panelClass} style={style}>
-                                    {renderPanelContent(panelId)}
+                                    <PanelContent
+                                        panelId={panelId}
+                                        sidebarTab={sidebarTab}
+                                        setSidebarTab={setSidebarTab}
+                                        todoTab={todoTab}
+                                        setTodoTab={setTodoTab}
+                                        taskFilter={taskFilter}
+                                        setTaskFilter={setTaskFilter}
+                                        fullPanel={panels.length === 1}
+                                    />
                                 </div>
                             </React.Fragment>
                         );
