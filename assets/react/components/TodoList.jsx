@@ -527,16 +527,16 @@ function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
             {view === 'tasks' && (
                 <div className="history-filter">
                     <button
-                        className={`history-filter-btn ${filter === 'all' ? 'active' : ''}`}
-                        onClick={() => onFilterChange('all')}
-                    >
-                        All
-                    </button>
-                    <button
                         className={`history-filter-btn ${filter === 'today' ? 'active' : ''}`}
                         onClick={() => onFilterChange('today')}
                     >
                         Today
+                    </button>
+                    <button
+                        className={`history-filter-btn ${filter === 'all' ? 'active' : ''}`}
+                        onClick={() => onFilterChange('all')}
+                    >
+                        All
                     </button>
                 </div>
             )}

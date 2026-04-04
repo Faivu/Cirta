@@ -34,7 +34,7 @@ function DashboardLayout() {
     const [todoFullscreen, setTodoFullscreen] = useState(false);
     const [sidebarTab, setSidebarTab] = useState(get('sidebarTab', 'timer'));
     const [todoTab, setTodoTab] = useState(get('todoTab', 'tasks'));
-    const [taskFilter, setTaskFilter] = useState(get('taskFilter', 'all'));
+    const [taskFilter, setTaskFilter] = useState(get('taskFilter', 'today'));
 
     const [sidebarWidth, setSidebarWidth] = useState(get('sidebarWidth', DEFAULT_SIDEBAR_WIDTH));
     const dragRef = useRef(null);
