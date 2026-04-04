@@ -109,7 +109,9 @@ class FlowtimeService implements SessionStrategy
         $session->setEndedAt(new \DateTime());
         $session->interrupt();
 
-        if ($session->getStartedAt() !== null) {
+        if ($actualDuration !== null) {
+            $session->setActualDuration($actualDuration);
+        } elseif ($session->getStartedAt() !== null) {
             $interval = $session->getStartedAt()->diff($session->getEndedAt());
             $session->setActualDuration(($interval->days * 24 * 60) + ($interval->h * 60) + $interval->i);
         }
