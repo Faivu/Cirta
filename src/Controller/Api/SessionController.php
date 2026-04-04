@@ -8,6 +8,7 @@ use App\Entity\Pomodoro;
 use App\Entity\Session;
 use App\Entity\Task;
 use App\Entity\TimeBlocking;
+use App\Repository\SessionRepository;
 use App\Service\SessionStrategy;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,6 +23,7 @@ final class SessionController extends AbstractController
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
+        private SessionRepository $sessionRepository,
         private ServiceLocator $strategies,
     ) {}
 
@@ -45,74 +47,26 @@ final class SessionController extends AbstractController
     public function history(Request $request): JsonResponse
     {
         $user = $this->getUser();
-        assert($user instanceof \App\Entity\User);
         if (!$user) {
             return $this->json(['error' => 'Not authenticated'], Response::HTTP_UNAUTHORIZED);
         }
 
-        $page = max(1, $request->query->getInt('page', 1));
+        $page  = max(1, $request->query->getInt('page', 1));
         $limit = min(50, max(1, $request->query->getInt('limit', 20)));
-        $offset = ($page - 1) * $limit;
 
-        $qb = $this->entityManager->getRepository(Session::class)->createQueryBuilder('s');
-        $qb->where('s.user = :user')
-            ->andWhere('s.status IN (:statuses)')
-            ->setParameter('user', $user->getId(), 'uuid')
-            ->setParameter('statuses', [Session::STATUS_COMPLETED, Session::STATUS_INTERRUPTED])
-            ->orderBy('s.startedAt', 'DESC')
-            ->setFirstResult($offset)
-            ->setMaxResults($limit);
-
-        $since = $request->query->get('since');
-        if ($since) {
-            $sinceDate = new \DateTime($since);
-            $qb->andWhere('s.startedAt >= :since')
-                ->setParameter('since', $sinceDate);
+        $since = null;
+        if ($sinceRaw = $request->query->get('since')) {
+            $since = new \DateTime($sinceRaw);
         }
 
-        $sessions = $qb->getQuery()->getResult();
-
-        $countQb = $this->entityManager->getRepository(Session::class)->createQueryBuilder('s');
-        $countQb->select('COUNT(s.id)')
-            ->where('s.user = :user')
-            ->andWhere('s.status IN (:statuses)')
-            ->setParameter('user', $user->getId(), 'uuid')
-            ->setParameter('statuses', [Session::STATUS_COMPLETED, Session::STATUS_INTERRUPTED]);
-
-        if ($since) {
-            $countQb->andWhere('s.startedAt >= :since')
-                ->setParameter('since', $sinceDate);
-        }
-        $total = (int) $countQb->getQuery()->getSingleScalarResult();
-
-        $data = array_map(function (Session $session) {
-            $item = [
-                'id' => $session->getId(),
-                'type' => match (true) {
-                    $session instanceof Pomodoro => 'pomodoro',
-                    $session instanceof Flowtime => 'flowtime',
-                    $session instanceof TimeBlocking => 'time_blocking',
-                    default => 'unknown',
-                },
-                'status' => $session->getStatus(),
-                'customGoal' => $session->getCustomGoal(),
-                'startedAt' => $session->getStartedAt()?->format('c'),
-                'endedAt' => $session->getEndedAt()?->format('c'),
-                'actualDuration' => $session->getActualDuration(),
-            ];
-
-            if ($session instanceof Pomodoro) {
-                $item['targetDuration'] = $session->getTargetDuration();
-            }
-
-            return $item;
-        }, $sessions);
+        $sessions = $this->sessionRepository->findHistoryPage($user, ($page - 1) * $limit, $limit, $since);
+        $total    = $this->sessionRepository->countHistory($user, $since);
 
         return $this->json([
-            'sessions' => $data,
-            'total' => $total,
-            'page' => $page,
-            'pages' => (int) ceil($total / $limit),
+            'sessions' => array_map($this->serializeSession(...), $sessions),
+            'total'    => $total,
+            'page'     => $page,
+            'pages'    => (int) ceil($total / $limit),
         ]);
     }
 
@@ -127,7 +81,7 @@ final class SessionController extends AbstractController
             return $this->json(['error' => 'Not authenticated'], Response::HTTP_UNAUTHORIZED);
         }
 
-        $data = json_decode($request->getContent(), true);
+        $data        = json_decode($request->getContent(), true);
         $strategyKey = $data['strategy'] ?? null;
 
         if (!$strategyKey || !$this->strategies->has($strategyKey)) {
@@ -135,7 +89,7 @@ final class SessionController extends AbstractController
         }
 
         $event = null;
-        $task = null;
+        $task  = null;
 
         if (!empty($data['eventId'])) {
             $event = $this->entityManager->getRepository(Event::class)->find($data['eventId']);
@@ -151,14 +105,17 @@ final class SessionController extends AbstractController
             }
         }
 
-        $targetDuration = isset($data['targetDuration']) ? (int) $data['targetDuration'] : null;
-        $customGoal = $data['customGoal'] ?? null;
-
-        $session = $this->strategies->get($strategyKey)->startSession($user, $customGoal, $task, $event, $targetDuration);
+        $session = $this->strategies->get($strategyKey)->startSession(
+            $user,
+            $data['customGoal'] ?? null,
+            $task,
+            $event,
+            isset($data['targetDuration']) ? (int) $data['targetDuration'] : null
+        );
 
         return $this->json([
-            'id' => $session->getId(),
-            'status' => $session->getStatus(),
+            'id'        => $session->getId(),
+            'status'    => $session->getStatus(),
             'startedAt' => $session->getStartedAt()?->format('c'),
         ], Response::HTTP_CREATED);
     }
@@ -177,9 +134,9 @@ final class SessionController extends AbstractController
         $newSession = $this->strategyForSession($session)->continueSession($session);
 
         $response = [
-            'id' => $newSession->getId(),
-            'status' => $newSession->getStatus(),
-            'startedAt' => $newSession->getStartedAt()?->format('c'),
+            'id'         => $newSession->getId(),
+            'status'     => $newSession->getStatus(),
+            'startedAt'  => $newSession->getStartedAt()?->format('c'),
             'customGoal' => $newSession->getCustomGoal(),
         ];
 
@@ -204,7 +161,7 @@ final class SessionController extends AbstractController
         $this->strategyForSession($session)->pauseSession($session);
 
         return $this->json([
-            'id' => $session->getId(),
+            'id'     => $session->getId(),
             'status' => $session->getStatus(),
         ]);
     }
@@ -223,7 +180,7 @@ final class SessionController extends AbstractController
         $this->strategyForSession($session)->resumeSession($session);
 
         return $this->json([
-            'id' => $session->getId(),
+            'id'     => $session->getId(),
             'status' => $session->getStatus(),
         ]);
     }
@@ -239,7 +196,7 @@ final class SessionController extends AbstractController
             return $session;
         }
 
-        $data = json_decode($request->getContent(), true) ?? [];
+        $data           = json_decode($request->getContent(), true) ?? [];
         $actualDuration = isset($data['actualDuration']) ? (int) $data['actualDuration'] : null;
 
         $this->strategyForSession($session)->endSession($session, $actualDuration);
@@ -250,8 +207,8 @@ final class SessionController extends AbstractController
         }
 
         $response = [
-            'id' => $session->getId(),
-            'status' => $session->getStatus(),
+            'id'             => $session->getId(),
+            'status'         => $session->getStatus(),
             'actualDuration' => $session->getActualDuration(),
         ];
 
@@ -275,7 +232,7 @@ final class SessionController extends AbstractController
             return $session;
         }
 
-        $data = json_decode($request->getContent(), true) ?? [];
+        $data           = json_decode($request->getContent(), true) ?? [];
         $actualDuration = isset($data['actualDuration']) ? (int) $data['actualDuration'] : null;
 
         $this->strategyForSession($session)->interruptSession($session, $actualDuration);
@@ -285,8 +242,8 @@ final class SessionController extends AbstractController
         }
 
         return $this->json([
-            'id' => $session->getId(),
-            'status' => $session->getStatus(),
+            'id'             => $session->getId(),
+            'status'         => $session->getStatus(),
             'actualDuration' => $session->getActualDuration(),
         ]);
     }
@@ -302,28 +259,38 @@ final class SessionController extends AbstractController
             return $session;
         }
 
-        $response = [
-            'id' => $session->getId(),
-            'status' => $session->getStatus(),
-            'customGoal' => $session->getCustomGoal(),
-            'startedAt' => $session->getStartedAt()?->format('c'),
-            'endedAt' => $session->getEndedAt()?->format('c'),
+        return $this->json($this->serializeSession($session));
+    }
+
+    /**
+     * Serialize a session to an array for API responses
+     */
+    private function serializeSession(Session $session): array
+    {
+        $data = [
+            'id'             => $session->getId(),
+            'type'           => match (true) {
+                $session instanceof Pomodoro     => 'pomodoro',
+                $session instanceof Flowtime     => 'flowtime',
+                $session instanceof TimeBlocking => 'time_blocking',
+                default                          => 'unknown',
+            },
+            'status'         => $session->getStatus(),
+            'customGoal'     => $session->getCustomGoal(),
+            'startedAt'      => $session->getStartedAt()?->format('c'),
+            'endedAt'        => $session->getEndedAt()?->format('c'),
             'actualDuration' => $session->getActualDuration(),
         ];
 
         if ($session instanceof Pomodoro) {
-            $response['type'] = 'pomodoro';
-            $response['targetDuration'] = $session->getTargetDuration();
-            $response['breakDuration'] = $session->getBreakDuration();
-            $response['breakTaken'] = $session->getBreakTaken();
+            $data['targetDuration'] = $session->getTargetDuration();
+            $data['breakDuration']  = $session->getBreakDuration();
+            $data['breakTaken']     = $session->getBreakTaken();
         } elseif ($session instanceof Flowtime) {
-            $response['type'] = 'flowtime';
-            $response['suggestedBreakDuration'] = $session->getSuggestedBreakDuration();
-        } else {
-            $response['type'] = 'time_blocking';
+            $data['suggestedBreakDuration'] = $session->getSuggestedBreakDuration();
         }
 
-        return $this->json($response);
+        return $data;
     }
 
     /**
@@ -332,8 +299,8 @@ final class SessionController extends AbstractController
     private function strategyForSession(Session $session): SessionStrategy
     {
         $key = match (true) {
-            $session instanceof Pomodoro => 'pomodoro',
-            $session instanceof Flowtime => 'flowtime',
+            $session instanceof Pomodoro     => 'pomodoro',
+            $session instanceof Flowtime     => 'flowtime',
             $session instanceof TimeBlocking => 'time_blocking',
         };
 
@@ -350,7 +317,7 @@ final class SessionController extends AbstractController
             return $this->json(['error' => 'Not authenticated'], Response::HTTP_UNAUTHORIZED);
         }
 
-        $session = $this->entityManager->getRepository(Session::class)->find($id);
+        $session = $this->sessionRepository->find($id);
 
         if (!$session) {
             return $this->json(['error' => 'Session not found'], Response::HTTP_NOT_FOUND);

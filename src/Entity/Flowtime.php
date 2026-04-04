@@ -70,22 +70,4 @@ class Flowtime extends Session
         return $this;
     }
 
-    /**
-     * Get elapsed working time in minutes (for real-time display)
-     */
-    public function getElapsedTime(): int
-    {
-        if ($this->startedAt === null) {
-            return 0;
-        }
-
-        if ($this->endedAt !== null) {
-            return $this->actualDuration ?? 0;
-        }
-
-        $now = new \DateTime();
-        $interval = $this->startedAt->diff($now);
-
-        return ($interval->days * 24 * 60) + ($interval->h * 60) + $interval->i;
-    }
 }

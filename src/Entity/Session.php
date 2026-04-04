@@ -2,10 +2,11 @@
 
 namespace App\Entity;
 
+use App\Repository\SessionRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: SessionRepository::class)]
 #[ORM\InheritanceType('JOINED')]
 #[ORM\DiscriminatorColumn(name: 'type', type: 'string')]
 #[ORM\DiscriminatorMap([
@@ -20,6 +21,8 @@ abstract class Session extends BaseEntity
     public const STATUS_PAUSED = 'paused';
     public const STATUS_COMPLETED = 'completed';
     public const STATUS_INTERRUPTED = 'interrupted';
+
+    public const MIN_DURATION = 1;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
@@ -234,5 +237,21 @@ abstract class Session extends BaseEntity
     public function isInterrupted(): bool
     {
         return $this->status === self::STATUS_INTERRUPTED;
+    }
+
+    public function getElapsedTime(): int
+    {
+        if ($this->startedAt === null) {
+            return 0;
+        }
+
+        if ($this->endedAt !== null) {
+            return $this->actualDuration ?? 0;
+        }
+
+        $now = new \DateTime();
+        $interval = $this->startedAt->diff($now);
+
+        return ($interval->days * 24 * 60) + ($interval->h * 60) + $interval->i;
     }
 }

@@ -12,7 +12,6 @@ use Doctrine\ORM\EntityManagerInterface;
 class PomodoroService implements SessionStrategy
 {
     private const DEFAULT_DURATION = 25;
-    private const MIN_DURATION = 1;
     private const SHORT_BREAK = 5;
     private const LONG_BREAK = 15;
     private const POMODOROS_BEFORE_LONG_BREAK = 4;
@@ -98,7 +97,7 @@ class PomodoroService implements SessionStrategy
         }
 
         // Don't save sessions with less than minimum duration
-        if ($actualDuration < self::MIN_DURATION) {
+        if ($actualDuration < Session::MIN_DURATION) {
             $this->entityManager->remove($session);
             $this->entityManager->flush();
             return;
@@ -131,7 +130,7 @@ class PomodoroService implements SessionStrategy
         }
 
         // If duration provided and less than minimum, delete instead of saving
-        if ($actualDuration !== null && $actualDuration < self::MIN_DURATION) {
+        if ($actualDuration !== null && $actualDuration < Session::MIN_DURATION) {
             $this->entityManager->remove($session);
             $this->entityManager->flush();
             return;
