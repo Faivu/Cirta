@@ -26,11 +26,6 @@ class Pomodoro extends Session
     #[ORM\Column]
     private int $breakDuration = 5;
 
-    /**
-     * Actual break taken in minutes (null if not yet taken or skipped)
-     */
-    #[ORM\Column(nullable: true)]
-    private ?int $breakTaken = null;
 
     public function getTargetDuration(): int
     {
@@ -64,18 +59,6 @@ class Pomodoro extends Session
     public function setBreakDuration(int $breakDuration): static
     {
         $this->breakDuration = $breakDuration;
-
-        return $this;
-    }
-
-    public function getBreakTaken(): ?int
-    {
-        return $this->breakTaken;
-    }
-
-    public function setBreakTaken(?int $breakTaken): static
-    {
-        $this->breakTaken = $breakTaken;
 
         return $this;
     }

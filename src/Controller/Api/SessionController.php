@@ -281,12 +281,12 @@ final class SessionController extends AbstractController
             'endedAt'        => $session->getEndedAt()?->format('c'),
             'actualDuration' => $session->getActualDuration(),
             'pauseCount'     => $session->getPauseCount(),
+            'breakAfter'     => $session->getBreakAfter(),
         ];
 
         if ($session instanceof Pomodoro) {
             $data['targetDuration'] = $session->getTargetDuration();
             $data['breakDuration']  = $session->getBreakDuration();
-            $data['breakTaken']     = $session->getBreakTaken();
         } elseif ($session instanceof Flowtime) {
             $data['suggestedBreakDuration'] = $session->getSuggestedBreakDuration();
         }

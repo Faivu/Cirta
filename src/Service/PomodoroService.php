@@ -155,9 +155,9 @@ class PomodoroService implements SessionStrategy
     /**
      * Record actual break taken
      */
-    public function recordBreak(Pomodoro $pomodoro, int $breakTaken): void
+    public function recordBreak(Pomodoro $pomodoro, int $breakAfter): void
     {
-        $pomodoro->setBreakTaken($breakTaken);
+        $pomodoro->setBreakAfter($breakAfter);
         $this->entityManager->flush();
     }
 
