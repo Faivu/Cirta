@@ -81,6 +81,12 @@ class FlowtimeService implements SessionStrategy
             }
         }
 
+        // Use the frontend-provided duration (excludes pause time) if available.
+        // Session::end() would recalculate from wall-clock, which includes pauses.
+        if ($actualDuration !== null) {
+            $session->setActualDuration($actualDuration);
+        }
+
         $session->end();
         $this->entityManager->flush();
     }

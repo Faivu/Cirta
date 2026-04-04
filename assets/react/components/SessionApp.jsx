@@ -46,6 +46,7 @@ function SessionApp({ compact = false, fullPanel = false, onFullscreen = null })
         getRemainingSeconds,
         dismissError,
         closeConfirmModal,
+        flowPauseSeconds,
     } = useSession();
 
     const goalInputRef = useRef(null);
@@ -119,6 +120,7 @@ function SessionApp({ compact = false, fullPanel = false, onFullscreen = null })
                     remainingSeconds={getRemainingSeconds()}
                     customGoal={customGoal}
                     loading={loading}
+                    flowPauseSeconds={flowPauseSeconds}
                     onModeChange={handleModeChange}
                     onPause={handlePause}
                     onResume={handleResume}

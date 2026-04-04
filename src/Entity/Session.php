@@ -206,9 +206,10 @@ abstract class Session extends BaseEntity
         $this->endedAt = new \DateTime();
         $this->status = self::STATUS_COMPLETED;
 
-        if ($this->startedAt !== null) {
+        // Only calculate from wall-clock if no accurate duration was pre-set
+        // (pre-set value comes from frontend and excludes pause time)
+        if ($this->actualDuration === null && $this->startedAt !== null) {
             $interval = $this->startedAt->diff($this->endedAt);
-            // Convert to total minutes
             $this->actualDuration = ($interval->days * 24 * 60) + ($interval->h * 60) + $interval->i;
         }
 

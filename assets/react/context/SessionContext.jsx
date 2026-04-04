@@ -112,6 +112,10 @@ export function SessionProvider({ children }) {
     const breakStartRef = useRef(null); //When the break starts
     const breakInitialRef = useRef(0); // how much to last when started
 
+    // Flowtime pause tracking
+    const [flowPauseSeconds, setFlowPauseSeconds] = useState(0); // live counter for current pause
+    const flowPauseStartRef = useRef(null);
+
     // Timer tick effect
     useEffect(() => {
         if (status !== 'running') return;
@@ -169,6 +173,31 @@ export function SessionProvider({ children }) {
             document.removeEventListener('visibilitychange', onVisibilityChange);
         };
     }, [status]);
+
+    // Flowtime pause counter — live ticker shown to user while paused
+    useEffect(() => {
+        if (status !== 'paused' || strategy !== 'flowtime') {
+            setFlowPauseSeconds(0);
+            flowPauseStartRef.current = null;
+            return;
+        }
+
+        flowPauseStartRef.current = Date.now();
+
+        const tick = () => {
+            const elapsed = Math.floor((Date.now() - flowPauseStartRef.current) / 1000);
+            setFlowPauseSeconds(elapsed);
+        };
+
+        const interval = setInterval(tick, 500);
+        const onVisibilityChange = () => { if (document.visibilityState === 'visible') tick(); };
+        document.addEventListener('visibilitychange', onVisibilityChange);
+
+        return () => {
+            clearInterval(interval);
+            document.removeEventListener('visibilitychange', onVisibilityChange);
+        };
+    }, [status, strategy]);
 
     // Reset to pomodoro mode when break finishes
     useEffect(() => {
@@ -251,6 +280,7 @@ export function SessionProvider({ children }) {
             setSessionId(data.id);
             setStatus('running');
             setElapsedSeconds(0);
+            setFlowPauseSeconds(0);
         } catch (err) {
             setError(err.message);
         } finally {
@@ -296,9 +326,15 @@ export function SessionProvider({ children }) {
             setCompletionData(data);
 
             if (strategy === 'flowtime' && data.suggestedBreakDuration) {
-                setBreakDuration(data.suggestedBreakDuration);
-                setBreakSeconds(data.suggestedBreakDuration * 60);
-                setStatus('break');
+                const earnedSeconds = Math.max(0, data.suggestedBreakDuration * 60 - flowPauseSeconds);
+                if (earnedSeconds > 0) {
+                    setBreakDuration(Math.round(earnedSeconds / 60));
+                    setBreakSeconds(earnedSeconds);
+                    setStatus('break');
+                } else {
+                    setBreakDuration(0);
+                    setStatus('completed');
+                }
             } else {
                 setBreakDuration(data.breakDuration || 0);
                 setStatus('completed');
@@ -325,9 +361,15 @@ export function SessionProvider({ children }) {
             setCompletionData(data);
 
             if (strategy === 'flowtime' && data.suggestedBreakDuration) {
-                setBreakDuration(data.suggestedBreakDuration);
-                setBreakSeconds(data.suggestedBreakDuration * 60);
-                setStatus('break');
+                const earnedSeconds = Math.max(0, data.suggestedBreakDuration * 60 - flowPauseSeconds);
+                if (earnedSeconds > 0) {
+                    setBreakDuration(Math.round(earnedSeconds / 60));
+                    setBreakSeconds(earnedSeconds);
+                    setStatus('break');
+                } else {
+                    setBreakDuration(0);
+                    setStatus('completed');
+                }
             } else {
                 setStatus('completed');
             }
@@ -476,6 +518,7 @@ export function SessionProvider({ children }) {
         linkedTask,
         setLinkedTask,
         taskDoneSignal,
+        flowPauseSeconds,
         sessionEndSignal,
         handleMarkTaskDone,
 
