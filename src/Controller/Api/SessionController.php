@@ -280,6 +280,7 @@ final class SessionController extends AbstractController
             'startedAt'      => $session->getStartedAt()?->format('c'),
             'endedAt'        => $session->getEndedAt()?->format('c'),
             'actualDuration' => $session->getActualDuration(),
+            'pauseCount'     => $session->getPauseCount(),
         ];
 
         if ($session instanceof Pomodoro) {

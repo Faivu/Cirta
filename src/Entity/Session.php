@@ -54,6 +54,12 @@ abstract class Session extends BaseEntity
     #[ORM\Column(nullable: true)]
     protected ?int $actualDuration = null;
 
+    /**
+     * Number of times the session was paused
+     */
+    #[ORM\Column]
+    protected int $pauseCount = 0;
+
     public function getUser(): ?User
     {
         return $this->user;
@@ -156,12 +162,18 @@ abstract class Session extends BaseEntity
         return $this;
     }
 
+    public function getPauseCount(): int
+    {
+        return $this->pauseCount;
+    }
+
     /**
      * Pause the session
      */
     public function pause(): static
     {
         if ($this->status === self::STATUS_IN_PROGRESS) {
+            $this->pauseCount++;
             $this->status = self::STATUS_PAUSED;
         }
 

@@ -21,12 +21,6 @@ class Pomodoro extends Session
     private int $pauseDuration = 0;
 
     /**
-     * Number of times the session was paused
-     */
-    #[ORM\Column]
-    private int $pauseCount = 0;
-
-    /**
      * Suggested break duration in minutes (5 for short, 15 for long break)
      */
     #[ORM\Column]
@@ -62,18 +56,6 @@ class Pomodoro extends Session
         return $this;
     }
 
-    public function getPauseCount(): int
-    {
-        return $this->pauseCount;
-    }
-
-    public function setPauseCount(int $pauseCount): static
-    {
-        $this->pauseCount = $pauseCount;
-
-        return $this;
-    }
-
     public function getBreakDuration(): int
     {
         return $this->breakDuration;
@@ -94,41 +76,6 @@ class Pomodoro extends Session
     public function setBreakTaken(?int $breakTaken): static
     {
         $this->breakTaken = $breakTaken;
-
-        return $this;
-    }
-
-    /**
-     * Pause the Pomodoro session
-     */
-    public function pause(): static
-    {
-        if ($this->status === self::STATUS_IN_PROGRESS) {
-            $this->pauseCount++;
-            $this->status = self::STATUS_PAUSED;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Resume the Pomodoro session from pause
-     */
-    public function resume(): static
-    {
-        if ($this->status === self::STATUS_PAUSED) {
-            $this->status = self::STATUS_IN_PROGRESS;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Interrupt/cancel the Pomodoro session before completion
-     */
-    public function interrupt(): static
-    {
-        $this->status = self::STATUS_INTERRUPTED;
 
         return $this;
     }
