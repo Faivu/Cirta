@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar';
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
@@ -6,18 +6,14 @@ import { format, parse, startOfWeek, getDay } from 'date-fns';
 import enUS from 'date-fns/locale/en-US';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
+import { useSettings } from '../context/SettingsContext';
 
-const locales = {
-    'en-US': enUS,
+const locales = { 'en-US': enUS };
+
+const WEEK_START_MAP = {
+    sunday: 0, monday: 1, tuesday: 2, wednesday: 3,
+    thursday: 4, friday: 5, saturday: 6,
 };
-
-const localizer = dateFnsLocalizer({
-    format,
-    parse,
-    startOfWeek,
-    getDay,
-    locales,
-});
 
 const DnDCalendar = withDragAndDrop(BigCalendar);
 
@@ -74,11 +70,13 @@ CustomToolbar.propTypes = {
  * Custom event component - shows title, and time only if duration >= 45 min (not for all-day)
  */
 function CustomEvent({ event, onMouseEnter, onMouseLeave }) {
+    const { calendarTimeFormat } = useSettings();
+    const timeFmt = calendarTimeFormat === '24h' ? 'HH:mm' : 'h:mm a';
     const isAllDay = event.allDay;
     const durationMinutes = (event.end - event.start) / (1000 * 60);
     const showTime = !isAllDay && durationMinutes >= 45;
     const isShort = !isAllDay && durationMinutes <= 15;
-    const timeText = `${format(event.start, 'p')} - ${format(event.end, 'p')}`;
+    const timeText = `${format(event.start, timeFmt)} - ${format(event.end, timeFmt)}`;
 
     return (
         <div
@@ -105,10 +103,12 @@ CustomEvent.propTypes = {
  * Displays events fetched from the API
  */
 function Calendar() {
+    const { calendarDragConfirm, calendarDefaultView, calendarWeekStart, calendarTimeFormat } = useSettings();
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [view, setView] = useState('week');
+    // Initialize directly from (localStorage-cached) settings, no flash
+    const [view, setView] = useState(calendarDefaultView);
     const [date, setDate] = useState(new Date());
     const [dateRange, setDateRange] = useState(null);
 
@@ -124,6 +124,21 @@ function Calendar() {
 
     // Tooltip state
     const [tooltip, setTooltip] = useState({ visible: false, event: null, x: 0, y: 0 });
+
+    // Dynamic localizer based on week start setting
+    const localizer = useMemo(() => {
+        const weekStartsOn = WEEK_START_MAP[calendarWeekStart] ?? 1;
+        return dateFnsLocalizer({
+            format,
+            parse,
+            startOfWeek: (date) => startOfWeek(date, { weekStartsOn }),
+            getDay,
+            locales,
+        });
+    }, [calendarWeekStart]);
+
+    // Time format for gutter/agenda
+    const timeFmt = calendarTimeFormat === '24h' ? 'HH:mm' : 'h:mm a';
 
     // Keyboard event handler for modals
     useEffect(() => {
@@ -407,6 +422,7 @@ function Calendar() {
 
     // Handle event drag and drop (move event)
     const handleEventDrop = async ({ event, start, end }) => {
+        if (calendarDragConfirm && !window.confirm('Move this event?')) return;
         try {
             const response = await fetch(`/api/events/${event.id}`, {
                 method: 'PUT',
@@ -503,6 +519,8 @@ function Calendar() {
                 }}
                 formats={{
                     eventTimeRangeFormat: () => null,
+                    timeGutterFormat: timeFmt,
+                    agendaTimeFormat: timeFmt,
                 }}
                 style={{ height: '100%' }}
             />
@@ -650,7 +668,7 @@ function Calendar() {
                     <div style={{ fontWeight: 500 }}>{tooltip.event.title}</div>
                     {!tooltip.event.allDay && (
                         <div style={{ opacity: 0.85, marginTop: '2px' }}>
-                            {format(tooltip.event.start, 'p')} - {format(tooltip.event.end, 'p')}
+                            {format(tooltip.event.start, timeFmt)} - {format(tooltip.event.end, timeFmt)}
                         </div>
                     )}
                 </div>

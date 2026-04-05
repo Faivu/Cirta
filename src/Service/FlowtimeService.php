@@ -7,9 +7,17 @@ use App\Entity\Flowtime;
 use App\Entity\Session;
 use App\Entity\Task;
 use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
 
 class FlowtimeService extends AbstractTimedSessionService
 {
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        private SettingsService $settingsService,
+    ) {
+        parent::__construct($entityManager);
+    }
+
     public function startSession(User $user, ?string $customGoal = null, ?Task $task = null, ?Event $event = null, ?int $targetDuration = null): Flowtime
     {
         $flowtime = new Flowtime();
@@ -17,6 +25,7 @@ class FlowtimeService extends AbstractTimedSessionService
         $flowtime->setCustomGoal($customGoal);
         $flowtime->setTask($task);
         $flowtime->setEvent($event);
+        $flowtime->setBreakRatio($this->settingsService->getOrCreate($user)->getFlowtimeBreakRatio());
         $flowtime->start();
 
         $this->entityManager->persist($flowtime);

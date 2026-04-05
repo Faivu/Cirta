@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useSettings } from '../context/SettingsContext';
 
 /**
  * PomodoroModeSelector - Buttons to switch between Pomodoro, Short Break, and Long Break
  */
 function PomodoroModeSelector({ mode, onChange, disabled }) {
+    const { pomodoroSeriousMode } = useSettings();
+    const [tooltipVisible, setTooltipVisible] = useState(false);
+
     const modes = [
         { id: 'pomodoro', label: 'Pomodoro' },
         { id: 'shortBreak', label: 'Short Break' },
@@ -12,7 +16,16 @@ function PomodoroModeSelector({ mode, onChange, disabled }) {
     ];
 
     return (
-        <div className="pomodoro-mode-selector">
+        <div
+            className="pomodoro-mode-selector"
+            onMouseEnter={() => pomodoroSeriousMode && setTooltipVisible(true)}
+            onMouseLeave={() => setTooltipVisible(false)}
+        >
+            {tooltipVisible && (
+                <div className="pomodoro-serious-tooltip">
+                    Serious mode is enabled
+                </div>
+            )}
             {modes.map(({ id, label }) => (
                 <button
                     key={id}

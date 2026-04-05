@@ -1,0 +1,323 @@
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f3f4f6;
+    color: #111827;
+}
+
+.settings-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    color: #6b7280;
+}
+
+.settings-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+.settings-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #fff;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 0 24px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.settings-back {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #6b7280;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: color 0.15s;
+}
+
+.settings-back:hover { color: #111827; }
+
+.settings-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+    color: #111827;
+}
+
+/* Body */
+.settings-body {
+    flex: 1;
+    max-width: 680px;
+    width: 100%;
+    margin: 32px auto;
+    padding: 0 24px 120px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Section */
+.settings-section {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    overflow: visible;
+}
+
+.settings-section-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #6b7280;
+    margin: 0;
+    border-radius: 12px 12px 0 0;
+    padding: 12px 20px;
+    border-bottom: 1px solid #f3f4f6;
+    background: #f9fafb;
+}
+
+/* Row */
+.settings-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 20px;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.settings-row:last-child { border-bottom: none; }
+
+.settings-row-label {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #111827;
+}
+
+.settings-row-desc {
+    font-size: 0.78rem;
+    font-weight: 400;
+    color: #6b7280;
+}
+
+/* Toggle */
+.settings-toggle {
+    flex-shrink: 0;
+    width: 44px;
+    height: 24px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.2s;
+    padding: 0;
+}
+
+.settings-toggle.on  { background: #2563eb; }
+.settings-toggle.off { background: #d1d5db; }
+
+.settings-toggle-knob {
+    position: absolute;
+    top: 3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    transition: left 0.2s;
+}
+
+.settings-toggle.on  .settings-toggle-knob { left: 23px; }
+.settings-toggle.off .settings-toggle-knob { left: 3px; }
+
+/* Select */
+.settings-select {
+    flex-shrink: 0;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 0.875rem;
+    color: #111827;
+    background: #fff;
+    cursor: pointer;
+    min-width: 150px;
+}
+
+.settings-select:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37,99,235,0.15);
+}
+
+/* Timezone picker */
+.tz-picker {
+    position: relative;
+    flex-shrink: 0;
+    min-width: 220px;
+}
+
+.tz-input-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.tz-search {
+    width: 100%;
+    cursor: text;
+}
+
+.tz-detect-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 0.75rem;
+    color: #2563eb;
+    cursor: pointer;
+    text-align: left;
+}
+
+.tz-detect-btn:hover { text-decoration: underline; }
+
+.tz-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    max-height: 220px;
+    overflow-y: auto;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+}
+
+.tz-option {
+    padding: 7px 12px;
+    font-size: 0.875rem;
+    color: #374151;
+    cursor: pointer;
+    text-align: left;
+    background: none;
+    border: none;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.tz-option:last-child { border-bottom: none; }
+.tz-option:hover { background: #f9fafb; }
+.tz-option.active { background: #eff6ff; color: #2563eb; font-weight: 500; }
+.tz-option.tz-empty { color: #9ca3af; cursor: default; }
+.tz-option.tz-empty:hover { background: none; }
+
+/* Number input */
+.settings-number {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.settings-number-input {
+    width: 64px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-size: 0.875rem;
+    color: #111827;
+    text-align: center;
+}
+
+.settings-number-input:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37,99,235,0.15);
+}
+
+.settings-number-unit {
+    font-size: 0.8rem;
+    color: #6b7280;
+    min-width: 24px;
+}
+
+/* Danger button */
+.settings-btn-danger {
+    flex-shrink: 0;
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: 1px solid #fca5a5;
+    background: #fff;
+    color: #dc2626;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.settings-btn-danger:hover { background: #fef2f2; }
+
+/* Footer */
+.settings-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-top: 1px solid #e5e7eb;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.settings-unsaved {
+    font-size: 0.8rem;
+    color: #92400e;
+    background: #fef3c7;
+    padding: 4px 10px;
+    border-radius: 6px;
+}
+
+.settings-error {
+    font-size: 0.8rem;
+    color: #dc2626;
+}
+
+.settings-success {
+    font-size: 0.8rem;
+    color: #16a34a;
+}
+
+.settings-save-btn {
+    padding: 8px 20px;
+    border-radius: 6px;
+    border: none;
+    background: #2563eb;
+    color: #fff;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s, opacity 0.15s;
+}
+
+.settings-save-btn:hover:not(:disabled) { background: #1d4ed8; }
+.settings-save-btn:disabled { opacity: 0.5; cursor: default; }

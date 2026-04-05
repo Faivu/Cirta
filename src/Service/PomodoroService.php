@@ -12,12 +12,11 @@ use Doctrine\ORM\EntityManagerInterface;
 class PomodoroService implements SessionStrategy
 {
     private const DEFAULT_DURATION = 25;
-    private const SHORT_BREAK = 5;
-    private const LONG_BREAK = 15;
     private const POMODOROS_BEFORE_LONG_BREAK = 4;
 
     public function __construct(
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface $entityManager,
+        private SettingsService $settingsService,
     ) {}
 
     /**
@@ -109,12 +108,13 @@ class PomodoroService implements SessionStrategy
         // Note: Doctrine auto-flushes before the count query, so current session is already included
         $completedToday = $this->countCompletedToday($session->getUser());
         $cyclePosition = $completedToday % self::POMODOROS_BEFORE_LONG_BREAK;
+        $userSettings = $this->settingsService->getOrCreate($session->getUser());
 
         if ($cyclePosition === 0) {
             // Every 4th pomodoro gets a long break
-            $session->setBreakDuration(self::LONG_BREAK);
+            $session->setBreakDuration($userSettings->getPomodoroLongBreak());
         } else {
-            $session->setBreakDuration(self::SHORT_BREAK);
+            $session->setBreakDuration($userSettings->getPomodoroShortBreak());
         }
 
         $this->entityManager->flush();

@@ -24,6 +24,7 @@ Encore
     .addEntry('login', './assets/styles/login.css')
     .addEntry('session', './assets/react/session.jsx')
     .addEntry('dashboard', './assets/react/dashboard.jsx')
+    .addEntry('settings', './assets/react/settings.jsx')
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
     .splitEntryChunks()

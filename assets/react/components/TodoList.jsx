@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import DatePicker from './DatePicker';
 import { useSession } from '../context/SessionContext';
 import { useToast } from '../context/ToastContext';
+import { useSettings } from '../context/SettingsContext';
 
 import { playTickSound } from '../utils/sounds';
 
@@ -17,6 +18,7 @@ const formatDuration = (minutes) => {
 function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
     const { linkedTask, taskDoneSignal, sessionEndSignal } = useSession();
     const { showToast } = useToast();
+    const { todoUncheckedNoConfirm, todoKeepFinishedVisible } = useSettings();
     const [tasks, setTasks] = useState([]);
     const [newTitle, setNewTitle] = useState('');
     const [scheduleDate, setScheduleDate] = useState('');
@@ -99,8 +101,8 @@ function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
 
         const newChecked = !currentChecked;
 
-        // Confirm before unchecking from history or today view
-        if (currentChecked && (view === 'history' || (view === 'tasks' && filter === 'today'))) {
+        // Confirm before unchecking from history or today view (unless disabled in settings)
+        if (!todoUncheckedNoConfirm && currentChecked && (view === 'history' || (view === 'tasks' && filter === 'today'))) {
             if (!window.confirm('Uncheck this task?')) return;
         }
 
@@ -286,8 +288,7 @@ function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
         }
 
         if (filter === 'today') {
-            // Today: all tasks scheduled for today (both checked and unchecked)
-            return tasks.filter(isScheduledForToday);
+            return tasks.filter(t => isScheduledForToday(t) && (todoKeepFinishedVisible || !t.isChecked));
         }
 
         // 'all' filter: only unchecked tasks

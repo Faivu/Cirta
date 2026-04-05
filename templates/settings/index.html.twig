@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Settings — Cirta{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('settings') }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('settings') }}
+{% endblock %}
+
+{% block body %}
+    <div id="settings-app">
+        <div style="display: flex; align-items: center; justify-content: center; height: 100vh; color: #666;">
+            Loading settings...
+        </div>
+    </div>
+{% endblock %}

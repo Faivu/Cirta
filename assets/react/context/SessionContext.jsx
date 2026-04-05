@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { playTickSound } from '../utils/sounds';
 import { useToast } from './ToastContext';
+import { useSettings } from './SettingsContext';
 import PropTypes from 'prop-types';
 
 const SessionContext = createContext(null);
@@ -73,14 +74,16 @@ const STRATEGY_LABEL = {
 
 export function SessionProvider({ children }) {
     const { showToast } = useToast();
-    // Session state
-    const [strategy, setStrategy] = useState('pomodoro');
+    const settings = useSettings();
+
+    // Session state — initialized directly from (localStorage-cached) settings, no flash
+    const [strategy, setStrategy] = useState(settings.defaultStrategy);
     const [status, setStatus] = useState('idle');
     const [sessionId, setSessionId] = useState(null);
 
     // Timer state
     const [elapsedSeconds, setElapsedSeconds] = useState(0);
-    const [targetMinutes, setTargetMinutes] = useState(25);
+    const [targetMinutes, setTargetMinutes] = useState(settings.pomodoroWorkDuration);
 
     // Break state
     const [breakSeconds, setBreakSeconds] = useState(0);
@@ -236,8 +239,8 @@ export function SessionProvider({ children }) {
     // Reset targetMinutes to a sensible default when switching strategies
     useEffect(() => {
         if (strategy === 'time_blocking') setTargetMinutes(60);
-        else if (strategy === 'pomodoro') setTargetMinutes(25);
-    }, [strategy]);
+        else if (strategy === 'pomodoro') setTargetMinutes(settings.pomodoroWorkDuration);
+    }, [strategy, settings.pomodoroWorkDuration]);
 
     // Auto-complete when pomodoro or time_blocking time is up
     useEffect(() => {
@@ -273,7 +276,7 @@ export function SessionProvider({ children }) {
         }
 
         if (strategy === 'pomodoro' && pomodoroMode !== 'pomodoro') {
-            const duration = pomodoroMode === 'shortBreak' ? 5 : 15;
+            const duration = pomodoroMode === 'shortBreak' ? settings.pomodoroShortBreak : settings.pomodoroLongBreak;
             setBreakDuration(duration);
             setBreakSeconds(duration * 60);
             setStatus('break');
@@ -402,7 +405,7 @@ export function SessionProvider({ children }) {
         setBreakSeconds(0);
 
         if (strategy === 'pomodoro' && pomodoroMode !== 'pomodoro') {
-            const duration = pomodoroMode === 'shortBreak' ? 5 : 15;
+            const duration = pomodoroMode === 'shortBreak' ? settings.pomodoroShortBreak : settings.pomodoroLongBreak;
             setBreakDuration(duration);
             setBreakSeconds(duration * 60);
             setStatus('break');
@@ -448,16 +451,20 @@ export function SessionProvider({ children }) {
     };
 
     const handleModeChange = (mode) => {
+        if (settings.pomodoroSeriousMode) return;
         if (status === 'running' || status === 'paused') return;
 
         setPomodoroMode(mode);
 
         if (mode === 'shortBreak') {
-            setBreakDuration(5);
+            setBreakDuration(settings.pomodoroShortBreak);
+            setTargetMinutes(settings.pomodoroShortBreak);
         } else if (mode === 'longBreak') {
-            setBreakDuration(15);
+            setBreakDuration(settings.pomodoroLongBreak);
+            setTargetMinutes(settings.pomodoroLongBreak);
+        } else {
+            setTargetMinutes(settings.pomodoroWorkDuration);
         }
-        setTargetMinutes(25);
     };
 
     const handleSkipBreak = () => {
@@ -516,6 +523,7 @@ export function SessionProvider({ children }) {
     const value = {
         // State
         strategy,
+        pomodoroSeriousMode: settings.pomodoroSeriousMode,
         status,
         sessionId,
         elapsedSeconds,

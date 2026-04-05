@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import SessionApp from './SessionApp';
 import SessionHistory from './SessionHistory';
 import TodoList from './TodoList';
@@ -8,6 +8,7 @@ import ResizeHandle from './ResizeHandle';
 import { SessionProvider } from '../context/SessionContext';
 import { ToastProvider } from '../context/ToastContext';
 import ToastContainer from './ToastContainer';
+import { SettingsProvider, useSettings } from '../context/SettingsContext';
 import { useLayoutStorage } from '../hooks/useLayoutStorage';
 import { useResize } from '../hooks/useResize';
 
@@ -21,7 +22,6 @@ const LAYOUT_DEFAULTS = {
     isPrimaryLeft: true,
     sidebarTab: 'timer',
     todoTab: 'tasks',
-    taskFilter: 'today',
     sidebarWidth: DEFAULT_SIDEBAR_WIDTH,
 };
 
@@ -82,17 +82,20 @@ function PanelContent({ panelId, sidebarTab, setSidebarTab, todoTab, setTodoTab,
     }
 }
 
-function DashboardLayout() {
+function DashboardContent() {
+    const { todoDefaultFilter } = useSettings();
     const [layout, setField] = useLayoutStorage(LAYOUT_STORAGE_KEY, LAYOUT_DEFAULTS);
-    const { primaryPanel, secondaryPanel, isPrimaryLeft, sidebarTab, todoTab, taskFilter, sidebarWidth } = layout;
+    const { primaryPanel, secondaryPanel, isPrimaryLeft, sidebarTab, todoTab, sidebarWidth } = layout;
 
     const setPrimaryPanel   = setField('primaryPanel');
     const setSecondaryPanel = setField('secondaryPanel');
     const setIsPrimaryLeft  = setField('isPrimaryLeft');
     const setSidebarTab     = setField('sidebarTab');
     const setTodoTab        = setField('todoTab');
-    const setTaskFilter     = setField('taskFilter');
     const setSidebarWidth   = setField('sidebarWidth');
+
+    // taskFilter is a startup default from settings — not persisted in localStorage
+    const [taskFilter, setTaskFilter] = useState(todoDefaultFilter);
 
     const { handleDragStart, handleDrag } = useResize(sidebarWidth, setSidebarWidth);
 
@@ -186,6 +189,14 @@ function DashboardLayout() {
         </SessionProvider>
         <ToastContainer />
         </ToastProvider>
+    );
+}
+
+function DashboardLayout() {
+    return (
+        <SettingsProvider>
+            <DashboardContent />
+        </SettingsProvider>
     );
 }
 

@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
  */
 function TimerPreview({ mode, minutes, editable, onMinutesChange }) {
     const isBreak = mode === 'shortBreak' || mode === 'longBreak';
-    const displayMinutes = mode === 'shortBreak' ? 5 : mode === 'longBreak' ? 15 : minutes;
+    const displayMinutes = minutes;
 
     return (
         <div className={`timer preview${isBreak ? ' break-mode' : ''}`}>
