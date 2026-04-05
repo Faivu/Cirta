@@ -3,6 +3,7 @@
 namespace App\Controller\Api;
 
 use App\Entity\Event;
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -27,9 +28,9 @@ final class EventController extends AbstractController
     #[Route('', name: 'list', methods: ['GET'])]
     public function list(Request $request): JsonResponse
     {
-        $user = $this->getUser();
-        if (!$user) {
-            return $this->json(['error' => 'Not authenticated'], Response::HTTP_UNAUTHORIZED);
+        $user = $this->getAuthenticatedUser();
+        if ($user instanceof JsonResponse) {
+            return $user;
         }
 
         $qb = $this->entityManager->getRepository(Event::class)
@@ -87,9 +88,9 @@ final class EventController extends AbstractController
     #[Route('/{id}', name: 'get', methods: ['GET'])]
     public function get(string $id): JsonResponse
     {
-        $user = $this->getUser();
-        if (!$user) {
-            return $this->json(['error' => 'Not authenticated'], Response::HTTP_UNAUTHORIZED);
+        $user = $this->getAuthenticatedUser();
+        if ($user instanceof JsonResponse) {
+            return $user;
         }
 
         $event = $this->entityManager->getRepository(Event::class)->find($id);
@@ -122,9 +123,9 @@ final class EventController extends AbstractController
     #[Route('', name: 'create', methods: ['POST'])]
     public function create(Request $request): JsonResponse
     {
-        $user = $this->getUser();
-        if (!$user) {
-            return $this->json(['error' => 'Not authenticated'], Response::HTTP_UNAUTHORIZED);
+        $user = $this->getAuthenticatedUser();
+        if ($user instanceof JsonResponse) {
+            return $user;
         }
 
         $data = json_decode($request->getContent(), true);
@@ -174,9 +175,9 @@ final class EventController extends AbstractController
     #[Route('/{id}', name: 'update', methods: ['PUT'])]
     public function update(string $id, Request $request): JsonResponse
     {
-        $user = $this->getUser();
-        if (!$user) {
-            return $this->json(['error' => 'Not authenticated'], Response::HTTP_UNAUTHORIZED);
+        $user = $this->getAuthenticatedUser();
+        if ($user instanceof JsonResponse) {
+            return $user;
         }
 
         $event = $this->entityManager->getRepository(Event::class)->find($id);
@@ -233,9 +234,9 @@ final class EventController extends AbstractController
     #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
     public function delete(string $id): JsonResponse
     {
-        $user = $this->getUser();
-        if (!$user) {
-            return $this->json(['error' => 'Not authenticated'], Response::HTTP_UNAUTHORIZED);
+        $user = $this->getAuthenticatedUser();
+        if ($user instanceof JsonResponse) {
+            return $user;
         }
 
         $event = $this->entityManager->getRepository(Event::class)->find($id);
@@ -252,5 +253,15 @@ final class EventController extends AbstractController
         $this->entityManager->flush();
 
         return $this->json(['success' => true]);
+    }
+
+    private function getAuthenticatedUser(): User|JsonResponse
+    {
+        $user = $this->getAuthenticatedUser();
+        if ($user instanceof JsonResponse) {
+            return $user;
+        }
+        assert($user instanceof User);
+        return $user;
     }
 }
