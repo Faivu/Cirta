@@ -199,6 +199,20 @@ export function SessionProvider({ children }) {
         };
     }, [status, strategy]);
 
+    // Warn user before closing tab if a session or break is active
+    useEffect(() => {
+        const active = status === 'running' || status === 'paused' || status === 'break';
+        if (!active) return;
+
+        const handleBeforeUnload = (e) => {
+            e.preventDefault();
+            e.returnValue = '';
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    }, [status]);
+
     // Record break and reset pomodoro mode when break timer runs out naturally
     useEffect(() => {
         if (status === 'break' && breakSeconds === 0 && breakDuration > 0 && sessionId) {
