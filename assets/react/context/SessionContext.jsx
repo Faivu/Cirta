@@ -199,9 +199,10 @@ export function SessionProvider({ children }) {
         };
     }, [status, strategy]);
 
-    // Reset to pomodoro mode when break finishes
+    // Record break and reset pomodoro mode when break timer runs out naturally
     useEffect(() => {
-        if (status === 'break' && breakSeconds === 0) {
+        if (status === 'break' && breakSeconds === 0 && breakDuration > 0 && sessionId) {
+            apiCall(`/api/session/${sessionId}/break`, 'POST', { duration: breakDuration }).catch(() => {});
             setPomodoroMode('pomodoro');
         }
     }, [status, breakSeconds]);
@@ -381,7 +382,7 @@ export function SessionProvider({ children }) {
         }
     };
 
-    const handleContinue = async () => {
+    const handleBreakEnd = async () => {
         setError(null);
         setCompletionData(null);
         setBreakSeconds(0);
@@ -446,6 +447,10 @@ export function SessionProvider({ children }) {
     };
 
     const handleSkipBreak = () => {
+        if (sessionId && status === 'break') {
+            const taken = Math.max(0, Math.round((breakDuration * 60 - breakSeconds) / 60));
+            apiCall(`/api/session/${sessionId}/break`, 'POST', { duration: taken }).catch(() => {});
+        }
         setBreakSeconds(0);
         setBreakDuration(0);
         setStatus(completionData ? 'completed' : 'idle');
@@ -529,7 +534,7 @@ export function SessionProvider({ children }) {
         handleComplete,
         handleInterrupt,
         confirmInterrupt,
-        handleContinue,
+        handleBreakEnd,
         handleReset,
         handleModeChange,
         handleSkipBreak,

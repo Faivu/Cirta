@@ -249,6 +249,29 @@ final class SessionController extends AbstractController
     }
 
     /**
+     * Record the actual break taken after a session
+     */
+    #[Route('/{id}/break', name: 'break', methods: ['POST'])]
+    public function recordBreak(string $id, Request $request): JsonResponse
+    {
+        $session = $this->findUserSession($id);
+        if ($session instanceof JsonResponse) {
+            return $session;
+        }
+
+        $data     = json_decode($request->getContent(), true) ?? [];
+        $duration = isset($data['duration']) ? max(0, (int) $data['duration']) : 0;
+
+        $session->setBreakAfter($duration);
+        $this->entityManager->flush();
+
+        return $this->json([
+            'id'         => $session->getId(),
+            'breakAfter' => $session->getBreakAfter(),
+        ]);
+    }
+
+    /**
      * Get session details
      */
     #[Route('/{id}', name: 'get', methods: ['GET'])]

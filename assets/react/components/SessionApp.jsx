@@ -39,7 +39,7 @@ function SessionApp({ compact = false, fullPanel = false, onFullscreen = null })
         handleComplete,
         handleInterrupt,
         confirmInterrupt,
-        handleContinue,
+        handleBreakEnd,
         handleModeChange,
         handleSkipBreak,
         handleGoalFinished,
@@ -139,7 +139,7 @@ function SessionApp({ compact = false, fullPanel = false, onFullscreen = null })
                     loading={loading}
                     completionData={completionData}
                     onModeChange={handleModeChange}
-                    onContinue={handleContinue}
+                    onContinue={handleBreakEnd}
                     onGoalFinished={handleGoalFinishedWithFocus}
                     onMarkTaskDone={handleMarkTaskDoneWithFocus}
                 />
@@ -157,7 +157,7 @@ function SessionApp({ compact = false, fullPanel = false, onFullscreen = null })
                     loading={loading}
                     onModeChange={handleModeChange}
                     onSkipBreak={handleSkipBreak}
-                    onContinue={handleContinue}
+                    onContinue={handleBreakEnd}
                     onGoalFinished={handleGoalFinishedWithFocus}
                     onMarkTaskDone={handleMarkTaskDoneWithFocus}
                 />
