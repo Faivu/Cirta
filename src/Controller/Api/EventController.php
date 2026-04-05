@@ -257,9 +257,9 @@ final class EventController extends AbstractController
 
     private function getAuthenticatedUser(): User|JsonResponse
     {
-        $user = $this->getAuthenticatedUser();
-        if ($user instanceof JsonResponse) {
-            return $user;
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->json(['error' => 'Not authenticated'], Response::HTTP_UNAUTHORIZED);
         }
         assert($user instanceof User);
         return $user;
