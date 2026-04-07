@@ -5,7 +5,7 @@ import { useToast } from '../context/ToastContext';
 const STRATEGY_ACCENT = {
     pomodoro:      '#ef4444',
     flowtime:      '#3b82f6',
-    time_blocking: '#92400e',
+    time_blocking: '#e9a008',
 };
 
 function Toast({ id, title, message, strategy, duration }) {

@@ -470,7 +470,7 @@
 }
 
 .btn-timeblock {
-    background: #a07040;
+    background: #e9a008;
     color: white;
 }
 
@@ -614,7 +614,7 @@
     background: transparent;
     border: none;
     cursor: pointer;
-    color: #a07040;
+    color: #e9a008;
     padding: 3px 0;
     border-radius: 6px;
     display: flex;
@@ -640,7 +640,7 @@
     font-weight: 600;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: #a07040;
+    color: #e9a008;
     opacity: 0.4;
     transition: opacity 0.15s;
     user-select: none;
@@ -653,13 +653,13 @@
 .tbp-edit-input {
     width: calc(76px * 2 + 8px);
     height: 96px;
-    background: #fdf5ee;
-    border: 2px solid #a07040;
+    background: #fffbeb;
+    border: 2px solid #e9a008;
     border-radius: 12px;
     text-align: center;
     font-size: 3.25rem;
     font-weight: 700;
-    color: #a07040;
+    color: #e9a008;
     outline: none;
     padding: 0;
     -moz-appearance: textfield;
@@ -786,7 +786,7 @@
 .timer-paused-indicator {
     font-size: 0.75rem;
     font-weight: 600;
-    color: #f59e0b;
+    color: #e9a008;
     background: #fef3c7;
     padding: 4px 12px;
     border-radius: 4px;
@@ -818,7 +818,7 @@
 
 .break-icon {
     background: #fef3c7;
-    color: #d97706;
+    color: #e9a008;
 }
 
 .session-completed h2,

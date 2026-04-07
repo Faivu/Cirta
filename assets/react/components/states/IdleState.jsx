@@ -5,8 +5,8 @@ import TimerPreview from '../TimerPreview';
 import StrategySelector from '../StrategySelector';
 import SquareTimer from '../SquareTimer';
 
-const TB_DIGIT_STYLE = { color: '#a07040', borderColor: '#a07040', background: '#fdf5ee' };
-const TB_SEP_STYLE   = { color: '#a07040' };
+const TB_DIGIT_STYLE = { color: '#e9a008', borderColor: '#e9a008', background: '#fffbeb' };
+const TB_SEP_STYLE   = { color: '#e9a008' };
 
 const START_ACTIONS = {
     pomodoro:      { label: 'Start Pomodoro',   btnClass: 'btn-pomodoro'  },

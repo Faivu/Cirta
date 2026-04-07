@@ -9,7 +9,7 @@ const RANGES = [
 const STRATEGY_META = {
     pomodoro:      { label: 'Pomodoro',      color: '#ef4444' },
     flowtime:      { label: 'Flowtime',      color: '#3b82f6' },
-    time_blocking: { label: 'Time Blocking', color: '#a07040' },
+    time_blocking: { label: 'Time Blocking', color: '#e9a008' },
 };
 
 function formatMinutes(mins) {
