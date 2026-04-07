@@ -46,7 +46,7 @@ const PANEL_CONFIG = {
     },
 };
 
-function TopBar({ primaryPanel, secondaryPanel, onTogglePanel, onSetPrimary, onRemoveFromSlot, onSwap }) {
+function MainBar({ primaryPanel, secondaryPanel, onTogglePanel, onSetPrimary, onRemoveFromSlot, onSwap }) {
     const [isDragOver, setIsDragOver] = useState(false);
     const [showHint, setShowHint] = useState(false);
     const [feedbackOpen, setFeedbackOpen] = useState(false);
@@ -104,14 +104,14 @@ function TopBar({ primaryPanel, secondaryPanel, onTogglePanel, onSetPrimary, onR
 
     return (
         <>
-        <div className="topbar">
-            <div className="topbar-top">
-                <img src="/images/logo.png" alt="Cirta" className="topbar-logo" />
+        <div className="mainbar">
+            <div className="mainbar-top">
+                <img src="/images/logo.png" alt="Cirta" className="mainbar-logo" />
             </div>
 
-            {/* Swap button + primary slot — outside topbar-middle so they never shift */}
+            {/* Swap button + primary slot — outside mainbar-middle so they never shift */}
             <button
-                className={`topbar-swap-btn ${primaryPanel && secondaryPanel ? '' : 'invisible'}`}
+                className={`mainbar-swap-btn ${primaryPanel && secondaryPanel ? '' : 'invisible'}`}
                 onClick={onSwap}
                 tabIndex={primaryPanel && secondaryPanel ? 0 : -1}
             >
@@ -154,11 +154,11 @@ function TopBar({ primaryPanel, secondaryPanel, onTogglePanel, onSetPrimary, onR
                 )}
             </div>
 
-            <div className="topbar-divider" />
+            <div className="mainbar-divider" />
 
             {/* Panel icons — can shift freely */}
             <div
-                className="topbar-middle"
+                className="mainbar-middle"
                 onDragOver={handleIconsDragOver}
                 onDrop={handleIconsDrop}
             >
@@ -167,7 +167,7 @@ function TopBar({ primaryPanel, secondaryPanel, onTogglePanel, onSetPrimary, onR
                     return (
                         <button
                             key={panelId}
-                            className={`topbar-view-toggle ${isOpen(panelId) ? 'active' : ''}`}
+                            className={`mainbar-view-toggle ${isOpen(panelId) ? 'active' : ''}`}
                             draggable
                             onDragStart={(e) => handleIconDragStart(e, panelId)}
                             onClick={() => onTogglePanel(panelId)}
@@ -179,15 +179,15 @@ function TopBar({ primaryPanel, secondaryPanel, onTogglePanel, onSetPrimary, onR
                 })}
             </div>
 
-            <div className="topbar-bottom">
-                <a href="/settings" className="topbar-settings" title="Settings">
+            <div className="mainbar-bottom">
+                <a href="/settings" className="mainbar-settings" title="Settings">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <circle cx="12" cy="12" r="3" />
                         <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
                     </svg>
                 </a>
                 <button
-                    className={`topbar-feedback ${feedbackOpen ? 'active' : ''}`}
+                    className={`mainbar-feedback ${feedbackOpen ? 'active' : ''}`}
                     title="Share feedback"
                     onClick={() => setFeedbackOpen(prev => !prev)}
                 >
@@ -196,7 +196,7 @@ function TopBar({ primaryPanel, secondaryPanel, onTogglePanel, onSetPrimary, onR
                     </svg>
                 </button>
                 <button
-                    className="topbar-logout"
+                    className="mainbar-logout"
                     title="Logout"
                     onClick={() => window.location.href = '/logout'}
                 >
@@ -214,7 +214,7 @@ function TopBar({ primaryPanel, secondaryPanel, onTogglePanel, onSetPrimary, onR
     );
 }
 
-TopBar.propTypes = {
+MainBar.propTypes = {
     primaryPanel: PropTypes.string,
     secondaryPanel: PropTypes.string,
     onTogglePanel: PropTypes.func.isRequired,
@@ -223,9 +223,9 @@ TopBar.propTypes = {
     onSwap: PropTypes.func.isRequired,
 };
 
-TopBar.defaultProps = {
+MainBar.defaultProps = {
     primaryPanel: null,
     secondaryPanel: null,
 };
 
-export default TopBar;
+export default MainBar;

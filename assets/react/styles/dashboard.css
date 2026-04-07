@@ -86,7 +86,7 @@
 }
 
 /* Left Navigation Sidebar */
-.topbar {
+.mainbar {
     display: grid;
     grid-template-rows: auto 1fr 40px 40px 13px auto 1fr auto;
     justify-items: center;
@@ -99,19 +99,19 @@
     box-sizing: border-box;
 }
 
-.topbar-top {
+.mainbar-top {
     grid-row: 1;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.topbar-logo {
+.mainbar-logo {
     height: 36px;
     width: auto;
 }
 
-.topbar-middle {
+.mainbar-middle {
     grid-row: 6;
     width: 100%;
     display: flex;
@@ -121,7 +121,7 @@
     gap: 4px;
 }
 
-.topbar-bottom {
+.mainbar-bottom {
     grid-row: 8;
     display: flex;
     flex-direction: column;
@@ -129,7 +129,7 @@
     gap: 4px;
 }
 
-.topbar-view-toggle {
+.mainbar-view-toggle {
     position: relative;
     display: flex;
     align-items: center;
@@ -145,18 +145,18 @@
     transition: all 0.2s;
 }
 
-.topbar-view-toggle:hover {
+.mainbar-view-toggle:hover {
     background: #f3f4f6;
     color: #374151;
 }
 
-.topbar-view-toggle.active {
+.mainbar-view-toggle.active {
     background: #eff6ff;
     color: #3b82f6;
 }
 
-.topbar-view-toggle .toggle-label,
-.topbar-swap-btn .toggle-label {
+.mainbar-view-toggle .toggle-label,
+.mainbar-swap-btn .toggle-label {
     position: absolute;
     left: 100%;
     top: 50%;
@@ -175,14 +175,14 @@
     pointer-events: none;
 }
 
-.topbar-view-toggle:hover .toggle-label,
-.topbar-swap-btn:hover .toggle-label {
+.mainbar-view-toggle:hover .toggle-label,
+.mainbar-swap-btn:hover .toggle-label {
     opacity: 1;
     visibility: visible;
     transition: opacity 0.2s 0.5s, visibility 0.2s 0.5s;
 }
 
-.topbar-settings {
+.mainbar-settings {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -196,12 +196,12 @@
     transition: all 0.2s;
 }
 
-.topbar-settings:hover {
+.mainbar-settings:hover {
     background: #f3f4f6;
     color: #374151;
 }
 
-.topbar-logout {
+.mainbar-logout {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -215,12 +215,12 @@
     transition: all 0.2s;
 }
 
-.topbar-logout:hover {
+.mainbar-logout:hover {
     background: #fee2e2;
     color: #dc2626;
 }
 
-.topbar-feedback {
+.mainbar-feedback {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -234,8 +234,8 @@
     transition: background 0.15s, color 0.15s;
 }
 
-.topbar-feedback:hover,
-.topbar-feedback.active {
+.mainbar-feedback:hover,
+.mainbar-feedback.active {
     background: #ede9fe;
     color: #7c3aed;
 }
@@ -445,7 +445,7 @@
     color: #6b7280;
 }
 
-.topbar-swap-btn {
+.mainbar-swap-btn {
     grid-row: 3;
     position: relative;
     display: flex;
@@ -462,16 +462,16 @@
     transition: all 0.2s;
 }
 
-.topbar-swap-btn:hover {
+.mainbar-swap-btn:hover {
     background: #f3f4f6;
     color: #374151;
 }
 
-.topbar-swap-btn:focus {
+.mainbar-swap-btn:focus {
     outline: none;
 }
 
-.topbar-swap-btn.invisible {
+.mainbar-swap-btn.invisible {
     visibility: hidden;
     pointer-events: none;
 }
@@ -507,7 +507,7 @@
 }
 
 /* Topbar divider */
-.topbar-divider {
+.mainbar-divider {
     grid-row: 5;
     width: 28px;
     height: 1px;

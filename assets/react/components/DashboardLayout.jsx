@@ -3,7 +3,7 @@ import SessionApp from './SessionApp';
 import SessionHistory from './SessionHistory';
 import TodoList from './TodoList';
 import Calendar from './Calendar';
-import TopBar from './TopBar';
+import MainBar from './MainBar';
 import ResizeHandle from './ResizeHandle';
 import { SessionProvider } from '../context/SessionContext';
 import { ToastProvider } from '../context/ToastContext';
@@ -143,7 +143,7 @@ function DashboardContent() {
         <ToastProvider>
         <SessionProvider>
             <div className="dashboard-wrapper">
-                <TopBar
+                <MainBar
                     primaryPanel={primaryPanel}
                     secondaryPanel={secondaryPanel}
                     onTogglePanel={handleTogglePanel}
