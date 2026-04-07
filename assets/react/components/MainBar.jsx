@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import FeedbackPanel from './FeedbackPanel';
 
@@ -48,17 +48,7 @@ const PANEL_CONFIG = {
 
 function MainBar({ primaryPanel, secondaryPanel, onTogglePanel, onSetPrimary, onRemoveFromSlot, onSwap }) {
     const [isDragOver, setIsDragOver] = useState(false);
-    const [showHint, setShowHint] = useState(false);
     const [feedbackOpen, setFeedbackOpen] = useState(false);
-    const hintTimerRef = useRef(null);
-
-    useEffect(() => () => clearTimeout(hintTimerRef.current), []);
-
-    const handlePrimaryIconClick = () => {
-        clearTimeout(hintTimerRef.current);
-        setShowHint(true);
-        hintTimerRef.current = setTimeout(() => setShowHint(false), 2500);
-    };
 
     const isOpen = (panelId) => panelId === primaryPanel || panelId === secondaryPanel;
 
@@ -128,29 +118,29 @@ function MainBar({ primaryPanel, secondaryPanel, onTogglePanel, onSetPrimary, on
                 onDragOver={handleSlotDragOver}
                 onDragLeave={() => setIsDragOver(false)}
                 onDrop={handleSlotDrop}
-                title={primaryPanel ? '' : 'Drag a panel here to make it primary'}
             >
                 {primaryPanel ? (
-                    <div
-                        className="primary-slot-icon"
-                        draggable
-                        onDragStart={handleSlotIconDragStart}
-                        onClick={handlePrimaryIconClick}
-                    >
-                        {PANEL_CONFIG[primaryPanel].icon(20)}
-                        {showHint && (
-                            <div className="primary-hint-tooltip">
-                                Drag down to unpin
-                            </div>
-                        )}
-                    </div>
+                    <>
+                        <div
+                            className="primary-slot-icon"
+                            draggable
+                            onDragStart={handleSlotIconDragStart}
+                        >
+                            {PANEL_CONFIG[primaryPanel].icon(20)}
+                        </div>
+                        <span className="toggle-label">Drag and drop below to unselect this panel as primary</span>
+                    </>
+
                 ) : (
-                    <span className="primary-slot-hint">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                            <line x1="12" y1="19" x2="12" y2="5" />
-                            <polyline points="5 12 12 5 19 12" />
-                        </svg>
-                    </span>
+                    <>
+                        <span className="primary-slot-hint">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                <line x1="12" y1="19" x2="12" y2="5" />
+                                <polyline points="5 12 12 5 19 12" />
+                            </svg>
+                        </span>
+                        <span className="toggle-label">Drag and drop a panel icon to set it as primary</span>
+                    </>
                 )}
             </div>
 
@@ -180,32 +170,22 @@ function MainBar({ primaryPanel, secondaryPanel, onTogglePanel, onSetPrimary, on
             </div>
 
             <div className="mainbar-bottom">
-                <a href="/settings" className="mainbar-settings" title="Settings">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <circle cx="12" cy="12" r="3" />
-                        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
-                    </svg>
-                </a>
                 <button
                     className={`mainbar-feedback ${feedbackOpen ? 'active' : ''}`}
-                    title="Share feedback"
                     onClick={() => setFeedbackOpen(prev => !prev)}
                 >
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                     </svg>
+                    <span className="toggle-label">Share feedback</span>
                 </button>
-                <button
-                    className="mainbar-logout"
-                    title="Logout"
-                    onClick={() => window.location.href = '/logout'}
-                >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                        <polyline points="16 17 21 12 16 7" />
-                        <line x1="21" y1="12" x2="9" y2="12" />
+                <a href="/settings" className="mainbar-settings">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="3" />
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
                     </svg>
-                </button>
+                    <span className="toggle-label">Settings</span>
+                </a>
             </div>
         </div>
 

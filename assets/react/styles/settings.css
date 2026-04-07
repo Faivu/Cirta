@@ -260,6 +260,9 @@ body {
 /* Danger button */
 .settings-btn-danger {
     flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     padding: 6px 14px;
     border-radius: 6px;
     border: 1px solid #fca5a5;
