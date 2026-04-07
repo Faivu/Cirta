@@ -88,7 +88,7 @@
 /* Left Navigation Sidebar */
 .topbar {
     display: grid;
-    grid-template-rows: auto 1fr 40px 40px 13px 128px 1fr auto;
+    grid-template-rows: auto 1fr 40px 40px 13px auto 1fr auto;
     justify-items: center;
     width: 60px;
     min-width: 60px;

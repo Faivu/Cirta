@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import DashboardLayout from './components/DashboardLayout';
 import './styles/session.css';
 import './styles/dashboard.css';
+import './styles/analytics.css';
 
 // Wait for DOM to be ready
 document.addEventListener('DOMContentLoaded', () => {

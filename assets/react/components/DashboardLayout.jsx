@@ -9,6 +9,7 @@ import { SessionProvider } from '../context/SessionContext';
 import { ToastProvider } from '../context/ToastContext';
 import ToastContainer from './ToastContainer';
 import { SettingsProvider, useSettings } from '../context/SettingsContext';
+import AnalyticsPanel from './AnalyticsPanel';
 import { useLayoutStorage } from '../hooks/useLayoutStorage';
 import { useResize } from '../hooks/useResize';
 
@@ -77,6 +78,8 @@ function PanelContent({ panelId, sidebarTab, setSidebarTab, todoTab, setTodoTab,
             );
         case 'calendar':
             return <Calendar />;
+        case 'analytics':
+            return <AnalyticsPanel />;
         default:
             return null;
     }
