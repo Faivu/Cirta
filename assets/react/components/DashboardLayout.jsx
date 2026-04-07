@@ -21,12 +21,13 @@ const LAYOUT_DEFAULTS = {
     primaryPanel: 'session',
     secondaryPanel: 'calendar',
     isPrimaryLeft: true,
-    sidebarTab: 'timer',
-    todoTab: 'tasks',
     sidebarWidth: DEFAULT_SIDEBAR_WIDTH,
 };
 
-function PanelContent({ panelId, sidebarTab, setSidebarTab, todoTab, setTodoTab, taskFilter, setTaskFilter, fullPanel }) {
+function PanelContent({ panelId, taskFilter, setTaskFilter, fullPanel }) {
+    const [sidebarTab, setSidebarTab] = useState('timer');
+    const [todoTab, setTodoTab]       = useState('tasks');
+
     switch (panelId) {
         case 'session':
             return (
@@ -88,13 +89,11 @@ function PanelContent({ panelId, sidebarTab, setSidebarTab, todoTab, setTodoTab,
 function DashboardContent() {
     const { todoDefaultFilter } = useSettings();
     const [layout, setField] = useLayoutStorage(LAYOUT_STORAGE_KEY, LAYOUT_DEFAULTS);
-    const { primaryPanel, secondaryPanel, isPrimaryLeft, sidebarTab, todoTab, sidebarWidth } = layout;
+    const { primaryPanel, secondaryPanel, isPrimaryLeft, sidebarWidth } = layout;
 
     const setPrimaryPanel   = setField('primaryPanel');
     const setSecondaryPanel = setField('secondaryPanel');
     const setIsPrimaryLeft  = setField('isPrimaryLeft');
-    const setSidebarTab     = setField('sidebarTab');
-    const setTodoTab        = setField('todoTab');
     const setSidebarWidth   = setField('sidebarWidth');
 
     // taskFilter is a startup default from settings — not persisted in localStorage
@@ -175,10 +174,6 @@ function DashboardContent() {
                                 <div className={panelClass} style={style}>
                                     <PanelContent
                                         panelId={panelId}
-                                        sidebarTab={sidebarTab}
-                                        setSidebarTab={setSidebarTab}
-                                        todoTab={todoTab}
-                                        setTodoTab={setTodoTab}
                                         taskFilter={taskFilter}
                                         setTaskFilter={setTaskFilter}
                                         fullPanel={panels.length === 1}
