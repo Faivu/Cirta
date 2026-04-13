@@ -755,7 +755,7 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     font-weight: 500;
     color: var(--text-secondary);
 }
@@ -765,13 +765,13 @@
 .history-type.time_blocking { color: #b45309; }
 
 .history-duration {
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     font-weight: 600;
     color: var(--text-heading);
 }
 
 .history-goal {
-    font-size: 0.8rem;
+    font-size: 1.05rem;
     color: var(--text-secondary);
     margin-bottom: 4px;
     white-space: nowrap;
@@ -786,12 +786,12 @@
 }
 
 .history-time {
-    font-size: 0.7rem;
+    font-size: 0.85rem;
     color: var(--text-muted);
 }
 
 .history-status {
-    font-size: 0.65rem;
+    font-size: 0.72rem;
     font-weight: 600;
     padding: 1px 6px;
     border-radius: 4px;
