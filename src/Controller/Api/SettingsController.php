@@ -87,6 +87,9 @@ final class SettingsController extends AbstractController
         if (isset($data['timezone']) && $this->isValidTimezone($data['timezone'])) {
             $settings->setTimezone($data['timezone']);
         }
+        if (isset($data['darkMode'])) {
+            $settings->setDarkMode((bool) $data['darkMode']);
+        }
 
         $this->entityManager->flush();
 

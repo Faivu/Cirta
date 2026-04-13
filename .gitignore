@@ -33,7 +33,10 @@
 
 ###> Logs ###
 *.log
+
 ###< Logs ###
+dissertation_sections.txt
+*.pdf
 
 ###> PHP tools ###
 .php-cs-fixer.cache

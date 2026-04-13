@@ -1,6 +1,8 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import DashboardLayout from './components/DashboardLayout';
+import './styles/variables.css';
+import './styles/dark.css';
 import './styles/session.css';
 import './styles/dashboard.css';
 import './styles/analytics.css';

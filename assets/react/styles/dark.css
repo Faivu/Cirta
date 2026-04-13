@@ -1,0 +1,183 @@
+[data-theme="dark"] {
+    --bg:             #111827;
+    --bg-subtle:      #1f2937;
+    --bg-muted:       #374151;
+    --border:         #374151;
+    --border-strong:  #4b5563;
+    --text:           #f9fafb;
+    --text-heading:   #f3f4f6;
+    --text-secondary: #e5e7eb;
+    --text-tertiary:  #9ca3af;
+    --text-muted:     #6b7280;
+    --primary-subtle: #1e3a5f;
+    --primary-muted:  #1e3a8a;
+    --accent-subtle:  #2e1065;
+    --accent-muted:   #2d1b69;
+}
+
+/* Scrollbars */
+[data-theme="dark"] ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-track {
+    background: var(--bg-subtle);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: 4px;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+}
+
+/* Tooltips — keep dark background in both modes */
+[data-theme="dark"] .mainbar-view-toggle .toggle-label,
+[data-theme="dark"] .mainbar-swap-btn .toggle-label,
+[data-theme="dark"] .primary-slot .toggle-label,
+[data-theme="dark"] .mainbar-settings .toggle-label,
+[data-theme="dark"] .mainbar-feedback .toggle-label {
+    background: #374151;
+    color: #f9fafb;
+}
+
+[data-theme="dark"] .analytics-timeline-tooltip {
+    background: #374151;
+    color: #f9fafb;
+}
+
+[data-theme="dark"] .pomodoro-serious-tooltip {
+    background: #374151;
+    color: #f9fafb;
+}
+
+[data-theme="dark"] .pomodoro-serious-tooltip::before {
+    border-bottom-color: #374151;
+}
+
+/* Toggle knob — keep it light so it's visible on the track */
+[data-theme="dark"] .settings-toggle-knob {
+    background: #f9fafb;
+}
+
+/* Form inputs — browser defaults to white, override for dark */
+[data-theme="dark"] input:not([type="range"]):not(.timer-time-input),
+[data-theme="dark"] select,
+[data-theme="dark"] textarea {
+    background: var(--bg-subtle);
+    color: var(--text);
+    border-color: var(--border-strong);
+    color-scheme: dark;
+}
+
+/* Time Blocking digit colors + strategy colors */
+[data-theme="dark"] {
+    --tb-digit-bg:     #2e2610;
+    --tb-digit-color:  #e9a008;
+    --tb-digit-border: #a16207;
+
+    --strategy-pomodoro:      #dc2626;
+    --strategy-flowtime:      #2563eb;
+    --strategy-time-blocking: #e9a008;
+}
+
+/* Split screen sidebar panel — match full screen background */
+[data-theme="dark"] .dashboard-sidebar {
+    background: var(--bg);
+}
+
+/* Pomodoro timer — match button color in dark mode */
+[data-theme="dark"] .timer-progress-bar { stroke: #dc2626; }
+[data-theme="dark"] .timer-progress-bg  { stroke: #7f1d1d; }
+[data-theme="dark"] .timer-time         { color: #dc2626; }
+
+[data-theme="dark"] .timer-progress-bar.break      { stroke: #16a34a; }
+[data-theme="dark"] .timer.break-mode .timer-progress-bg { stroke: #14532d; }
+[data-theme="dark"] .timer.break-mode .timer-time  { color: #16a34a; }
+
+/* Start buttons — slightly muted in dark mode */
+[data-theme="dark"] .btn-pomodoro                  { background: #dc2626; }
+[data-theme="dark"] .btn-pomodoro:hover:not(:disabled) { background: #b91c1c; }
+
+[data-theme="dark"] .btn-primary                   { background: #1d4ed8; }
+[data-theme="dark"] .btn-primary:hover:not(:disabled)  { background: #1e40af; }
+
+[data-theme="dark"] .btn-timeblock                 { background: #e9a008; }
+[data-theme="dark"] .btn-timeblock:hover:not(:disabled){ background: #d97706; }
+
+[data-theme="dark"] .btn-success                   { background: #059669; }
+[data-theme="dark"] .btn-success:hover:not(:disabled)  { background: #047857; }
+
+/* React Big Calendar — override library hardcoded whites */
+[data-theme="dark"] .rbc-time-slot,
+[data-theme="dark"] .rbc-timeslot-group,
+[data-theme="dark"] .rbc-day-bg,
+[data-theme="dark"] .rbc-time-content,
+[data-theme="dark"] .rbc-time-view,
+[data-theme="dark"] .rbc-month-view,
+[data-theme="dark"] .rbc-agenda-view,
+[data-theme="dark"] .rbc-month-row,
+[data-theme="dark"] .rbc-date-cell,
+[data-theme="dark"] .rbc-off-range-bg {
+    background: var(--bg);
+}
+
+[data-theme="dark"] .rbc-calendar,
+[data-theme="dark"] .rbc-time-view,
+[data-theme="dark"] .rbc-month-view,
+[data-theme="dark"] .rbc-agenda-view,
+[data-theme="dark"] .rbc-time-header,
+[data-theme="dark"] .rbc-time-header-content,
+[data-theme="dark"] .rbc-time-content,
+[data-theme="dark"] .rbc-time-gutter,
+[data-theme="dark"] .rbc-time-header-gutter {
+    border-color: var(--border);
+}
+
+[data-theme="dark"] .rbc-time-view > .rbc-time-header {
+    border-bottom-color: var(--border);
+}
+
+[data-theme="dark"] .rbc-timeslot-group,
+[data-theme="dark"] .rbc-month-row,
+[data-theme="dark"] .rbc-day-bg + .rbc-day-bg,
+[data-theme="dark"] .rbc-header,
+[data-theme="dark"] .rbc-header + .rbc-header,
+[data-theme="dark"] .rbc-time-content > * + * > * {
+    border-color: var(--border);
+}
+
+[data-theme="dark"] .rbc-time-slot,
+[data-theme="dark"] .rbc-day-slot .rbc-time-slot {
+    border-color: #1e2a3a;
+}
+
+[data-theme="dark"] .rbc-label,
+[data-theme="dark"] .rbc-time-slot .rbc-label {
+    color: var(--text-tertiary);
+}
+
+[data-theme="dark"] .rbc-today {
+    background-color: var(--primary-subtle);
+}
+
+[data-theme="dark"] .rbc-off-range {
+    color: var(--text-muted);
+}
+
+[data-theme="dark"] .rbc-show-more {
+    color: #60a5fa;
+}
+
+/* Session-linked todo items */
+[data-theme="dark"] .todo-item.session-linked {
+    background: #1c1a00;
+    border-color: #713f12;
+}
+
+[data-theme="dark"] .todo-item.session-linked:hover {
+    background: #292500;
+}

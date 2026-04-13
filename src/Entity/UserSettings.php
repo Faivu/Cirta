@@ -62,6 +62,9 @@ class UserSettings extends BaseEntity
     #[ORM\Column(length: 64)]
     private string $timezone = 'UTC';
 
+    #[ORM\Column]
+    private bool $darkMode = false;
+
     public function getUser(): User
     {
         return $this->user;
@@ -114,4 +117,7 @@ class UserSettings extends BaseEntity
 
     public function getTimezone(): string { return $this->timezone; }
     public function setTimezone(string $v): static { $this->timezone = $v; return $this; }
+
+    public function isDarkMode(): bool { return $this->darkMode; }
+    public function setDarkMode(bool $v): static { $this->darkMode = $v; return $this; }
 }

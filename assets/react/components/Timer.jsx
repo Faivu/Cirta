@@ -59,7 +59,7 @@ function Timer({ elapsedSeconds, remainingSeconds, mode, isPaused }) {
     if (isTimeBlocking) {
         return (
             <div className={`timer mode-time_blocking ${isPaused ? 'paused' : ''}`}>
-                <SquareTimer chars={timeToChars(displayTime)} isPaused={isPaused} color="#e9a008" bgColor="#fffbeb" />
+                <SquareTimer chars={timeToChars(displayTime)} isPaused={isPaused} color="var(--tb-digit-color)" bgColor="var(--tb-digit-bg)" />
             </div>
         );
     }

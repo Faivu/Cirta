@@ -7,6 +7,7 @@ const TIMEZONES = Intl.supportedValuesOf
        'Asia/Shanghai', 'Asia/Kolkata', 'Australia/Sydney', 'Africa/Algiers'];
 
 const DEFAULTS = {
+    darkMode: false,
     calendarDragConfirm: true,
     calendarWeekStart: 'monday',
     calendarDefaultView: 'month',
@@ -32,6 +33,10 @@ export default function SettingsPage() {
     const [saveSuccess, setSaveSuccess] = useState(false);
 
     const isDirty = JSON.stringify(settings) !== JSON.stringify(saved);
+
+    useEffect(() => {
+        document.documentElement.dataset.theme = settings.darkMode ? 'dark' : 'light';
+    }, [settings.darkMode]);
 
     useEffect(() => {
         fetch('/api/settings', { headers: { Accept: 'application/json' } })
@@ -220,6 +225,17 @@ export default function SettingsPage() {
                         </div>
                         <TimezonePicker value={settings.timezone} onChange={set('timezone')} />
                     </div>
+                </section>
+
+                {/* Appearance */}
+                <section className="settings-section">
+                    <h2 className="settings-section-title">Appearance</h2>
+                    <ToggleSetting
+                        label="Dark mode"
+                        description="Switch the interface to a dark color scheme."
+                        value={settings.darkMode}
+                        onChange={set('darkMode')}
+                    />
                 </section>
 
                 {/* Account */}

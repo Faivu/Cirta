@@ -3,8 +3,8 @@
 body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: #f3f4f6;
-    color: #111827;
+    background: var(--bg-muted);
+    color: var(--text);
 }
 
 .settings-loading {
@@ -12,7 +12,7 @@ body {
     align-items: center;
     justify-content: center;
     height: 100vh;
-    color: #6b7280;
+    color: var(--text-tertiary);
 }
 
 .settings-page {
@@ -26,8 +26,8 @@ body {
     position: sticky;
     top: 0;
     z-index: 10;
-    background: #fff;
-    border-bottom: 1px solid #e5e7eb;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
     padding: 0 24px;
     height: 56px;
     display: flex;
@@ -39,20 +39,20 @@ body {
     display: flex;
     align-items: center;
     gap: 4px;
-    color: #6b7280;
+    color: var(--text-tertiary);
     text-decoration: none;
     font-size: 0.875rem;
     font-weight: 500;
     transition: color 0.15s;
 }
 
-.settings-back:hover { color: #111827; }
+.settings-back:hover { color: var(--text); }
 
 .settings-title {
     font-size: 1rem;
     font-weight: 600;
     margin: 0;
-    color: #111827;
+    color: var(--text);
 }
 
 /* Body */
@@ -69,8 +69,8 @@ body {
 
 /* Section */
 .settings-section {
-    background: #fff;
-    border: 1px solid #e5e7eb;
+    background: var(--bg);
+    border: 1px solid var(--border);
     border-radius: 12px;
     overflow: visible;
 }
@@ -80,12 +80,12 @@ body {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: #6b7280;
+    color: var(--text-tertiary);
     margin: 0;
     border-radius: 12px 12px 0 0;
     padding: 12px 20px;
-    border-bottom: 1px solid #f3f4f6;
-    background: #f9fafb;
+    border-bottom: 1px solid var(--bg-muted);
+    background: var(--bg-subtle);
 }
 
 /* Row */
@@ -95,7 +95,7 @@ body {
     justify-content: space-between;
     gap: 16px;
     padding: 14px 20px;
-    border-bottom: 1px solid #f3f4f6;
+    border-bottom: 1px solid var(--bg-muted);
 }
 
 .settings-row:last-child { border-bottom: none; }
@@ -106,13 +106,13 @@ body {
     gap: 2px;
     font-size: 0.875rem;
     font-weight: 500;
-    color: #111827;
+    color: var(--text);
 }
 
 .settings-row-desc {
     font-size: 0.78rem;
     font-weight: 400;
-    color: #6b7280;
+    color: var(--text-tertiary);
 }
 
 /* Toggle */
@@ -129,7 +129,7 @@ body {
 }
 
 .settings-toggle.on  { background: #2563eb; }
-.settings-toggle.off { background: #d1d5db; }
+.settings-toggle.off { background: var(--border-strong); }
 
 .settings-toggle-knob {
     position: absolute;
@@ -137,7 +137,7 @@ body {
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    background: #fff;
+    background: var(--bg);
     box-shadow: 0 1px 3px rgba(0,0,0,0.2);
     transition: left 0.2s;
 }
@@ -148,12 +148,12 @@ body {
 /* Select */
 .settings-select {
     flex-shrink: 0;
-    border: 1px solid #d1d5db;
+    border: 1px solid var(--border-strong);
     border-radius: 6px;
     padding: 6px 10px;
     font-size: 0.875rem;
-    color: #111827;
-    background: #fff;
+    color: var(--text);
+    background: var(--bg);
     cursor: pointer;
     min-width: 150px;
 }
@@ -199,8 +199,8 @@ body {
     top: calc(100% + 4px);
     left: 0;
     right: 0;
-    background: #fff;
-    border: 1px solid #d1d5db;
+    background: var(--bg);
+    border: 1px solid var(--border-strong);
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     max-height: 220px;
@@ -213,18 +213,18 @@ body {
 .tz-option {
     padding: 7px 12px;
     font-size: 0.875rem;
-    color: #374151;
+    color: var(--text-secondary);
     cursor: pointer;
     text-align: left;
     background: none;
     border: none;
-    border-bottom: 1px solid #f3f4f6;
+    border-bottom: 1px solid var(--bg-muted);
 }
 
 .tz-option:last-child { border-bottom: none; }
-.tz-option:hover { background: #f9fafb; }
-.tz-option.active { background: #eff6ff; color: #2563eb; font-weight: 500; }
-.tz-option.tz-empty { color: #9ca3af; cursor: default; }
+.tz-option:hover { background: var(--bg-subtle); }
+.tz-option.active { background: var(--primary-subtle); color: #2563eb; font-weight: 500; }
+.tz-option.tz-empty { color: var(--text-muted); cursor: default; }
 .tz-option.tz-empty:hover { background: none; }
 
 /* Number input */
@@ -237,11 +237,11 @@ body {
 
 .settings-number-input {
     width: 64px;
-    border: 1px solid #d1d5db;
+    border: 1px solid var(--border-strong);
     border-radius: 6px;
     padding: 6px 8px;
     font-size: 0.875rem;
-    color: #111827;
+    color: var(--text);
     text-align: center;
 }
 
@@ -253,7 +253,7 @@ body {
 
 .settings-number-unit {
     font-size: 0.8rem;
-    color: #6b7280;
+    color: var(--text-tertiary);
     min-width: 24px;
 }
 
@@ -266,7 +266,7 @@ body {
     padding: 6px 14px;
     border-radius: 6px;
     border: 1px solid #fca5a5;
-    background: #fff;
+    background: var(--bg);
     color: #dc2626;
     font-size: 0.875rem;
     font-weight: 500;
@@ -283,8 +283,8 @@ body {
     bottom: 0;
     left: 0;
     right: 0;
-    background: #fff;
-    border-top: 1px solid #e5e7eb;
+    background: var(--bg);
+    border-top: 1px solid var(--border);
     padding: 12px 24px;
     display: flex;
     align-items: center;

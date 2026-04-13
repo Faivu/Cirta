@@ -45,6 +45,7 @@ class SettingsService
             'todoKeepFinishedVisible'  => $settings->isTodoKeepFinishedVisible(),
             'todoUncheckedNoConfirm'   => $settings->isTodoUncheckedNoConfirm(),
             'timezone'                 => $settings->getTimezone(),
+            'darkMode'                 => $settings->isDarkMode(),
         ];
     }
 }
