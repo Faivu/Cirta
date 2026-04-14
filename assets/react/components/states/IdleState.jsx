@@ -20,7 +20,7 @@ function getStartAction(strategy, pomodoroMode) {
     return START_ACTIONS[strategy] ?? { label: 'Start Session', btnClass: 'btn-primary' };
 }
 
-function TimeBlockingPicker({ targetMinutes, onMinutesChange }) {
+export function TimeBlockingPicker({ targetMinutes, onMinutesChange }) {
     const hours = Math.floor(targetMinutes / 60);
     const mins  = targetMinutes % 60;
 

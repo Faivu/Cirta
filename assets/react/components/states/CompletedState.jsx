@@ -2,6 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import PomodoroModeSelector from '../PomodoroModeSelector';
 import TimerPreview from '../TimerPreview';
+import SquareTimer from '../SquareTimer';
+import { TimeBlockingPicker } from './IdleState';
+
 
 function CompletedState({
     strategy,
@@ -12,9 +15,11 @@ function CompletedState({
     loading,
     completionData,
     onModeChange,
+    onMinutesChange,
     onContinue,
     onGoalFinished,
     onMarkTaskDone,
+    onChangeGoal,
 }) {
     const noBreakAvailable = strategy === 'flowtime' && !completionData?.suggestedBreakDuration;
 
@@ -34,6 +39,15 @@ function CompletedState({
                 />
             )}
 
+            {strategy !== 'pomodoro' && <div className="mode-selector-spacer" />}
+
+            {strategy === 'flowtime' && (
+                <SquareTimer chars={['F','L','O','W']} idle />
+            )}
+            {strategy === 'time_blocking' && (
+                <TimeBlockingPicker targetMinutes={targetMinutes} onMinutesChange={onMinutesChange} />
+            )}
+
             {customGoal && (
                 <div className="current-goal">
                     {customGoal}
@@ -46,7 +60,12 @@ function CompletedState({
 
             <div className="completion-actions">
                 <button
-                    className={`btn ${pomodoroMode === 'pomodoro' ? 'btn-primary' : 'btn-success'}`}
+                    className={`btn ${
+                        strategy === 'flowtime'      ? 'btn-primary' :
+                        strategy === 'time_blocking' ? 'btn-timeblock' :
+                        pomodoroMode === 'pomodoro'  ? 'btn-pomodoro' :
+                        'btn-success'
+                    }`}
                     onClick={onContinue}
                     disabled={loading}
                 >
@@ -75,6 +94,13 @@ function CompletedState({
                         Goal Finished
                     </button>
                 )}
+                <button
+                    className="btn btn-secondary"
+                    onClick={onChangeGoal}
+                    disabled={loading}
+                >
+                    Return to Strategies
+                </button>
             </div>
         </div>
     );
@@ -89,9 +115,11 @@ CompletedState.propTypes = {
     loading: PropTypes.bool.isRequired,
     completionData: PropTypes.object,
     onModeChange: PropTypes.func.isRequired,
+    onMinutesChange: PropTypes.func.isRequired,
     onContinue: PropTypes.func.isRequired,
     onGoalFinished: PropTypes.func.isRequired,
     onMarkTaskDone: PropTypes.func.isRequired,
+    onChangeGoal: PropTypes.func.isRequired,
 };
 
 CompletedState.defaultProps = {

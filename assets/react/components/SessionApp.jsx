@@ -54,6 +54,12 @@ function SessionApp({ compact = false, fullPanel = false, onFullscreen = null })
     // Focus goal input after finishing
     const handleGoalFinishedWithFocus = () => {
         handleGoalFinished();
+    };
+
+    const handleChangeGoal = () => {
+        handleGoalFinished();
+        setLinkedTask(null);
+        setCustomGoal('');
         setTimeout(() => goalInputRef.current?.focus(), 0);
     };
 
@@ -139,9 +145,11 @@ function SessionApp({ compact = false, fullPanel = false, onFullscreen = null })
                     loading={loading}
                     completionData={completionData}
                     onModeChange={handleModeChange}
+                    onMinutesChange={setTargetMinutes}
                     onContinue={handleBreakEnd}
                     onGoalFinished={handleGoalFinishedWithFocus}
                     onMarkTaskDone={handleMarkTaskDoneWithFocus}
+                    onChangeGoal={handleChangeGoal}
                 />
             )}
 

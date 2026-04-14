@@ -1108,12 +1108,10 @@
         min-width: auto;
     }
 
-    .session-container.compact .completion-actions,
     .session-container.compact .break-actions {
         flex-direction: row;
     }
 
-    .session-container.compact .completion-actions .btn,
     .session-container.compact .break-actions .btn {
         min-width: 120px;
         width: auto;
@@ -1224,12 +1222,10 @@
     min-width: auto;
 }
 
-.session-container.compact.full-panel .completion-actions,
 .session-container.compact.full-panel .break-actions {
     flex-direction: row;
 }
 
-.session-container.compact.full-panel .completion-actions .btn,
 .session-container.compact.full-panel .break-actions .btn {
     min-width: 140px;
     width: auto;

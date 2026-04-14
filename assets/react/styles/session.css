@@ -213,12 +213,23 @@
 .pomodoro-mode-selector,
 .strategy-nav,
 .session-controls,
-.completion-actions,
 .break-actions,
 .modal-actions {
     display: flex;
     gap: 12px;
     justify-content: center;
+}
+
+.completion-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    max-width: 320px;
+}
+
+.completion-actions .btn {
+    width: 100%;
 }
 
 .session-idle,
@@ -868,9 +879,7 @@
     opacity: 0.6;
 }
 
-.square-timer.idle .square-timer-digit {
-    background: var(--primary-subtle);
-}
+
 
 .square-timer-group {
     display: flex;
@@ -884,7 +893,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--bg);
+    background: var(--primary-subtle);
     border: 2px solid #93c5fd;
     border-radius: 12px;
     font-size: 3.25rem;
