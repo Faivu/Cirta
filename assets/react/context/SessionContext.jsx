@@ -513,7 +513,7 @@ export function SessionProvider({ children }) {
     };
 
     const getRemainingSeconds = () => {
-        if (strategy !== 'pomodoro') return null;
+        if (strategy !== 'pomodoro' && strategy !== 'time_blocking') return null;
         return Math.max(0, targetMinutes * 60 - elapsedSeconds);
     };
 

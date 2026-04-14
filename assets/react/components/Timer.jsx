@@ -57,9 +57,18 @@ function Timer({ elapsedSeconds, remainingSeconds, mode, isPaused }) {
     }
 
     if (isTimeBlocking) {
+        const isLong = displayTime >= 3600;
+        const tbChars = isLong
+            ? (() => {
+                const h = Math.floor(displayTime / 3600);
+                const m = Math.floor((displayTime % 3600) / 60);
+                return `${String(h).padStart(2, '0')}${String(m).padStart(2, '0')}`.split('');
+            })()
+            : timeToChars(displayTime);
+        const tbLabels = isLong ? ['hrs', 'min'] : ['min', 'sec'];
         return (
             <div className={`timer mode-time_blocking ${isPaused ? 'paused' : ''}`}>
-                <SquareTimer chars={timeToChars(displayTime)} isPaused={isPaused} color="var(--tb-digit-color)" bgColor="var(--tb-digit-bg)" />
+                <SquareTimer chars={tbChars} isPaused={isPaused} color="var(--tb-digit-color)" bgColor="var(--tb-digit-bg)" labels={tbLabels} />
             </div>
         );
     }
