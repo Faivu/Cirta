@@ -46,7 +46,7 @@ function StrategySelector({ selected, onSelect, compact }) {
 
     if (compact) {
         return (
-            <div className="strategy-selector compact">
+            <div className="strategy-selector compact" data-strategy={selected}>
                 <div className="strategy-nav">
                     <button className="strategy-nav-btn" onClick={handlePrev} type="button">
                         &lt;

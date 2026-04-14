@@ -214,6 +214,7 @@ final class SessionController extends AbstractController
 
         if ($session instanceof Pomodoro) {
             $response['breakDuration'] = $session->getBreakDuration();
+            $response['breakType']     = $session->getBreakType();
         } elseif ($session instanceof Flowtime) {
             $response['suggestedBreakDuration'] = $session->getSuggestedBreakDuration();
         }

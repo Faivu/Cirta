@@ -9,8 +9,9 @@
     --text-secondary: #e5e7eb;
     --text-tertiary:  #9ca3af;
     --text-muted:     #6b7280;
-    --primary-subtle: #1e3a5f;
-    --primary-muted:  #1e3a8a;
+    --primary-subtle:  #1e3a5f;
+    --primary-muted:   #1e3a8a;
+    --pomodoro-subtle: #2d0a0a;
     --accent-subtle:  #2e1065;
     --accent-muted:   #2d1b69;
 }

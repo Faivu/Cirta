@@ -26,6 +26,11 @@ class Pomodoro extends Session
     #[ORM\Column]
     private int $breakDuration = 5;
 
+    /**
+     * Transient: break type determined at completion time, not persisted
+     */
+    private ?string $breakType = null;
+
 
     public function getTargetDuration(): int
     {
@@ -59,6 +64,18 @@ class Pomodoro extends Session
     public function setBreakDuration(int $breakDuration): static
     {
         $this->breakDuration = $breakDuration;
+
+        return $this;
+    }
+
+    public function getBreakType(): ?string
+    {
+        return $this->breakType;
+    }
+
+    public function setBreakType(string $breakType): static
+    {
+        $this->breakType = $breakType;
 
         return $this;
     }

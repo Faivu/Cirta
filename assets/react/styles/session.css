@@ -441,11 +441,11 @@
     align-items: center;
     justify-content: center;
     background: var(--bg);
-    border: 1px solid var(--border-strong);
+    border: 1px solid var(--strategy-selector-color, var(--border-strong));
     border-radius: 6px;
     cursor: pointer;
     font-size: 1rem;
-    color: var(--text-secondary);
+    color: var(--strategy-selector-color, var(--text-secondary));
     transition: all 0.2s ease;
 }
 
@@ -460,8 +460,8 @@
     justify-content: center;
     gap: 8px;
     padding: 8px 16px;
-    background: var(--primary-subtle);
-    border: 1px solid #3b82f6;
+    background: var(--strategy-selector-bg, var(--primary-subtle));
+    border: 1px solid var(--strategy-selector-color, #3b82f6);
     border-radius: 8px;
     min-width: 140px;
 }
@@ -473,7 +473,23 @@
 .strategy-name {
     font-size: 0.9rem;
     font-weight: 500;
-    color: #1d4ed8;
+    color: var(--strategy-selector-color, #1d4ed8);
+}
+
+/* Per-strategy colors */
+.strategy-selector[data-strategy="pomodoro"] {
+    --strategy-selector-color: var(--strategy-pomodoro);
+    --strategy-selector-bg:    var(--pomodoro-subtle);
+}
+
+.strategy-selector[data-strategy="flowtime"] {
+    --strategy-selector-color: #3b82f6;
+    --strategy-selector-bg:    var(--primary-subtle);
+}
+
+.strategy-selector[data-strategy="time_blocking"] {
+    --strategy-selector-color: var(--strategy-time-blocking);
+    --strategy-selector-bg:    var(--tb-digit-bg);
 }
 
 /* Sticky Start Button */

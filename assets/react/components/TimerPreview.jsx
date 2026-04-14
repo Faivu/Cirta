@@ -42,6 +42,8 @@ function TimerPreview({ mode, minutes, editable, onMinutesChange }) {
                             onChange={(e) => onMinutesChange(Math.max(1, Math.min(99, parseInt(e.target.value) || 1)))}
                             min="1"
                             max="99"
+                            maxLength="2"
+                            onInput={(e) => { if (e.target.value.length > 2) e.target.value = e.target.value.slice(0, 2); }}
                         />
                         <span className="timer-time-separator">:</span>
                         <span className="timer-time-seconds">00</span>

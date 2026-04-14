@@ -19,6 +19,9 @@
     --primary-subtle:  #eff6ff;
     --primary-muted:   #dbeafe;
 
+    /* Strategy subtle backgrounds */
+    --pomodoro-subtle: #fef2f2;
+
     /* Purple accent tints */
     --accent-subtle:   #ede9fe;
     --accent-muted:    #ddd6fe;

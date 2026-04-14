@@ -231,7 +231,9 @@ export function SessionProvider({ children }) {
             // Only count and suggest break for successfully completed sessions
             if (completionData?.breakDuration) {
                 setPomodoroCount(prev => prev + 1);
-                setPomodoroMode(completionData.breakDuration >= 15 ? 'longBreak' : 'shortBreak');
+                const newMode = completionData.breakType === 'long' ? 'longBreak' : 'shortBreak';
+                setPomodoroMode(newMode);
+                setTargetMinutes(newMode === 'longBreak' ? settings.pomodoroLongBreak : settings.pomodoroShortBreak);
             }
         }
     }, [status, strategy, sessionId, completionData]);
