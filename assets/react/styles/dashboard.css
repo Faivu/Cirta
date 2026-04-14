@@ -497,6 +497,12 @@
 }
 
 /* Topbar divider */
+.mainbar-primary-info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .mainbar-divider {
     grid-row: 5;
     width: 28px;
