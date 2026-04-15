@@ -1,5 +1,14 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useSettings } from '../context/SettingsContext';
+import InfoButton from './InfoButton';
+
+const ANALYTICS_SLIDES = [
+    {
+        title: 'Analytics',
+        description: 'In the Analytics Panel, you can track your progress across days, weeks and months with relevant metrics around your focus time, you can also see which strategies you used and how often. Use the app consistently and watch you statistics go up!',
+        media: '/videos/Analytics_tutorial.mp4',
+    },
+];
 
 const RANGES = [
     { id: 'today', label: 'Day' },
@@ -145,6 +154,9 @@ export default function AnalyticsPanel() {
     return (
         <div className="analytics-panel">
             <div className="analytics-range">
+                <div className="analytics-range-info">
+                    <InfoButton slides={ANALYTICS_SLIDES} />
+                </div>
                 {RANGES.map(r => (
                     <button
                         key={r.id}

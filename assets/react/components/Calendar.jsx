@@ -8,6 +8,14 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 import { useSettings } from '../context/SettingsContext';
 import ConfirmModal from './ConfirmModal';
+import InfoButton from './InfoButton';
+
+const CALENDAR_SLIDES = [
+    {
+        title: 'Calendar',
+        description: 'Schedule and track your events across month, week, and day views. Click any slot to create an event, or drag existing events to reschedule them. You can also drag events from one day to another and resize them to adjust their duration.',
+    },
+];
 
 const locales = { 'en-US': enUS };
 
@@ -58,25 +66,28 @@ function CustomToolbar({ label, onNavigate, onView, view }) {
                 </button>
                 <span className="toolbar-label">{label}</span>
             </div>
-            <div className="toolbar-views">
-                <button
-                    className={view === 'month' ? 'active' : ''}
-                    onClick={() => onView('month')}
-                >
-                    Month
-                </button>
-                <button
-                    className={view === 'week' ? 'active' : ''}
-                    onClick={() => onView('week')}
-                >
-                    Week
-                </button>
-                <button
-                    className={view === 'day' ? 'active' : ''}
-                    onClick={() => onView('day')}
-                >
-                    Day
-                </button>
+            <div className="toolbar-views-wrap">
+                <InfoButton slides={CALENDAR_SLIDES} />
+                <div className="toolbar-views">
+                    <button
+                        className={view === 'month' ? 'active' : ''}
+                        onClick={() => onView('month')}
+                    >
+                        Month
+                    </button>
+                    <button
+                        className={view === 'week' ? 'active' : ''}
+                        onClick={() => onView('week')}
+                    >
+                        Week
+                    </button>
+                    <button
+                        className={view === 'day' ? 'active' : ''}
+                        onClick={() => onView('day')}
+                    >
+                        Day
+                    </button>
+                </div>
             </div>
         </div>
     );

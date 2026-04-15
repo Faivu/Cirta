@@ -100,6 +100,26 @@ function MainBar({ primaryPanel, secondaryPanel, onTogglePanel, onSetPrimary, on
                 <img src="/images/logo.png" alt="Cirta" className="mainbar-logo" />
             </div>
 
+            <div className="mainbar-primary-info">
+                <InfoButton slides={[
+                    {
+                        title: 'Setting a Primary Panel',
+                        description: 'If you drag and drop panel icon into the Primary Slot, that panel will be selected as a primary panel. To unset it, drag the icon back down.',
+                        media: '/videos/Primary_panel_tutorial.mp4',
+                    },
+                    {
+                        title: 'Split Screen',
+                        description: 'The primary panel remain open even if you open another one, enabling you to open two panels at the same time! (split screen)',
+                        media: '/videos/Primary_panel_tutorial_2.mp4',
+                    },
+                    {
+                        title: 'Customise Your Layout',
+                        description: 'In the split screen mode, You can customise the width and position of the two panels as you prefer, and it will stay the same when you open it later.',
+                        media: '/videos/Primary_panel_tutorial_3.mp4',
+                    },
+                ]} />
+            </div>
+
             {/* Swap button + primary slot — outside mainbar-middle so they never shift */}
             <button
                 className={`mainbar-swap-btn ${primaryPanel && secondaryPanel ? '' : 'invisible'}`}
@@ -143,26 +163,6 @@ function MainBar({ primaryPanel, secondaryPanel, onTogglePanel, onSetPrimary, on
                         <span className="toggle-label">Drag and drop a panel icon to set it as primary</span>
                     </>
                 )}
-            </div>
-
-            <div className="mainbar-primary-info">
-                <InfoButton slides={[
-                    {
-                        title: 'Setting a Primary Panel',
-                        description: 'If you drag and drop panel icon into the Primary Slot, that panel will be selected as a primary panel. To unset it, drag the icon back down.',
-                        media: '/videos/Primary_panel_tutorial.mp4',
-                    },
-                    {
-                        title: 'Split Screen',
-                        description: 'The primary panel remain open even if you open another one, enabling you to open two panels at the same time! (split screen)',
-                        media: '/videos/Primary_panel_tutorial_2.mp4',
-                    },
-                    {
-                        title: 'Customise Your Layout',
-                        description: 'In the split screen mode, You can customise the width and position of the two panels as you prefer, and it will stay the same when you open it later.',
-                        media: '/videos/Primary_panel_tutorial_3.mp4',
-                    },
-                ]} />
             </div>
 
             <div className="mainbar-divider" />

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 
 function MediaSlot({ src }) {
@@ -47,7 +48,7 @@ function InfoModal({ isOpen, slides, onClose }) {
     const slide = slides[index];
     const total = slides.length;
 
-    return (
+    return ReactDOM.createPortal(
         <div className="modal-overlay" onClick={onClose}>
             <div className="info-modal" onClick={(e) => e.stopPropagation()}>
                 <button className="info-modal-close" onClick={onClose} aria-label="Close">
@@ -111,7 +112,8 @@ function InfoModal({ isOpen, slides, onClose }) {
                 )}
 
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }
 

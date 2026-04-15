@@ -21,8 +21,17 @@
 .analytics-range {
     display: flex;
     justify-content: center;
+    align-items: center;
     border-bottom: 1px solid var(--border);
     flex-shrink: 0;
+    position: relative;
+}
+
+.analytics-range-info {
+    position: absolute;
+    right: 12px;
+    display: flex;
+    align-items: center;
 }
 
 .analytics-range-btn {
