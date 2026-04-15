@@ -328,6 +328,11 @@
     flex-shrink: 0;
 }
 
+.analytics-legend-pct {
+    color: var(--text-tertiary);
+    font-size: 0.75rem;
+}
+
 /* Timeline legend */
 .analytics-timeline-legend {
     display: flex;

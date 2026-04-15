@@ -1,10 +1,16 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useSettings } from '../context/SettingsContext';
 
 const RANGES = [
     { id: 'today', label: 'Day' },
     { id: 'week',  label: 'Week'  },
     { id: 'month', label: 'Month' },
 ];
+
+const WEEK_START_MAP = {
+    sunday: 0, monday: 1, tuesday: 2, wednesday: 3,
+    thursday: 4, friday: 5, saturday: 6,
+};
 
 const STRATEGY_META = {
     pomodoro:      { label: 'Pomodoro',      color: 'var(--strategy-pomodoro)' },
@@ -31,12 +37,21 @@ function isToday(dateStr) {
     return dateStr === toDateStr(new Date());
 }
 
+/** Return the Monday (or configured weekday) on or before `date` */
+function getCalendarWeekStart(date, weekStartDay) {
+    const d = new Date(date);
+    d.setHours(0, 0, 0, 0);
+    const diff = (d.getDay() - weekStartDay + 7) % 7;
+    d.setDate(d.getDate() - diff);
+    return d;
+}
+
 /** Compute the from/to Date objects for a given range + offset (0 = current, 1 = previous, …) */
-function computeDates(range, offset) {
-    const DAYS = range === 'week' ? 7 : 30;
+function computeDates(range, offset, weekStartDay) {
+    const today = new Date();
 
     if (range === 'today') {
-        const from = new Date();
+        const from = new Date(today);
         from.setDate(from.getDate() - offset);
         from.setHours(0, 0, 0, 0);
         const to = new Date(from);
@@ -44,28 +59,41 @@ function computeDates(range, offset) {
         return { from, to };
     }
 
-    // week / month
-    const to = new Date();
-    if (offset > 0) {
-        to.setDate(to.getDate() - DAYS * offset);
+    if (range === 'week') {
+        const from = getCalendarWeekStart(today, weekStartDay);
+        from.setDate(from.getDate() - offset * 7);
+        from.setHours(0, 0, 0, 0);
+        const to = new Date(from);
+        to.setDate(to.getDate() + 6);
         to.setHours(23, 59, 59, 999);
+        return { from, to };
     }
-    const from = new Date(to);
-    from.setDate(from.getDate() - (DAYS - 1));
+
+    // month — proper calendar month
+    const target = new Date(today.getFullYear(), today.getMonth() - offset, 1);
+    const from = new Date(target.getFullYear(), target.getMonth(), 1);
     from.setHours(0, 0, 0, 0);
+    const to = new Date(target.getFullYear(), target.getMonth() + 1, 0);
+    to.setHours(23, 59, 59, 999);
     return { from, to };
 }
 
-function getPeriodLabel(range, offset, from, to) {
+function getPeriodLabel(range, offset, from) {
     if (range === 'today') {
         if (offset === 0) return 'Today';
         if (offset === 1) return 'Yesterday';
         return from.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
     }
-    if (offset === 0) return range === 'week' ? 'This week' : 'This month';
-    if (offset === 1) return range === 'week' ? 'Last week' : 'Last month';
-    const fmt = d => d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-    return `${fmt(from)} – ${fmt(to)}`;
+    if (range === 'week') {
+        if (offset === 0) return 'This week';
+        if (offset === 1) return 'Last week';
+        const to = new Date(from);
+        to.setDate(to.getDate() + 6);
+        const fmt = d => d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+        return `${fmt(from)} – ${fmt(to)}`;
+    }
+    // month — always show full month name
+    return from.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
 }
 
 /** Build a full list of date strings (no gaps) between from and to */
@@ -82,19 +110,6 @@ function buildDayList(from, to) {
     return days;
 }
 
-function sampleDays(days, n) {
-    if (days.length <= n) return days;
-    const result = [];
-    const step = (days.length - 1) / (n - 1);
-    for (let i = 0; i < n; i++) result.push(days[Math.round(i * step)]);
-    return result;
-}
-
-function formatDayLabel(dateStr, range) {
-    const d = new Date(dateStr + 'T00:00:00');
-    if (range === 'month') return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-    return d.toLocaleDateString(undefined, { weekday: 'short' });
-}
 
 export default function AnalyticsPanel() {
     const [range, setRange]   = useState('today');
@@ -103,8 +118,11 @@ export default function AnalyticsPanel() {
     const [loading, setLoading] = useState(true);
     const [error, setError]   = useState(null);
 
-    const { from, to } = useMemo(() => computeDates(range, offset), [range, offset]);
-    const periodLabel   = getPeriodLabel(range, offset, from, to);
+    const { calendarWeekStart } = useSettings();
+    const weekStartDay = WEEK_START_MAP[calendarWeekStart] ?? 1;
+
+    const { from, to } = useMemo(() => computeDates(range, offset, weekStartDay), [range, offset, weekStartDay]);
+    const periodLabel   = getPeriodLabel(range, offset, from);
 
     const handleRangeChange = (newRange) => {
         setRange(newRange);
@@ -229,21 +247,23 @@ function getYTicks(maxMins) {
     return ticks;
 }
 
-function buildWeeks(from, to) {
-    const weeks = [];
-    const cursor = new Date(from);
-    cursor.setHours(0, 0, 0, 0);
-    const end = new Date(to);
-    end.setHours(0, 0, 0, 0);
-    while (cursor <= end) {
-        const weekStart = new Date(cursor);
-        const weekEnd = new Date(cursor);
-        weekEnd.setDate(weekEnd.getDate() + 6);
-        if (weekEnd > end) weekEnd.setTime(end.getTime());
-        weeks.push({ start: toDateStr(weekStart), end: toDateStr(weekEnd) });
-        cursor.setDate(cursor.getDate() + 7);
-    }
-    return weeks;
+/** Split a month into exactly 4 chunks: days 1–7, 8–14, 15–21, 22–end */
+function buildMonthChunks(from) {
+    const year  = from.getFullYear();
+    const month = from.getMonth();
+    const lastDay = new Date(year, month + 1, 0).getDate();
+    const monthShort = from.toLocaleDateString(undefined, { month: 'short' });
+
+    const boundaries = [1, 8, 15, 22, lastDay + 1];
+    return boundaries.slice(0, 4).map((startDay, i) => {
+        const endDay = boundaries[i + 1] - 1;
+        return {
+            start:    toDateStr(new Date(year, month, startDay)),
+            end:      toDateStr(new Date(year, month, endDay)),
+            label:    `${startDay}–${endDay}`,
+            sublabel: monthShort,
+        };
+    });
 }
 
 function DailyChart({ data, range, from, to }) {
@@ -258,25 +278,14 @@ function DailyChart({ data, range, from, to }) {
     // Build display items — days for week view, weeks for month view
     let items;
     if (range === 'month') {
-        items = buildWeeks(from, to).map(w => {
-            const days = buildDayList(new Date(w.start), new Date(w.end));
+        items = buildMonthChunks(from).map(w => {
+            const days = buildDayList(new Date(w.start + 'T00:00:00'), new Date(w.end + 'T00:00:00'));
             const mins = days.reduce((sum, d) => sum + (dayMap[d] || 0), 0);
             const stratMins = {};
             days.forEach(d => Object.entries(stratByDay[d] || {}).forEach(([s, m]) => {
                 stratMins[s] = (stratMins[s] || 0) + m;
             }));
-            const startD = new Date(w.start + 'T00:00:00');
-            const endD   = new Date(w.end   + 'T00:00:00');
-            const sameMonth = startD.getMonth() === endD.getMonth();
-            let label, sublabel;
-            if (sameMonth) {
-                label    = `${startD.getDate()}–${endD.getDate()}`;
-                sublabel = startD.toLocaleDateString(undefined, { month: 'short' });
-            } else {
-                label    = `${startD.getDate()} ${startD.toLocaleDateString(undefined, { month: 'short' })}`;
-                sublabel = `– ${endD.getDate()} ${endD.toLocaleDateString(undefined, { month: 'short' })}`;
-            }
-            return { key: w.start, label, sublabel, mins, segments: Object.entries(stratMins), today: days.includes(toDateStr(new Date())) };
+            return { key: w.start, label: w.label, sublabel: w.sublabel, mins, segments: Object.entries(stratMins), today: days.includes(toDateStr(new Date())) };
         });
     } else {
         const allDays = buildDayList(from, to);
@@ -292,6 +301,12 @@ function DailyChart({ data, range, from, to }) {
             };
         });
     }
+
+    const stratTotals = {};
+    items.forEach(item => item.segments.forEach(([s, m]) => {
+        stratTotals[s] = (stratTotals[s] || 0) + m;
+    }));
+    const stratTotal = Object.values(stratTotals).reduce((a, b) => a + b, 0);
 
     const maxMinutes = Math.max(...items.map(i => i.mins), 120);
     const ticks = getYTicks(maxMinutes);
@@ -345,12 +360,16 @@ function DailyChart({ data, range, from, to }) {
                 )}
             </div>
             <div className="analytics-timeline-legend">
-                {Object.entries(STRATEGY_META).map(([key, meta]) => (
-                    <div key={key} className="analytics-legend-item">
-                        <span className="analytics-legend-dot" style={{ background: meta.color }} />
-                        <span className="analytics-strategy-name">{meta.label}</span>
-                    </div>
-                ))}
+                {Object.entries(STRATEGY_META).map(([key, meta]) => {
+                    const pct = stratTotal > 0 ? Math.round((stratTotals[key] || 0) / stratTotal * 100) : 0;
+                    return (
+                        <div key={key} className="analytics-legend-item">
+                            <span className="analytics-legend-dot" style={{ background: meta.color }} />
+                            <span className="analytics-strategy-name">{meta.label}</span>
+                            <span className="analytics-legend-pct">{pct > 0 ? `${pct}%` : '—'}</span>
+                        </div>
+                    );
+                })}
             </div>
         </div>
     );
@@ -413,10 +432,14 @@ function StrategyBreakdown({ data }) {
     );
 }
 
-function formatHour(h) {
-    if (h === 0 || h === 24) return '12am';
-    if (h === 12) return '12pm';
-    return h < 12 ? `${h}am` : `${h - 12}pm`;
+function formatTimeLabel(totalMinutes) {
+    const h = Math.floor(totalMinutes / 60) % 24;
+    const m = totalMinutes % 60;
+    const period = h < 12 ? 'am' : 'pm';
+    const hour12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+    return m > 0
+        ? `${hour12}:${String(m).padStart(2, '0')}${period}`
+        : `${hour12}${period}`;
 }
 
 function DayTimeline({ data }) {
@@ -455,10 +478,14 @@ function DayTimeline({ data }) {
     const viewEnd   = Math.min(MINUTES_IN_DAY, Math.max(...endMinutes) + PAD);
     const viewRange = viewEnd - viewStart;
 
-    const startHour = Math.ceil(viewStart / 60);
-    const endHour   = Math.floor(viewEnd / 60);
-    const ticks = [];
-    for (let h = startHour; h <= endHour; h++) ticks.push(h);
+    const stratTotals = {};
+    sessions.forEach(s => { stratTotals[s.strategy] = (stratTotals[s.strategy] || 0) + s.duration; });
+    const stratTotal = Object.values(stratTotals).reduce((a, b) => a + b, 0);
+
+    const startLabels = sessions.map((_, i) => ({
+        pct:  ((startMinutes[i] - viewStart) / viewRange) * 100,
+        text: formatTimeLabel(startMinutes[i]),
+    }));
 
     return (
         <div className="analytics-section">
@@ -491,24 +518,24 @@ function DayTimeline({ data }) {
                     </div>
                 </div>
                 <div className="analytics-timeline-labels">
-                    {ticks.map(h => (
-                        <span
-                            key={h}
-                            className="analytics-timeline-label"
-                            style={{ left: `${((h * 60 - viewStart) / viewRange) * 100}%` }}
-                        >
-                            {formatHour(h)}
+                    {startLabels.map((l, i) => (
+                        <span key={i} className="analytics-timeline-label" style={{ left: `${l.pct}%` }}>
+                            {l.text}
                         </span>
                     ))}
                 </div>
             </div>
             <div className="analytics-timeline-legend">
-                {Object.entries(STRATEGY_META).map(([key, meta]) => (
-                    <div key={key} className="analytics-legend-item">
-                        <span className="analytics-legend-dot" style={{ background: meta.color }} />
-                        <span className="analytics-strategy-name">{meta.label}</span>
-                    </div>
-                ))}
+                {Object.entries(STRATEGY_META).map(([key, meta]) => {
+                    const pct = stratTotal > 0 ? Math.round((stratTotals[key] || 0) / stratTotal * 100) : 0;
+                    return (
+                        <div key={key} className="analytics-legend-item">
+                            <span className="analytics-legend-dot" style={{ background: meta.color }} />
+                            <span className="analytics-strategy-name">{meta.label}</span>
+                            <span className="analytics-legend-pct">{pct > 0 ? `${pct}%` : '—'}</span>
+                        </div>
+                    );
+                })}
             </div>
         </div>
     );
