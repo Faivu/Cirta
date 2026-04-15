@@ -182,3 +182,12 @@
 [data-theme="dark"] .todo-item.session-linked:hover {
     background: #292500;
 }
+
+[data-theme="dark"] .todo-section-due .todo-section-count {
+    background: #2d0a0a;
+    color: #f87171;
+}
+
+[data-theme="dark"] .todo-section-due .todo-section-header {
+    color: #f87171;
+}

@@ -23,7 +23,6 @@ function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
     const [newTitle, setNewTitle] = useState('');
     const [scheduleDate, setScheduleDate] = useState('');
     const [showAddForm, setShowAddForm] = useState(false);
-    const [editMode, setEditMode] = useState(false);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [editingId, setEditingId] = useState(null);
@@ -156,7 +155,6 @@ function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
     };
 
     const startEditing = (task) => {
-        if (!editMode) return;
         if (linkedTask?.id === task.id) {
             showToast({
                 title: 'Task is linked to an active session',
@@ -228,16 +226,6 @@ function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
         }
     };
 
-    const toggleEditMode = () => {
-        if (editMode) {
-            // Exiting edit mode — cancel any in-progress edit
-            setEditingId(null);
-            setEditShowDates(false);
-        }
-        setEditMode(!editMode);
-        setShowAddForm(false);
-    };
-
     const toggleSection = (key) => {
         setCollapsedSections((prev) => ({ ...prev, [key]: !prev[key] }));
     };
@@ -246,7 +234,6 @@ function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
         setShowAddForm(true);
         setNewTitle('');
         setScheduleDate(filter === 'today' ? new Date().toISOString().split('T')[0] : '');
-        setEditMode(false);
         setEditingId(null);
     };
 
@@ -281,6 +268,15 @@ function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
             && schedule.getDate() === today.getDate();
     };
 
+    const isOverdue = (t) => {
+        if (!t.scheduleDate) return false;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const schedule = new Date(t.scheduleDate);
+        schedule.setHours(0, 0, 0, 0);
+        return schedule < today;
+    };
+
     // Filter tasks based on view and filter
     const getFilteredTasks = () => {
         if (view === 'history') {
@@ -305,13 +301,16 @@ function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
         ? filteredTasks.filter((t) => t.isChecked)
         : [];
 
-    // For 'all' filter: split into 3 groups
-    // noDate and upcoming show only unchecked; today shows all (checked + unchecked)
+    // For 'all' filter: split into 4 groups
+    // noDate, due, upcoming show only unchecked; today shows all (checked + unchecked)
     const noDateTasks = (view === 'tasks' && filter === 'all')
         ? tasks.filter((t) => !t.isChecked && !t.scheduleDate)
         : [];
+    const dueTasks = (view === 'tasks' && filter === 'all')
+        ? tasks.filter((t) => !t.isChecked && isOverdue(t))
+        : [];
     const upcomingTasks = (view === 'tasks' && filter === 'all')
-        ? tasks.filter((t) => !t.isChecked && t.scheduleDate && !isScheduledForToday(t))
+        ? tasks.filter((t) => !t.isChecked && t.scheduleDate && !isScheduledForToday(t) && !isOverdue(t))
         : [];
     const todayGroupTasks = (view === 'tasks' && filter === 'all')
         ? tasks.filter(isScheduledForToday)
@@ -401,13 +400,12 @@ function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
             );
         }
 
-        const draggable = !editMode && !isChecked;
+        const draggable = !isChecked;
 
         return (
             <div
                 key={task.id}
-                className={`todo-item ${isChecked ? 'checked' : ''} ${editMode ? 'edit-mode' : ''} ${draggable ? 'draggable' : ''} ${linkedTask?.id === task.id ? 'session-linked' : ''}`}
-                onClick={() => startEditing(task)}
+                className={`todo-item ${isChecked ? 'checked' : ''} ${draggable ? 'draggable' : ''} ${linkedTask?.id === task.id ? 'session-linked' : ''}`}
                 draggable={draggable}
                 onDragStart={draggable ? (e) => {
                     e.dataTransfer.setData('taskId', task.id);
@@ -449,18 +447,28 @@ function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
                         </div>
                     )}
                 </div>
-                {editMode && (
+                <div className="todo-card-actions">
                     <button
-                        className="todo-delete visible"
+                        className="todo-card-btn"
+                        onClick={(e) => { e.stopPropagation(); startEditing(task); }}
+                        title="Edit"
+                    >
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                        </svg>
+                    </button>
+                    <button
+                        className="todo-card-btn todo-card-delete"
                         onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }}
                         title="Delete"
                     >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
                             <line x1="18" y1="6" x2="6" y2="18" />
                             <line x1="6" y1="6" x2="18" y2="18" />
                         </svg>
                     </button>
-                )}
+                </div>
             </div>
         );
     };
@@ -473,7 +481,7 @@ function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
         const checked = key === 'today' ? sectionTasks.filter((t) => t.isChecked) : [];
 
         return (
-            <div key={key} className="todo-section">
+            <div key={key} className={`todo-section${key === 'due' && sectionTasks.length > 0 ? ' todo-section-due' : ''}`}>
                 <button
                     type="button"
                     className="todo-section-header"
@@ -550,9 +558,10 @@ function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
                     </div>
                 ) : view === 'tasks' && filter === 'all' ? (
                     <div className="todo-items">
-                        {renderSection('noDate', 'No date', noDateTasks)}
-                        {renderSection('upcoming', 'Upcoming', upcomingTasks)}
+                        {renderSection('due', 'Due', dueTasks)}
                         {renderSection('today', 'Today', todayGroupTasks)}
+                        {renderSection('upcoming', 'Upcoming', upcomingTasks)}
+                        {renderSection('noDate', 'No date', noDateTasks)}
                     </div>
                 ) : (
                     <div className="todo-items">
@@ -566,26 +575,12 @@ function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
             </div>
 
             {view === 'tasks' && (
-                <div className="todo-bottom-bar">
-                    <button
-                        className="todo-bottom-btn"
-                        onClick={openAddModal}
-                    >
+                <div className="todo-footer">
+                    <button className="todo-add-fab" onClick={openAddModal} title="Add task">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                             <line x1="12" y1="5" x2="12" y2="19" />
                             <line x1="5" y1="12" x2="19" y2="12" />
                         </svg>
-                        <span>Add</span>
-                    </button>
-                    <button
-                        className={`todo-bottom-btn ${editMode ? 'active' : ''}`}
-                        onClick={toggleEditMode}
-                    >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                        </svg>
-                        <span>{editMode ? 'Done' : 'Edit'}</span>
                     </button>
                 </div>
             )}
