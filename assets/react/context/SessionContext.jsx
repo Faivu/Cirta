@@ -221,6 +221,7 @@ export function SessionProvider({ children }) {
         if (status === 'break' && breakSeconds === 0 && breakDuration > 0 && sessionId) {
             apiCall(`/api/session/${sessionId}/break`, 'POST', { duration: breakDuration }).catch(() => {});
             setPomodoroMode('pomodoro');
+            setTargetMinutes(settings.pomodoroWorkDuration);
         }
     }, [status, breakSeconds]);
 
@@ -416,13 +417,15 @@ export function SessionProvider({ children }) {
 
         setLoading(true);
         setBreakDuration(0);
+        setTargetMinutes(settings.pomodoroWorkDuration);
 
         try {
+            const workDuration = strategy === 'pomodoro' ? settings.pomodoroWorkDuration : targetMinutes;
             const payload = {
                 strategy,
                 customGoal: customGoal || null,
                 taskId: linkedTask?.id ?? null,
-                ...((strategy === 'pomodoro' || strategy === 'time_blocking') && { targetDuration: targetMinutes }),
+                ...((strategy === 'pomodoro' || strategy === 'time_blocking') && { targetDuration: workDuration }),
             };
 
             const data = await apiCall('/api/session/start', 'POST', payload);
@@ -440,6 +443,7 @@ export function SessionProvider({ children }) {
     const handleReset = () => {
         setStrategy('pomodoro');
         setPomodoroMode('pomodoro');
+        setTargetMinutes(settings.pomodoroWorkDuration);
         setPomodoroCount(0);
         setStatus('idle');
         setSessionId(null);
@@ -481,6 +485,7 @@ export function SessionProvider({ children }) {
 
     const handleGoalFinished = () => {
         setPomodoroMode('pomodoro');
+        setTargetMinutes(settings.pomodoroWorkDuration);
         setStatus('idle');
         setSessionId(null);
         setElapsedSeconds(0);
