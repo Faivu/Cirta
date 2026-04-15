@@ -18,6 +18,28 @@ const WEEK_START_MAP = {
 
 const DnDCalendar = withDragAndDrop(BigCalendar);
 
+const PALETTE = [
+    '#3b82f6', '#ef4444', '#22c55e', '#a855f7',
+    '#f97316', '#ec4899', '#14b8a6', '#f59e0b',
+    '#6366f1', '#6b7280',
+];
+
+function ColorSwatches({ selected, onChange }) {
+    return (
+        <div className="calendar-color-swatches">
+            {PALETTE.map(c => (
+                <button
+                    key={c}
+                    type="button"
+                    className={`calendar-color-swatch${selected === c ? ' selected' : ''}`}
+                    style={{ background: c }}
+                    onClick={() => onChange(c)}
+                />
+            ))}
+        </div>
+    );
+}
+
 /**
  * Custom toolbar component
  */
@@ -120,7 +142,11 @@ function Calendar() {
     const [selectedSlot, setSelectedSlot] = useState(null);
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [newEventTitle, setNewEventTitle] = useState('');
+    const [newEventColor, setNewEventColor] = useState(PALETTE[0]);
+    const [newEventAllDay, setNewEventAllDay] = useState(false);
     const [editEventTitle, setEditEventTitle] = useState('');
+    const [editEventColor, setEditEventColor] = useState(PALETTE[0]);
+    const [editEventAllDay, setEditEventAllDay] = useState(false);
     const [saving, setSaving] = useState(false);
 
     // Tooltip state
@@ -272,8 +298,8 @@ function Calendar() {
         return () => document.removeEventListener('mousedown', hideTooltip);
     }, [hideTooltip]);
 
-    // Tooltip handlers
-    const handleEventMouseEnter = (event, e) => {
+    // Tooltip handlers — memoized so components object stays stable across tooltip state changes
+    const handleEventMouseEnter = useCallback((event, e) => {
         const rect = e.currentTarget.getBoundingClientRect();
         setTooltip({
             visible: true,
@@ -281,9 +307,20 @@ function Calendar() {
             x: rect.left + rect.width / 2,
             y: rect.top - 10,
         });
-    };
+    }, []);
 
     const handleEventMouseLeave = hideTooltip;
+
+    const calendarComponents = useMemo(() => ({
+        toolbar: CustomToolbar,
+        event: (props) => (
+            <CustomEvent
+                {...props}
+                onMouseEnter={handleEventMouseEnter}
+                onMouseLeave={handleEventMouseLeave}
+            />
+        ),
+    }), [handleEventMouseEnter, handleEventMouseLeave]);
 
     // Handle event click - show event details modal
     const handleSelectEvent = (event) => {
@@ -298,7 +335,11 @@ function Calendar() {
     const handleCloseEventModal = async () => {
         if (saving) return;
 
-        const hasChanges = isEditing && editEventTitle !== selectedEvent?.title;
+        const hasChanges = isEditing && (
+            editEventTitle !== selectedEvent?.title ||
+            editEventColor !== (selectedEvent?.resource?.color || PALETTE[0]) ||
+            editEventAllDay !== (selectedEvent?.allDay ?? false)
+        );
         if (hasChanges) {
             const confirmed = await showConfirm({
                 title: 'Discard Changes',
@@ -328,6 +369,8 @@ function Calendar() {
         }
         setShowCreateModal(false);
         setNewEventTitle('');
+        setNewEventColor(PALETTE[0]);
+        setNewEventAllDay(false);
     };
 
     // Handle slot selection - open create modal
@@ -348,6 +391,8 @@ function Calendar() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     title: newEventTitle,
+                    color: newEventColor,
+                    allDay: newEventAllDay,
                     startAt: selectedSlot.start.toISOString(),
                     endAt: selectedSlot.end.toISOString(),
                 }),
@@ -371,6 +416,8 @@ function Calendar() {
             }]);
             setShowCreateModal(false);
             setNewEventTitle('');
+            setNewEventColor(PALETTE[0]);
+            setNewEventAllDay(false);
             setSelectedSlot(null);
         } catch (err) {
             setError(err.message);
@@ -390,6 +437,8 @@ function Calendar() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     title: editEventTitle,
+                    color: editEventColor,
+                    allDay: editEventAllDay,
                 }),
             });
 
@@ -400,7 +449,7 @@ function Calendar() {
             const updatedEvent = await response.json();
             setEvents(prev => prev.map(e =>
                 e.id === selectedEvent.id
-                    ? { ...e, title: updatedEvent.title }
+                    ? { ...e, title: updatedEvent.title, allDay: updatedEvent.allDay, resource: { ...e.resource, color: updatedEvent.color } }
                     : e
             ));
             setShowEventModal(false);
@@ -541,16 +590,7 @@ function Calendar() {
                 step={15}
                 timeslots={4}
                 views={['month', 'week', 'day']}
-                components={{
-                    toolbar: CustomToolbar,
-                    event: (props) => (
-                        <CustomEvent
-                            {...props}
-                            onMouseEnter={handleEventMouseEnter}
-                            onMouseLeave={handleEventMouseLeave}
-                        />
-                    ),
-                }}
+                components={calendarComponents}
                 formats={{
                     eventTimeRangeFormat: () => null,
                     timeGutterFormat: timeFmt,
@@ -581,8 +621,20 @@ function Calendar() {
                             autoFocus
                         />
                         <p className="calendar-modal-time">
-                            {selectedSlot && format(selectedSlot.start, 'PPp')} - {selectedSlot && format(selectedSlot.end, 'p')}
+                            {selectedSlot && (newEventAllDay
+                                ? format(selectedSlot.start, 'PP')
+                                : `${format(selectedSlot.start, 'PPp')} - ${format(selectedSlot.end, 'p')}`
+                            )}
                         </p>
+                        <ColorSwatches selected={newEventColor} onChange={setNewEventColor} />
+                        <label className="calendar-modal-allday">
+                            <input
+                                type="checkbox"
+                                checked={newEventAllDay}
+                                onChange={(e) => setNewEventAllDay(e.target.checked)}
+                            />
+                            All day
+                        </label>
                         <div className="calendar-modal-actions">
                             <button
                                 onClick={handleCloseCreateModal}
@@ -620,23 +672,37 @@ function Calendar() {
                             </button>
                         )}
                         {isEditing ? (
-                            <input
-                                type="text"
-                                value={editEventTitle}
-                                onChange={(e) => setEditEventTitle(e.target.value)}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter' && editEventTitle.trim() && !saving) {
-                                        handleUpdateEvent();
-                                    }
-                                }}
-                                className="calendar-modal-input"
-                                autoFocus
-                            />
+                            <>
+                                <input
+                                    type="text"
+                                    value={editEventTitle}
+                                    onChange={(e) => setEditEventTitle(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' && editEventTitle.trim() && !saving) {
+                                            handleUpdateEvent();
+                                        }
+                                    }}
+                                    className="calendar-modal-input"
+                                    autoFocus
+                                />
+                                <ColorSwatches selected={editEventColor} onChange={setEditEventColor} />
+                                <label className="calendar-modal-allday">
+                                    <input
+                                        type="checkbox"
+                                        checked={editEventAllDay}
+                                        onChange={(e) => setEditEventAllDay(e.target.checked)}
+                                    />
+                                    All day
+                                </label>
+                            </>
                         ) : (
                             <h3>{selectedEvent.title}</h3>
                         )}
                         <p className="calendar-modal-time">
-                            {format(selectedEvent.start, 'PPp')} - {format(selectedEvent.end, 'p')}
+                            {selectedEvent.allDay
+                                ? format(selectedEvent.start, 'PP')
+                                : `${format(selectedEvent.start, 'PPp')} - ${format(selectedEvent.end, 'p')}`
+                            }
                         </p>
                         <div className="calendar-modal-actions">
                             {isEditing ? (
@@ -659,18 +725,23 @@ function Calendar() {
                             ) : (
                                 <>
                                     <button
-                                        onClick={() => setIsEditing(true)}
+                                        onClick={handleDeleteEvent}
+                                        className="calendar-modal-btn delete"
+                                        disabled={saving}
+                                        style={{ marginRight: 'auto' }}
+                                    >
+                                        {saving ? 'Deleting...' : 'Delete'}
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setIsEditing(true);
+                                            setEditEventColor(selectedEvent.resource?.color || PALETTE[0]);
+                                            setEditEventAllDay(selectedEvent.allDay ?? false);
+                                        }}
                                         className="calendar-modal-btn confirm"
                                         disabled={saving}
                                     >
                                         Edit
-                                    </button>
-                                    <button
-                                        onClick={handleDeleteEvent}
-                                        className="calendar-modal-btn delete"
-                                        disabled={saving}
-                                    >
-                                        {saving ? 'Deleting...' : 'Delete'}
                                     </button>
                                 </>
                             )}
