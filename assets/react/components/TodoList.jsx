@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import DatePicker from './DatePicker';
+import ConfirmModal from './ConfirmModal';
 import { useSession } from '../context/SessionContext';
 import { useToast } from '../context/ToastContext';
 import { useSettings } from '../context/SettingsContext';
@@ -30,8 +31,18 @@ function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
     const [editScheduleDate, setEditScheduleDate] = useState('');
     const [editShowDates, setEditShowDates] = useState(false);
     const [collapsedSections, setCollapsedSections] = useState({});
+    const [confirmModal, setConfirmModal] = useState({ isOpen: false });
     const inputRef = useRef(null);
     const editFormRef = useRef(null);
+
+    const showConfirm = useCallback((options) => new Promise((resolve) => {
+        setConfirmModal({ ...options, isOpen: true, resolve });
+    }), []);
+
+    const handleConfirmResponse = (result) => {
+        confirmModal.resolve(result);
+        setConfirmModal({ isOpen: false });
+    };
 
     useEffect(() => {
         fetchTasks();
@@ -102,7 +113,13 @@ function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
 
         // Confirm before unchecking from history or today view (unless disabled in settings)
         if (!todoUncheckedNoConfirm && currentChecked && (view === 'history' || (view === 'tasks' && filter === 'today'))) {
-            if (!window.confirm('Uncheck this task?')) return;
+            const confirmed = await showConfirm({
+                title: 'Uncheck Task',
+                message: 'Mark this task as not done?',
+                confirmText: 'Uncheck',
+                cancelText: 'Cancel',
+            });
+            if (!confirmed) return;
         }
 
         if (newChecked) playTickSound();
@@ -138,7 +155,14 @@ function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
             });
             return;
         }
-        if (!window.confirm('Delete this task?')) return;
+        const confirmed = await showConfirm({
+            title: 'Delete Task',
+            message: 'Are you sure you want to delete this task?',
+            confirmText: 'Delete',
+            cancelText: 'Cancel',
+            destructive: true,
+        });
+        if (!confirmed) return;
 
         const prev = tasks;
         setTasks((t) => t.filter((task) => task.id !== id));
@@ -637,6 +661,17 @@ function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
                     </div>
                 </div>
             )}
+
+            <ConfirmModal
+                isOpen={confirmModal.isOpen}
+                title={confirmModal.title}
+                message={confirmModal.message || ''}
+                confirmText={confirmModal.confirmText}
+                cancelText={confirmModal.cancelText}
+                destructive={confirmModal.destructive}
+                onConfirm={() => handleConfirmResponse(true)}
+                onCancel={() => handleConfirmResponse(false)}
+            />
         </div>
     );
 }

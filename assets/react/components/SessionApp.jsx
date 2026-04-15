@@ -177,6 +177,7 @@ function SessionApp({ compact = false, fullPanel = false, onFullscreen = null })
                 message="Are you sure you want to end this session? Your progress will be saved if you worked for one minute or more."
                 confirmText="End"
                 cancelText="Continue Working"
+                destructive={true}
                 onConfirm={confirmInterrupt}
                 onCancel={closeConfirmModal}
             />

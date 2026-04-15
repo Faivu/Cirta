@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 /**
  * ConfirmModal - A simple confirmation dialog
  */
-function ConfirmModal({ isOpen, title, message, onConfirm, onCancel, confirmText, cancelText }) {
+function ConfirmModal({ isOpen, title, message, onConfirm, onCancel, confirmText, cancelText, destructive }) {
     if (!isOpen) return null;
 
     return (
@@ -16,7 +16,7 @@ function ConfirmModal({ isOpen, title, message, onConfirm, onCancel, confirmText
                     <button className="btn btn-secondary" onClick={onCancel}>
                         {cancelText}
                     </button>
-                    <button className="btn btn-danger" onClick={onConfirm}>
+                    <button className={`btn ${destructive ? 'btn-danger' : 'btn-primary'}`} onClick={onConfirm}>
                         {confirmText}
                     </button>
                 </div>
@@ -33,12 +33,14 @@ ConfirmModal.propTypes = {
     onCancel: PropTypes.func.isRequired,
     confirmText: PropTypes.string,
     cancelText: PropTypes.string,
+    destructive: PropTypes.bool,
 };
 
 ConfirmModal.defaultProps = {
     title: null,
     confirmText: 'Confirm',
     cancelText: 'Cancel',
+    destructive: false,
 };
 
 export default ConfirmModal;

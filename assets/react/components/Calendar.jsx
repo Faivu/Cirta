@@ -7,6 +7,7 @@ import enUS from 'date-fns/locale/en-US';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 import { useSettings } from '../context/SettingsContext';
+import ConfirmModal from './ConfirmModal';
 
 const locales = { 'en-US': enUS };
 
@@ -124,6 +125,18 @@ function Calendar() {
 
     // Tooltip state
     const [tooltip, setTooltip] = useState({ visible: false, event: null, x: 0, y: 0 });
+
+    // Confirm modal state
+    const [confirmModal, setConfirmModal] = useState({ isOpen: false });
+
+    const showConfirm = useCallback((options) => new Promise((resolve) => {
+        setConfirmModal({ ...options, isOpen: true, resolve });
+    }), []);
+
+    const handleConfirmResponse = (result) => {
+        confirmModal.resolve(result);
+        setConfirmModal({ isOpen: false });
+    };
 
     // Dynamic localizer based on week start setting
     const localizer = useMemo(() => {
@@ -282,35 +295,39 @@ function Calendar() {
     };
 
     // Handle closing event modal with unsaved changes check
-    const handleCloseEventModal = () => {
+    const handleCloseEventModal = async () => {
         if (saving) return;
 
         const hasChanges = isEditing && editEventTitle !== selectedEvent?.title;
         if (hasChanges) {
-            if (window.confirm('You have unsaved changes. Are you sure you want to discard them?')) {
-                setShowEventModal(false);
-                setIsEditing(false);
-            }
-        } else {
-            setShowEventModal(false);
-            setIsEditing(false);
+            const confirmed = await showConfirm({
+                title: 'Discard Changes',
+                message: 'You have unsaved changes. Are you sure you want to discard them?',
+                confirmText: 'Discard',
+                cancelText: 'Keep Editing',
+            });
+            if (!confirmed) return;
         }
+        setShowEventModal(false);
+        setIsEditing(false);
     };
 
     // Handle closing create modal with unsaved changes check
-    const handleCloseCreateModal = () => {
+    const handleCloseCreateModal = async () => {
         if (saving) return;
 
         const hasChanges = newEventTitle.trim() !== '';
         if (hasChanges) {
-            if (window.confirm('You have unsaved changes. Are you sure you want to discard them?')) {
-                setShowCreateModal(false);
-                setNewEventTitle('');
-            }
-        } else {
-            setShowCreateModal(false);
-            setNewEventTitle('');
+            const confirmed = await showConfirm({
+                title: 'Discard Changes',
+                message: 'You have unsaved changes. Are you sure you want to discard them?',
+                confirmText: 'Discard',
+                cancelText: 'Keep Editing',
+            });
+            if (!confirmed) return;
         }
+        setShowCreateModal(false);
+        setNewEventTitle('');
     };
 
     // Handle slot selection - open create modal
@@ -400,6 +417,15 @@ function Calendar() {
     const handleDeleteEvent = async () => {
         if (!selectedEvent) return;
 
+        const confirmed = await showConfirm({
+            title: 'Delete Event',
+            message: `Delete "${selectedEvent.title}"? This cannot be undone.`,
+            confirmText: 'Delete',
+            cancelText: 'Cancel',
+            destructive: true,
+        });
+        if (!confirmed) return;
+
         setSaving(true);
         try {
             const response = await fetch(`/api/events/${selectedEvent.id}`, {
@@ -422,7 +448,15 @@ function Calendar() {
 
     // Handle event drag and drop (move event)
     const handleEventDrop = async ({ event, start, end }) => {
-        if (calendarDragConfirm && !window.confirm('Move this event?')) return;
+        if (calendarDragConfirm) {
+            const confirmed = await showConfirm({
+                title: 'Move Event',
+                message: `Move "${event.title}" to the new time?`,
+                confirmText: 'Move',
+                cancelText: 'Cancel',
+            });
+            if (!confirmed) return;
+        }
         try {
             const response = await fetch(`/api/events/${event.id}`, {
                 method: 'PUT',
@@ -673,6 +707,17 @@ function Calendar() {
                     )}
                 </div>
             )}
+
+            <ConfirmModal
+                isOpen={confirmModal.isOpen}
+                title={confirmModal.title}
+                message={confirmModal.message || ''}
+                confirmText={confirmModal.confirmText}
+                cancelText={confirmModal.cancelText}
+                destructive={confirmModal.destructive}
+                onConfirm={() => handleConfirmResponse(true)}
+                onCancel={() => handleConfirmResponse(false)}
+            />
         </div>
     );
 }
