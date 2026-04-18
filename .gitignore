@@ -37,6 +37,7 @@
 ###< Logs ###
 dissertation_sections.txt
 *.pdf
+*.xls
 
 ###> PHP tools ###
 .php-cs-fixer.cache

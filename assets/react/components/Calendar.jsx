@@ -14,6 +14,7 @@ const CALENDAR_SLIDES = [
     {
         title: 'Calendar',
         description: 'Schedule and track your events across month, week, and day views. Click any slot to create an event, or drag existing events to reschedule them. You can also drag events from one day to another and resize them to adjust their duration.',
+        media: '/images/Calendar_tutorial.png',
     },
 ];
 
