@@ -39,8 +39,7 @@
 [data-theme="dark"] .mainbar-view-toggle .toggle-label,
 [data-theme="dark"] .mainbar-swap-btn .toggle-label,
 [data-theme="dark"] .primary-slot .toggle-label,
-[data-theme="dark"] .mainbar-settings .toggle-label,
-[data-theme="dark"] .mainbar-feedback .toggle-label {
+[data-theme="dark"] .mainbar-settings .toggle-label {
     background: #374151;
     color: #f9fafb;
 }

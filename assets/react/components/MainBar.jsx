@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import FeedbackPanel from './FeedbackPanel';
 import InfoButton from './InfoButton';
 
 const PANEL_CONFIG = {
@@ -49,7 +48,6 @@ const PANEL_CONFIG = {
 
 function MainBar({ primaryPanel, secondaryPanel, onTogglePanel, onSetPrimary, onRemoveFromSlot, onSwap }) {
     const [isDragOver, setIsDragOver] = useState(false);
-    const [feedbackOpen, setFeedbackOpen] = useState(false);
 
     const isOpen = (panelId) => panelId === primaryPanel || panelId === secondaryPanel;
 
@@ -94,7 +92,6 @@ function MainBar({ primaryPanel, secondaryPanel, onTogglePanel, onSetPrimary, on
     };
 
     return (
-        <>
         <div className="mainbar">
             <div className="mainbar-top">
                 <img src="/images/logo.png" alt="Cirta" className="mainbar-logo" />
@@ -191,15 +188,6 @@ function MainBar({ primaryPanel, secondaryPanel, onTogglePanel, onSetPrimary, on
             </div>
 
             <div className="mainbar-bottom">
-                <button
-                    className={`mainbar-feedback ${feedbackOpen ? 'active' : ''}`}
-                    onClick={() => setFeedbackOpen(prev => !prev)}
-                >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                    </svg>
-                    <span className="toggle-label">Share feedback</span>
-                </button>
                 <a href="/settings" className="mainbar-settings">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <circle cx="12" cy="12" r="3" />
@@ -209,9 +197,6 @@ function MainBar({ primaryPanel, secondaryPanel, onTogglePanel, onSetPrimary, on
                 </a>
             </div>
         </div>
-
-        <FeedbackPanel isOpen={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
-        </>
     );
 }
 
