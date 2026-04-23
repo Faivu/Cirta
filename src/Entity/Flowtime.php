@@ -19,12 +19,6 @@ class Flowtime extends Session
     #[ORM\Column]
     private int $breakRatio = 5;
 
-    /**
-     * Suggested break duration in minutes (calculated after session ends)
-     */
-    #[ORM\Column(nullable: true)]
-    private ?int $suggestedBreakDuration = null;
-
     public function getBreakRatio(): int
     {
         return $this->breakRatio;
@@ -38,33 +32,14 @@ class Flowtime extends Session
     }
 
     /**
-     * Get suggested break duration in minutes
-     */
-    public function getSuggestedBreakDuration(): ?int
-    {
-        return $this->suggestedBreakDuration;
-    }
-
-    /**
-     * Set suggested break duration in minutes
-     */
-    public function setSuggestedBreakDuration(?int $suggestedBreakDuration): static
-    {
-        $this->suggestedBreakDuration = $suggestedBreakDuration;
-
-        return $this;
-    }
-
-    /**
      * Override end() to calculate suggested break duration
      */
     public function end(): static
     {
         parent::end();
 
-        // Calculate suggested break duration based on actual work time
         if ($this->actualDuration !== null && $this->actualDuration > 0) {
-            $this->suggestedBreakDuration = (int) ceil($this->actualDuration / $this->breakRatio);
+            $this->suggestedBreak = (int) ceil($this->actualDuration / $this->breakRatio);
         }
 
         return $this;

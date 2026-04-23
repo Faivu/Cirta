@@ -346,8 +346,8 @@ export function SessionProvider({ children }) {
             const data = await apiCall(`/api/session/${sessionId}/end`, 'POST', { actualDuration });
             setCompletionData(data);
 
-            if (strategy === 'flowtime' && data.suggestedBreakDuration) {
-                const earnedSeconds = Math.max(0, data.suggestedBreakDuration * 60 - flowPauseSeconds);
+            if (strategy === 'flowtime' && data.suggestedBreak) {
+                const earnedSeconds = Math.max(0, data.suggestedBreak * 60 - flowPauseSeconds);
                 if (earnedSeconds > 0) {
                     setBreakDuration(Math.round(earnedSeconds / 60));
                     setBreakSeconds(earnedSeconds);
@@ -381,8 +381,8 @@ export function SessionProvider({ children }) {
             const data = await apiCall(`/api/session/${sessionId}/${endpoint}`, 'POST', { actualDuration });
             setCompletionData(data);
 
-            if (strategy === 'flowtime' && data.suggestedBreakDuration) {
-                const earnedSeconds = Math.max(0, data.suggestedBreakDuration * 60 - flowPauseSeconds);
+            if (strategy === 'flowtime' && data.suggestedBreak) {
+                const earnedSeconds = Math.max(0, data.suggestedBreak * 60 - flowPauseSeconds);
                 if (earnedSeconds > 0) {
                     setBreakDuration(Math.round(earnedSeconds / 60));
                     setBreakSeconds(earnedSeconds);

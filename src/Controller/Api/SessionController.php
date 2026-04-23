@@ -216,7 +216,7 @@ final class SessionController extends AbstractController
             $response['breakDuration'] = $session->getBreakDuration();
             $response['breakType']     = $session->getBreakType();
         } elseif ($session instanceof Flowtime) {
-            $response['suggestedBreakDuration'] = $session->getSuggestedBreakDuration();
+            $response['suggestedBreak'] = $session->getSuggestedBreak();
         }
 
         return $this->json($response);
@@ -318,7 +318,7 @@ final class SessionController extends AbstractController
             $data['targetDuration'] = $session->getTargetDuration();
             $data['breakDuration']  = $session->getBreakDuration();
         } elseif ($session instanceof Flowtime) {
-            $data['suggestedBreakDuration'] = $session->getSuggestedBreakDuration();
+            $data['suggestedBreak'] = $session->getSuggestedBreak();
         }
 
         return $data;

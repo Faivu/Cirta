@@ -67,6 +67,12 @@ abstract class Session extends BaseEntity
     protected int $pauseDuration = 0;
 
     /**
+     * Suggested break duration in minutes (set at session end, Flowtime only for now)
+     */
+    #[ORM\Column(nullable: true)]
+    protected ?int $suggestedBreak = null;
+
+    /**
      * Actual break taken after this session in minutes (null if not recorded)
      */
     #[ORM\Column(nullable: true)]
@@ -187,6 +193,18 @@ abstract class Session extends BaseEntity
     public function setPauseDuration(int $pauseDuration): static
     {
         $this->pauseDuration = $pauseDuration;
+
+        return $this;
+    }
+
+    public function getSuggestedBreak(): ?int
+    {
+        return $this->suggestedBreak;
+    }
+
+    public function setSuggestedBreak(?int $suggestedBreak): static
+    {
+        $this->suggestedBreak = $suggestedBreak;
 
         return $this;
     }

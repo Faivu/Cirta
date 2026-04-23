@@ -21,7 +21,7 @@ function CompletedState({
     onMarkTaskDone,
     onChangeGoal,
 }) {
-    const noBreakAvailable = strategy === 'flowtime' && !completionData?.suggestedBreakDuration;
+    const noBreakAvailable = strategy === 'flowtime' && !completionData?.suggestedBreak;
 
     return (
         <div className="session-completed">
