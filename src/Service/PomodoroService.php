@@ -9,15 +9,17 @@ use App\Entity\Task;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 
-class PomodoroService implements SessionStrategy
+class PomodoroService extends AbstractTimedSessionService
 {
     private const DEFAULT_DURATION = 25;
     private const POMODOROS_BEFORE_LONG_BREAK = 4;
 
     public function __construct(
-        private EntityManagerInterface $entityManager,
+        EntityManagerInterface $entityManager,
         private SettingsService $settingsService,
-    ) {}
+    ) {
+        parent::__construct($entityManager);
+    }
 
     /**
      * Start a new Pomodoro session
@@ -57,32 +59,6 @@ class PomodoroService implements SessionStrategy
     }
 
     /**
-     * Pause the session
-     */
-    public function pauseSession(Session $session): void
-    {
-        if (!$session instanceof Pomodoro) {
-            throw new \InvalidArgumentException('Expected Pomodoro session');
-        }
-
-        $session->pause();
-        $this->entityManager->flush();
-    }
-
-    /**
-     * Resume the session
-     */
-    public function resumeSession(Session $session): void
-    {
-        if (!$session instanceof Pomodoro) {
-            throw new \InvalidArgumentException('Expected Pomodoro session');
-        }
-
-        $session->resume();
-        $this->entityManager->flush();
-    }
-
-    /**
      * End/complete the session
      */
     public function endSession(Session $session, ?int $actualDuration = null): void
@@ -104,12 +80,6 @@ class PomodoroService implements SessionStrategy
 
         $session->setActualDuration($actualDuration);
         $session->end();
-
-        if ($session->getStartedAt() !== null) {
-            $interval = $session->getStartedAt()->diff($session->getEndedAt());
-            $wallTimeMinutes = ($interval->days * 24 * 60) + ($interval->h * 60) + $interval->i;
-            $session->setPauseDuration(max(0, $wallTimeMinutes - $actualDuration));
-        }
 
         // Count sessions already completed today (current session not flushed yet, so not included)
         $alreadyCompleted = $this->countCompletedToday($session->getUser());
@@ -171,13 +141,11 @@ class PomodoroService implements SessionStrategy
         $this->entityManager->flush();
     }
 
-    /**
-     * Record actual break taken
-     */
-    public function recordBreak(Session $session, int $duration): void
+    protected function assertType(Session $session): void
     {
-        $session->setBreakAfter($duration);
-        $this->entityManager->flush();
+        if (!$session instanceof Pomodoro) {
+            throw new \InvalidArgumentException('Expected Pomodoro session');
+        }
     }
 
     /**

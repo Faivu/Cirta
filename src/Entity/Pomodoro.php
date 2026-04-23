@@ -63,6 +63,22 @@ class Pomodoro extends Session
     }
 
     /**
+     * Override end() to calculate pause duration
+     */
+    public function end(): static
+    {
+        parent::end();
+
+        if ($this->startedAt !== null && $this->actualDuration !== null) {
+            $interval = $this->startedAt->diff($this->endedAt);
+            $wallTimeMinutes = ($interval->days * 24 * 60) + ($interval->h * 60) + $interval->i;
+            $this->pauseDuration = max(0, $wallTimeMinutes - $this->actualDuration);
+        }
+
+        return $this;
+    }
+
+    /**
      * Check if the Pomodoro has reached its target duration
      */
     public function hasReachedTarget(int $elapsedMinutes): bool

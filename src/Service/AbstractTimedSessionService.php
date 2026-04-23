@@ -49,28 +49,7 @@ abstract class AbstractTimedSessionService implements SessionStrategy
 
     public function interruptSession(Session $session, ?int $actualDuration = null): void
     {
-        $this->assertType($session);
-
-        if ($session->getStartedAt() !== null) {
-            $elapsed = (int) ((time() - $session->getStartedAt()->getTimestamp()) / 60);
-            if ($elapsed < Session::MIN_DURATION) {
-                $this->entityManager->remove($session);
-                $this->entityManager->flush();
-                return;
-            }
-        }
-
-        $session->setEndedAt(new \DateTime());
-        $session->interrupt();
-
-        if ($actualDuration !== null) {
-            $session->setActualDuration($actualDuration);
-        } elseif ($session->getStartedAt() !== null) {
-            $interval = $session->getStartedAt()->diff($session->getEndedAt());
-            $session->setActualDuration(($interval->days * 24 * 60) + ($interval->h * 60) + $interval->i);
-        }
-
-        $this->entityManager->flush();
+        $this->endSession($session, $actualDuration);
     }
 
     public function recordBreak(Session $session, int $duration): void
