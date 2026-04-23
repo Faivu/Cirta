@@ -5,7 +5,7 @@ namespace App\Service;
 use App\Entity\Session;
 use Doctrine\ORM\EntityManagerInterface;
 
-abstract class AbstractTimedSessionService implements SessionStrategy
+abstract class SessionService implements SessionStrategy
 {
 
     public function __construct(
@@ -45,11 +45,6 @@ abstract class AbstractTimedSessionService implements SessionStrategy
 
         $session->end();
         $this->entityManager->flush();
-    }
-
-    public function interruptSession(Session $session, ?int $actualDuration = null): void
-    {
-        $this->endSession($session, $actualDuration);
     }
 
     public function recordBreak(Session $session, int $duration): void

@@ -9,7 +9,7 @@ use App\Entity\Task;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 
-class PomodoroService extends AbstractTimedSessionService
+class PomodoroService extends SessionService
 {
     private const DEFAULT_DURATION = 25;
     private const POMODOROS_BEFORE_LONG_BREAK = 4;

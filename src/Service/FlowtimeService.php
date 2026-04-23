@@ -9,7 +9,7 @@ use App\Entity\Task;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 
-class FlowtimeService extends AbstractTimedSessionService
+class FlowtimeService extends SessionService
 {
     public function __construct(
         EntityManagerInterface $entityManager,

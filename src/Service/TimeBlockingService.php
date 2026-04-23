@@ -8,7 +8,7 @@ use App\Entity\Task;
 use App\Entity\TimeBlocking;
 use App\Entity\User;
 
-class TimeBlockingService extends AbstractTimedSessionService
+class TimeBlockingService extends SessionService
 {
     public function startSession(User $user, ?string $customGoal = null, ?Task $task = null, ?Event $event = null, ?int $targetDuration = null): TimeBlocking
     {

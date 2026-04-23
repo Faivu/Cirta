@@ -9,8 +9,8 @@ use App\Entity\Session;
 use App\Entity\Task;
 use App\Entity\TimeBlocking;
 use App\Repository\SessionRepository;
+use App\Service\SessionService;
 use App\Service\SessionStrategy;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -22,7 +22,6 @@ use Symfony\Component\Routing\Attribute\Route;
 final class SessionController extends AbstractController
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
         private SessionRepository $sessionRepository,
         private ServiceLocator $strategies,
     ) {}
@@ -236,7 +235,13 @@ final class SessionController extends AbstractController
         $data           = json_decode($request->getContent(), true) ?? [];
         $actualDuration = isset($data['actualDuration']) ? (int) $data['actualDuration'] : null;
 
-        $this->strategyForSession($session)->interruptSession($session, $actualDuration);
+        if (!$session instanceof Pomodoro) {
+            return $this->json(['error' => 'Interrupt is only available for Pomodoro sessions'], Response::HTTP_BAD_REQUEST);
+        }
+
+        /** @var \App\Service\PomodoroService $pomodoroService */
+        $pomodoroService = $this->strategies->get('pomodoro');
+        $pomodoroService->interruptSession($session, $actualDuration);
 
         if ($session->getId() === null) {
             return $this->json(['deleted' => true]);
@@ -327,7 +332,7 @@ final class SessionController extends AbstractController
     /**
      * Get the strategy service for a given session
      */
-    private function strategyForSession(Session $session): SessionStrategy
+    private function strategyForSession(Session $session): SessionService
     {
         $key = match (true) {
             $session instanceof Pomodoro     => 'pomodoro',
