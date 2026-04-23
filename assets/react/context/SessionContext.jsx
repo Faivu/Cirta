@@ -480,6 +480,8 @@ export function SessionProvider({ children }) {
         }
         setBreakSeconds(0);
         setBreakDuration(0);
+        setPomodoroMode('pomodoro');
+        setTargetMinutes(settings.pomodoroWorkDuration);
         setStatus(completionData ? 'completed' : 'idle');
     };
 

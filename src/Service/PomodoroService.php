@@ -156,6 +156,18 @@ class PomodoroService implements SessionStrategy
             }
         }
 
+        $alreadyDone = $this->countCompletedToday($session->getUser());
+        $cyclePosition = ($alreadyDone + 1) % self::POMODOROS_BEFORE_LONG_BREAK;
+        $userSettings = $this->settingsService->getOrCreate($session->getUser());
+
+        if ($cyclePosition === 0) {
+            $session->setBreakDuration($userSettings->getPomodoroLongBreak());
+            $session->setBreakType('long');
+        } else {
+            $session->setBreakDuration($userSettings->getPomodoroShortBreak());
+            $session->setBreakType('short');
+        }
+
         $this->entityManager->flush();
     }
 
@@ -180,11 +192,11 @@ class PomodoroService implements SessionStrategy
             ->createQueryBuilder('p')
             ->select('COUNT(p.id)')
             ->where('p.user = :user')
-            ->andWhere('p.status = :status')
+            ->andWhere('p.status IN (:statuses)')
             ->andWhere('p.endedAt >= :today')
             ->andWhere('p.endedAt < :tomorrow')
             ->setParameter('user', $user->getId(), 'uuid')
-            ->setParameter('status', Session::STATUS_COMPLETED)
+            ->setParameter('statuses', [Session::STATUS_COMPLETED, Session::STATUS_INTERRUPTED])
             ->setParameter('today', $today)
             ->setParameter('tomorrow', $tomorrow)
             ->getQuery()

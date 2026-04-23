@@ -242,11 +242,18 @@ final class SessionController extends AbstractController
             return $this->json(['deleted' => true]);
         }
 
-        return $this->json([
+        $response = [
             'id'             => $session->getId(),
             'status'         => $session->getStatus(),
             'actualDuration' => $session->getActualDuration(),
-        ]);
+        ];
+
+        if ($session instanceof \App\Entity\Pomodoro) {
+            $response['breakDuration'] = $session->getBreakDuration();
+            $response['breakType']     = $session->getBreakType();
+        }
+
+        return $this->json($response);
     }
 
     /**
