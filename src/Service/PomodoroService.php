@@ -43,7 +43,7 @@ class PomodoroService extends AbstractTimedSessionService
     /**
      * Continue with a new session based on a previous one (same settings)
      */
-    public function continueSession(Session $previous): Pomodoro
+    public function repeatSession(Session $previous): Pomodoro
     {
         if (!$previous instanceof Pomodoro) {
             throw new \InvalidArgumentException('Expected Pomodoro session');

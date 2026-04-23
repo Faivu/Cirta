@@ -124,14 +124,14 @@ final class SessionController extends AbstractController
      * Continue with a new session based on a previous one
      */
     #[Route('/{id}/continue', name: 'continue', methods: ['POST'])]
-    public function continueSession(string $id): JsonResponse
+    public function repeatSession(string $id): JsonResponse
     {
         $session = $this->findUserSession($id);
         if ($session instanceof JsonResponse) {
             return $session;
         }
 
-        $newSession = $this->strategyForSession($session)->continueSession($session);
+        $newSession = $this->strategyForSession($session)->repeatSession($session);
 
         $response = [
             'id'         => $newSession->getId(),

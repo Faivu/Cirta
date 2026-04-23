@@ -34,7 +34,7 @@ class FlowtimeService extends AbstractTimedSessionService
         return $flowtime;
     }
 
-    public function continueSession(Session $previous): Flowtime
+    public function repeatSession(Session $previous): Flowtime
     {
         $this->assertType($previous);
 

@@ -11,7 +11,7 @@ interface SessionStrategy
 {
     public function startSession(User $user, ?string $customGoal = null, ?Task $task = null, ?Event $event = null, ?int $targetDuration = null): Session;
 
-    public function continueSession(Session $previous): Session;
+    public function repeatSession(Session $previous): Session;
 
     public function pauseSession(Session $session): void;
 

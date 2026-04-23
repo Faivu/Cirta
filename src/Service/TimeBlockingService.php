@@ -25,7 +25,7 @@ class TimeBlockingService extends AbstractTimedSessionService
         return $timeBlocking;
     }
 
-    public function continueSession(Session $previous): TimeBlocking
+    public function repeatSession(Session $previous): TimeBlocking
     {
         $this->assertType($previous);
 
