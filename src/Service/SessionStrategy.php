@@ -20,4 +20,6 @@ interface SessionStrategy
     public function endSession(Session $session, ?int $actualDuration = null): void;
 
     public function interruptSession(Session $session, ?int $actualDuration = null): void;
+
+    public function recordBreak(Session $session, int $duration): void;
 }

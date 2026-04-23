@@ -73,5 +73,11 @@ abstract class AbstractTimedSessionService implements SessionStrategy
         $this->entityManager->flush();
     }
 
+    public function recordBreak(Session $session, int $duration): void
+    {
+        $session->setBreakAfter($duration);
+        $this->entityManager->flush();
+    }
+
     abstract protected function assertType(Session $session): void;
 }

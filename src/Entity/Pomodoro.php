@@ -15,12 +15,6 @@ class Pomodoro extends Session
     private int $targetDuration = 25;
 
     /**
-     * Total time spent paused in minutes (calculated on end)
-     */
-    #[ORM\Column]
-    private int $pauseDuration = 0;
-
-    /**
      * Suggested break duration in minutes (5 for short, 15 for long break)
      */
     #[ORM\Column]
@@ -40,18 +34,6 @@ class Pomodoro extends Session
     public function setTargetDuration(int $targetDuration): static
     {
         $this->targetDuration = $targetDuration;
-
-        return $this;
-    }
-
-    public function getPauseDuration(): int
-    {
-        return $this->pauseDuration;
-    }
-
-    public function setPauseDuration(int $pauseDuration): static
-    {
-        $this->pauseDuration = $pauseDuration;
 
         return $this;
     }
@@ -76,27 +58,6 @@ class Pomodoro extends Session
     public function setBreakType(string $breakType): static
     {
         $this->breakType = $breakType;
-
-        return $this;
-    }
-
-    /**
-     * Complete the Pomodoro session
-     *
-     * @param int $actualDuration The actual working time in minutes (sent from frontend)
-     */
-    public function complete(int $actualDuration): static
-    {
-        $this->endedAt = new \DateTime();
-        $this->status = self::STATUS_COMPLETED;
-        $this->actualDuration = $actualDuration;
-
-        // Calculate pause duration: total wall time - actual working time
-        if ($this->startedAt !== null) {
-            $interval = $this->startedAt->diff($this->endedAt);
-            $wallTimeMinutes = ($interval->days * 24 * 60) + ($interval->h * 60) + $interval->i;
-            $this->pauseDuration = max(0, $wallTimeMinutes - $actualDuration);
-        }
 
         return $this;
     }

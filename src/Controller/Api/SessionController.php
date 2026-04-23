@@ -263,8 +263,7 @@ final class SessionController extends AbstractController
         $data     = json_decode($request->getContent(), true) ?? [];
         $duration = isset($data['duration']) ? max(0, (int) $data['duration']) : 0;
 
-        $session->setBreakAfter($duration);
-        $this->entityManager->flush();
+        $this->strategyForSession($session)->recordBreak($session, $duration);
 
         return $this->json([
             'id'         => $session->getId(),

@@ -102,7 +102,14 @@ class PomodoroService implements SessionStrategy
             return;
         }
 
-        $session->complete($actualDuration);
+        $session->setActualDuration($actualDuration);
+        $session->end();
+
+        if ($session->getStartedAt() !== null) {
+            $interval = $session->getStartedAt()->diff($session->getEndedAt());
+            $wallTimeMinutes = ($interval->days * 24 * 60) + ($interval->h * 60) + $interval->i;
+            $session->setPauseDuration(max(0, $wallTimeMinutes - $actualDuration));
+        }
 
         // Count sessions already completed today (current session not flushed yet, so not included)
         $alreadyCompleted = $this->countCompletedToday($session->getUser());
@@ -155,9 +162,9 @@ class PomodoroService implements SessionStrategy
     /**
      * Record actual break taken
      */
-    public function recordBreak(Pomodoro $pomodoro, int $breakAfter): void
+    public function recordBreak(Session $session, int $duration): void
     {
-        $pomodoro->setBreakAfter($breakAfter);
+        $session->setBreakAfter($duration);
         $this->entityManager->flush();
     }
 

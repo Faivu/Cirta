@@ -61,6 +61,12 @@ abstract class Session extends BaseEntity
     protected int $pauseCount = 0;
 
     /**
+     * Total time spent paused in minutes
+     */
+    #[ORM\Column]
+    protected int $pauseDuration = 0;
+
+    /**
      * Actual break taken after this session in minutes (null if not recorded)
      */
     #[ORM\Column(nullable: true)]
@@ -171,6 +177,18 @@ abstract class Session extends BaseEntity
     public function getPauseCount(): int
     {
         return $this->pauseCount;
+    }
+
+    public function getPauseDuration(): int
+    {
+        return $this->pauseDuration;
+    }
+
+    public function setPauseDuration(int $pauseDuration): static
+    {
+        $this->pauseDuration = $pauseDuration;
+
+        return $this;
     }
 
     public function getBreakAfter(): ?int
