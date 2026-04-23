@@ -4,7 +4,7 @@ namespace App\Controller\Api;
 
 use App\Entity\Event;
 use App\Entity\User;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Service\EventService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,16 +15,9 @@ use Symfony\Component\Routing\Attribute\Route;
 final class EventController extends AbstractController
 {
     public function __construct(
-        private EntityManagerInterface $entityManager
+        private EventService $eventService,
     ) {}
 
-    /**
-     * Get events for the current user
-     *
-     * Query params:
-     * - start: ISO date string for range start (optional)
-     * - end: ISO date string for range end (optional)
-     */
     #[Route('', name: 'list', methods: ['GET'])]
     public function list(Request $request): JsonResponse
     {
@@ -33,58 +26,15 @@ final class EventController extends AbstractController
             return $user;
         }
 
-        $qb = $this->entityManager->getRepository(Event::class)
-            ->createQueryBuilder('e')
-            ->where('e.user = :user')
-            ->setParameter('user', $user->getId(), 'uuid')
-            ->orderBy('e.startAt', 'ASC');
+        $events = $this->eventService->list(
+            $user,
+            $request->query->get('start'),
+            $request->query->get('end')
+        );
 
-        // Optional date range filtering
-        $start = $request->query->get('start');
-        $end = $request->query->get('end');
-
-        if ($start) {
-            try {
-                $startDate = new \DateTime($start);
-                $qb->andWhere('e.endAt >= :start')
-                   ->setParameter('start', $startDate);
-            } catch (\Exception $e) {
-                // Invalid date, ignore filter
-            }
-        }
-
-        if ($end) {
-            try {
-                $endDate = new \DateTime($end);
-                $qb->andWhere('e.startAt <= :end')
-                   ->setParameter('end', $endDate);
-            } catch (\Exception $e) {
-                // Invalid date, ignore filter
-            }
-        }
-
-        $events = $qb->getQuery()->getResult();
-
-        $data = array_map(function (Event $event) {
-            return [
-                'id' => $event->getId(),
-                'title' => $event->getTitle(),
-                'category' => $event->getCategory(),
-                'color' => $event->getColor(),
-                'startAt' => $event->getStartAt()?->format('c'),
-                'endAt' => $event->getEndAt()?->format('c'),
-                'allDay' => $event->isAllDay(),
-                'isReoccurring' => $event->isReoccurring(),
-                'reoccurrencePattern' => $event->getReoccurrencePattern(),
-            ];
-        }, $events);
-
-        return $this->json($data);
+        return $this->json(array_map($this->serializeEvent(...), $events));
     }
 
-    /**
-     * Get a single event
-     */
     #[Route('/{id}', name: 'get', methods: ['GET'])]
     public function get(string $id): JsonResponse
     {
@@ -93,33 +43,17 @@ final class EventController extends AbstractController
             return $user;
         }
 
-        $event = $this->entityManager->getRepository(Event::class)->find($id);
-
-        if (!$event) {
-            return $this->json(['error' => 'Event not found'], Response::HTTP_NOT_FOUND);
-        }
-
-        if ($event->getUser() !== $user) {
-            return $this->json(['error' => 'Access denied'], Response::HTTP_FORBIDDEN);
+        $event = $this->findUserEvent($id, $user);
+        if ($event instanceof JsonResponse) {
+            return $event;
         }
 
         return $this->json([
-            'id' => $event->getId(),
-            'title' => $event->getTitle(),
-            'category' => $event->getCategory(),
-            'color' => $event->getColor(),
-            'startAt' => $event->getStartAt()?->format('c'),
-            'endAt' => $event->getEndAt()?->format('c'),
-            'allDay' => $event->isAllDay(),
-            'isReoccurring' => $event->isReoccurring(),
-            'reoccurrencePattern' => $event->getReoccurrencePattern(),
+            ...$this->serializeEvent($event),
             'reoccurrenceEndDate' => $event->getReoccurrenceEndDate()?->format('c'),
         ]);
     }
 
-    /**
-     * Create a new event
-     */
     #[Route('', name: 'create', methods: ['POST'])]
     public function create(Request $request): JsonResponse
     {
@@ -135,43 +69,14 @@ final class EventController extends AbstractController
         }
 
         try {
-            $event = new Event();
-            $event->setUser($user);
-            $event->setTitle($data['title']);
-            $event->setStartAt(new \DateTime($data['startAt']));
-            $event->setEndAt(new \DateTime($data['endAt']));
-            $event->setCategory($data['category'] ?? 'default');
-            $event->setColor($data['color'] ?? '#3b82f6');
-            $event->setAllDay($data['allDay'] ?? false);
-            $event->setIsReoccurring($data['isReoccurring'] ?? false);
-
-            if (isset($data['reoccurrencePattern'])) {
-                $event->setReoccurrencePattern($data['reoccurrencePattern']);
-            }
-            if (isset($data['reoccurrenceEndDate'])) {
-                $event->setReoccurrenceEndDate(new \DateTime($data['reoccurrenceEndDate']));
-            }
-
-            $this->entityManager->persist($event);
-            $this->entityManager->flush();
-
-            return $this->json([
-                'id' => $event->getId(),
-                'title' => $event->getTitle(),
-                'category' => $event->getCategory(),
-                'color' => $event->getColor(),
-                'startAt' => $event->getStartAt()?->format('c'),
-                'endAt' => $event->getEndAt()?->format('c'),
-                'allDay' => $event->isAllDay(),
-            ], Response::HTTP_CREATED);
-        } catch (\Exception $e) {
+            $event = $this->eventService->create($user, $data);
+        } catch (\Exception) {
             return $this->json(['error' => 'Invalid date format'], Response::HTTP_BAD_REQUEST);
         }
+
+        return $this->json($this->serializeEvent($event), Response::HTTP_CREATED);
     }
 
-    /**
-     * Update an event
-     */
     #[Route('/{id}', name: 'update', methods: ['PUT'])]
     public function update(string $id, Request $request): JsonResponse
     {
@@ -180,57 +85,20 @@ final class EventController extends AbstractController
             return $user;
         }
 
-        $event = $this->entityManager->getRepository(Event::class)->find($id);
-
-        if (!$event) {
-            return $this->json(['error' => 'Event not found'], Response::HTTP_NOT_FOUND);
+        $event = $this->findUserEvent($id, $user);
+        if ($event instanceof JsonResponse) {
+            return $event;
         }
-
-        if ($event->getUser() !== $user) {
-            return $this->json(['error' => 'Access denied'], Response::HTTP_FORBIDDEN);
-        }
-
-        $data = json_decode($request->getContent(), true);
 
         try {
-            if (isset($data['title'])) {
-                $event->setTitle($data['title']);
-            }
-            if (isset($data['startAt'])) {
-                $event->setStartAt(new \DateTime($data['startAt']));
-            }
-            if (isset($data['endAt'])) {
-                $event->setEndAt(new \DateTime($data['endAt']));
-            }
-            if (isset($data['category'])) {
-                $event->setCategory($data['category']);
-            }
-            if (isset($data['color'])) {
-                $event->setColor($data['color']);
-            }
-            if (isset($data['allDay'])) {
-                $event->setAllDay($data['allDay']);
-            }
-
-            $this->entityManager->flush();
-
-            return $this->json([
-                'id' => $event->getId(),
-                'title' => $event->getTitle(),
-                'category' => $event->getCategory(),
-                'color' => $event->getColor(),
-                'startAt' => $event->getStartAt()?->format('c'),
-                'endAt' => $event->getEndAt()?->format('c'),
-                'allDay' => $event->isAllDay(),
-            ]);
-        } catch (\Exception $e) {
+            $this->eventService->update($event, json_decode($request->getContent(), true));
+        } catch (\Exception) {
             return $this->json(['error' => 'Invalid data'], Response::HTTP_BAD_REQUEST);
         }
+
+        return $this->json($this->serializeEvent($event));
     }
 
-    /**
-     * Delete an event
-     */
     #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
     public function delete(string $id): JsonResponse
     {
@@ -239,7 +107,34 @@ final class EventController extends AbstractController
             return $user;
         }
 
-        $event = $this->entityManager->getRepository(Event::class)->find($id);
+        $event = $this->findUserEvent($id, $user);
+        if ($event instanceof JsonResponse) {
+            return $event;
+        }
+
+        $this->eventService->delete($event);
+
+        return $this->json(['success' => true]);
+    }
+
+    private function serializeEvent(Event $event): array
+    {
+        return [
+            'id'                  => $event->getId(),
+            'title'               => $event->getTitle(),
+            'category'            => $event->getCategory(),
+            'color'               => $event->getColor(),
+            'startAt'             => $event->getStartAt()?->format('c'),
+            'endAt'               => $event->getEndAt()?->format('c'),
+            'allDay'              => $event->isAllDay(),
+            'isReoccurring'       => $event->isReoccurring(),
+            'reoccurrencePattern' => $event->getReoccurrencePattern(),
+        ];
+    }
+
+    private function findUserEvent(string $id, User $user): Event|JsonResponse
+    {
+        $event = $this->eventService->findById($id);
 
         if (!$event) {
             return $this->json(['error' => 'Event not found'], Response::HTTP_NOT_FOUND);
@@ -249,10 +144,7 @@ final class EventController extends AbstractController
             return $this->json(['error' => 'Access denied'], Response::HTTP_FORBIDDEN);
         }
 
-        $this->entityManager->remove($event);
-        $this->entityManager->flush();
-
-        return $this->json(['success' => true]);
+        return $event;
     }
 
     private function getAuthenticatedUser(): User|JsonResponse
