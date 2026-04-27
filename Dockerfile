@@ -25,7 +25,7 @@ RUN echo "APP_ENV=prod" > /app/.env
 
 # Install composer dependencies (skip scripts to avoid cache:clear during build)
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-RUN composer install --no-dev --optimize-autoloader --no-scripts
+RUN composer install --no-dev --optimize-autoloader
 
 # Build assets
 RUN npm ci && npm run build

@@ -39,6 +39,7 @@
 *.xls
 *.docx
 *.png
+*.txt
 
 ###> PHP tools ###
 .php-cs-fixer.cache

@@ -1,0 +1,202 @@
+/* Cirta FYP Deck — design tokens + base styles */
+
+:root {
+  --c-primary: #2631E6;
+  --c-primary-deep: #1A22B8;
+  --c-accent: #E6960D;
+  --c-accent-soft: #FBE5BD;
+  --c-ink: #111827;
+  --c-ink-2: #1F2937;
+  --c-mute: #6B7280;
+  --c-line: #E5E7EB;
+  --c-line-soft: #EEF0F4;
+  --c-paper: #FAFAF7;
+  --c-paper-2: #F4F4EE;
+  --c-white: #FFFFFF;
+
+  --font-sans: 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 'Geist', 'Inter', sans-serif;
+  --font-mono: 'Geist Mono', 'JetBrains Mono', ui-monospace, monospace;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  color: var(--c-ink);
+  background: #0a0a0a;
+}
+
+deck-stage > section {
+  width: 1920px;
+  height: 1080px;
+  background: var(--c-paper);
+  position: relative;
+  overflow: hidden;
+  font-family: var(--font-sans);
+  color: var(--c-ink);
+}
+
+/* ----- shared chrome ----- */
+
+.slide-chrome {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.corner-mark {
+  position: absolute;
+  bottom: 36px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--c-ink);
+}
+.corner-mark--left  { left: 56px; }
+.corner-mark--right { right: 56px; font-family: var(--font-mono); font-weight: 400; color: var(--c-mute); font-size: 14px; }
+
+.logo-mark {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: var(--c-primary);
+  position: relative;
+  display: inline-block;
+}
+.logo-mark::after {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border-radius: 50%;
+  border: 2px solid var(--c-paper);
+  border-top-color: transparent;
+  border-right-color: transparent;
+  transform: rotate(-45deg);
+}
+
+/* ----- panel ----- */
+
+.panel-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 16px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--c-primary);
+}
+.panel-title::before {
+  content: '';
+  width: 28px;
+  height: 2px;
+  background: var(--c-primary);
+}
+
+.section-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-mute);
+  font-weight: 500;
+}
+
+.headline {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 92px;
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  color: var(--c-ink);
+  text-wrap: balance;
+}
+
+.subhead {
+  font-size: 36px;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--c-ink-2);
+  text-wrap: pretty;
+}
+
+.body-lg {
+  font-size: 26px;
+  line-height: 1.4;
+  color: var(--c-ink-2);
+  text-wrap: pretty;
+}
+
+.body {
+  font-size: 22px;
+  line-height: 1.45;
+  color: var(--c-ink-2);
+}
+
+.mono-label {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--c-mute);
+}
+
+/* ----- placeholder ----- */
+
+.placeholder {
+  width: 100%;
+  height: 100%;
+  background:
+    repeating-linear-gradient(
+      135deg,
+      #EFEFEA 0 14px,
+      #E6E6DF 14px 28px
+    );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  color: var(--c-ink);
+}
+.placeholder__label {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  background: var(--c-paper);
+  padding: 10px 14px;
+  border: 1px solid var(--c-line);
+  border-radius: 4px;
+  color: var(--c-ink-2);
+  max-width: 70%;
+  text-align: center;
+}
+
+/* ----- callout ----- */
+
+.callout {
+  background: var(--c-ink);
+  color: var(--c-paper);
+  padding: 36px 44px;
+  border-radius: 4px;
+  position: relative;
+}
+.callout--accent {
+  background: var(--c-accent);
+  color: var(--c-ink);
+}
+
+/* utility */
+.row { display: flex; }
+.col { display: flex; flex-direction: column; }
+.grid { display: grid; }
+
+ul.clean { list-style: none; padding: 0; margin: 0; }
+ul.clean li { padding: 0; }

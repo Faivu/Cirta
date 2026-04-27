@@ -1,0 +1,1900 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Cirta — FYP Presentation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+/* Cirta FYP Deck — design tokens + base styles */
+
+:root {
+  --c-primary: #2631E6;
+  --c-primary-deep: #1A22B8;
+  --c-accent: #E6960D;
+  --c-accent-soft: #FBE5BD;
+  --c-ink: #111827;
+  --c-ink-2: #1F2937;
+  --c-mute: #6B7280;
+  --c-line: #E5E7EB;
+  --c-line-soft: #EEF0F4;
+  --c-paper: #FAFAF7;
+  --c-paper-2: #F4F4EE;
+  --c-white: #FFFFFF;
+
+  --font-sans: 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 'Geist', 'Inter', sans-serif;
+  --font-mono: 'Geist Mono', 'JetBrains Mono', ui-monospace, monospace;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  color: var(--c-ink);
+  background: #0a0a0a;
+}
+
+deck-stage > section {
+  width: 1920px;
+  height: 1080px;
+  background: var(--c-paper);
+  position: relative;
+  overflow: hidden;
+  font-family: var(--font-sans);
+  color: var(--c-ink);
+}
+
+/* ----- shared chrome ----- */
+
+.slide-chrome {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.corner-mark {
+  position: absolute;
+  bottom: 36px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--c-ink);
+}
+.corner-mark--left  { left: 56px; }
+.corner-mark--right { right: 56px; font-family: var(--font-mono); font-weight: 400; color: var(--c-mute); font-size: 14px; }
+
+.logo-mark {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: var(--c-primary);
+  position: relative;
+  display: inline-block;
+}
+.logo-mark::after {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border-radius: 50%;
+  border: 2px solid var(--c-paper);
+  border-top-color: transparent;
+  border-right-color: transparent;
+  transform: rotate(-45deg);
+}
+
+/* ----- panel ----- */
+
+.panel-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 16px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--c-primary);
+}
+.panel-title::before {
+  content: '';
+  width: 28px;
+  height: 2px;
+  background: var(--c-primary);
+}
+
+.section-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-mute);
+  font-weight: 500;
+}
+
+.headline {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 92px;
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  color: var(--c-ink);
+  text-wrap: balance;
+}
+
+.subhead {
+  font-size: 36px;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--c-ink-2);
+  text-wrap: pretty;
+}
+
+.body-lg {
+  font-size: 26px;
+  line-height: 1.4;
+  color: var(--c-ink-2);
+  text-wrap: pretty;
+}
+
+.body {
+  font-size: 22px;
+  line-height: 1.45;
+  color: var(--c-ink-2);
+}
+
+.mono-label {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--c-mute);
+}
+
+/* ----- placeholder ----- */
+
+.placeholder {
+  width: 100%;
+  height: 100%;
+  background:
+    repeating-linear-gradient(
+      135deg,
+      #EFEFEA 0 14px,
+      #E6E6DF 14px 28px
+    );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  color: var(--c-ink);
+}
+.placeholder__label {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  background: var(--c-paper);
+  padding: 10px 14px;
+  border: 1px solid var(--c-line);
+  border-radius: 4px;
+  color: var(--c-ink-2);
+  max-width: 70%;
+  text-align: center;
+}
+
+/* ----- callout ----- */
+
+.callout {
+  background: var(--c-ink);
+  color: var(--c-paper);
+  padding: 36px 44px;
+  border-radius: 4px;
+  position: relative;
+}
+.callout--accent {
+  background: var(--c-accent);
+  color: var(--c-ink);
+}
+
+/* utility */
+.row { display: flex; }
+.col { display: flex; flex-direction: column; }
+.grid { display: grid; }
+
+ul.clean { list-style: none; padding: 0; margin: 0; }
+ul.clean li { padding: 0; }
+
+  </style>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script>
+/**
+ * <deck-stage> — reusable web component for HTML decks.
+ *
+ * Handles:
+ *  (a) speaker notes — reads <script type="application/json" id="speaker-notes">
+ *      and posts {slideIndexChanged: N} to the parent window on nav.
+ *  (b) keyboard navigation — ←/→, PgUp/PgDn, Space, Home/End, number keys.
+ *  (c) press R to reset to slide 0 (with a tasteful keyboard hint).
+ *  (d) bottom-center overlay showing slide count + hints, fades out on idle.
+ *  (e) auto-scaling — inner canvas is a fixed design size (default 1920×1080)
+ *      scaled with `transform: scale()` to fit the viewport, letterboxed.
+ *      Set the `noscale` attribute to render at authored size (1:1) — the
+ *      PPTX exporter sets this so its DOM capture sees unscaled geometry.
+ *  (f) print — `@media print` lays every slide out as its own page at the
+ *      design size, so the browser's Print → Save as PDF produces a clean
+ *      one-page-per-slide PDF with no extra setup.
+ *
+ * Slides are HIDDEN, not unmounted. Non-active slides stay in the DOM with
+ * `visibility: hidden` + `opacity: 0`, so their state (videos, iframes,
+ * form inputs, React trees) is preserved across navigation.
+ *
+ * Lifecycle event — the component dispatches a `slidechange` CustomEvent on
+ * itself whenever the active slide changes (including the initial mount).
+ * The event bubbles and composes out of shadow DOM, so you can listen on
+ * the <deck-stage> element or on document:
+ *
+ *   document.querySelector('deck-stage').addEventListener('slidechange', (e) => {
+ *     e.detail.index         // new 0-based index
+ *     e.detail.previousIndex // previous index, or -1 on init
+ *     e.detail.total         // total slide count
+ *     e.detail.slide         // the new active slide element
+ *     e.detail.previousSlide // the prior slide element, or null on init
+ *     e.detail.reason        // 'init' | 'keyboard' | 'click' | 'tap' | 'api'
+ *   });
+ *
+ * Persistence: none at the deck level. The host app keeps the current slide
+ * in its own URL (?slide=) and re-delivers it via location.hash on load, so a
+ * bare load with no hash always starts at slide 1.
+ *
+ * Usage:
+ *   <deck-stage width="1920" height="1080">
+ *     <section data-label="Title">...</section>
+ *     <section data-label="Agenda">...</section>
+ *   </deck-stage>
+ *
+ * Slides are the direct element children of <deck-stage>. Each slide is
+ * automatically tagged with:
+ *   - data-screen-label="NN Label"   (1-indexed, for comment flow)
+ *   - data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text"
+ */
+
+(() => {
+  const DESIGN_W_DEFAULT = 1920;
+  const DESIGN_H_DEFAULT = 1080;
+  const OVERLAY_HIDE_MS = 1800;
+  const VALIDATE_ATTR = 'no_overflowing_text,no_overlapping_text,slide_sized_text';
+
+  const pad2 = (n) => String(n).padStart(2, '0');
+
+  const stylesheet = `
+    :host {
+      position: fixed;
+      inset: 0;
+      display: block;
+      background: #000;
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    .stage {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .canvas {
+      position: relative;
+      transform-origin: center center;
+      flex-shrink: 0;
+      background: #fff;
+      will-change: transform;
+    }
+
+    /* Slides live in light DOM (via <slot>) so authored CSS still applies.
+       We absolutely position each slotted child to stack them. */
+    ::slotted(*) {
+      position: absolute !important;
+      inset: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      box-sizing: border-box !important;
+      overflow: hidden;
+      opacity: 0;
+      pointer-events: none;
+      visibility: hidden;
+    }
+    ::slotted([data-deck-active]) {
+      opacity: 1;
+      pointer-events: auto;
+      visibility: visible;
+    }
+
+    /* Tap zones for mobile — back/forward thirds like Stories.
+       Transparent, no visible UI, don't block the overlay. */
+    .tapzones {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      z-index: 2147482000;
+      pointer-events: none;
+    }
+    .tapzone {
+      flex: 1;
+      pointer-events: auto;
+      -webkit-tap-highlight-color: transparent;
+    }
+    /* Only activate tap zones on coarse pointers (touch devices). */
+    @media (hover: hover) and (pointer: fine) {
+      .tapzones { display: none; }
+    }
+
+    .overlay {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      transform: translate(-50%, 6px) scale(0.92);
+      filter: blur(6px);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px;
+      background: #000;
+      color: #fff;
+      border-radius: 999px;
+      font-size: 12px;
+      font-feature-settings: "tnum" 1;
+      letter-spacing: 0.01em;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 260ms ease, transform 260ms cubic-bezier(.2,.8,.2,1), filter 260ms ease;
+      transform-origin: center bottom;
+      z-index: 2147483000;
+      user-select: none;
+    }
+    .overlay[data-visible] {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translate(-50%, 0) scale(1);
+      filter: blur(0);
+    }
+
+    .btn {
+      appearance: none;
+      -webkit-appearance: none;
+      background: transparent;
+      border: 0;
+      margin: 0;
+      padding: 0;
+      color: inherit;
+      font: inherit;
+      cursor: default;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 28px;
+      min-width: 28px;
+      border-radius: 999px;
+      color: rgba(255,255,255,0.72);
+      transition: background 140ms ease, color 140ms ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
+    .btn:active { background: rgba(255,255,255,0.18); }
+    .btn:focus { outline: none; }
+    .btn:focus-visible { outline: none; }
+    .btn::-moz-focus-inner { border: 0; }
+    .btn svg { width: 14px; height: 14px; display: block; }
+    .btn.reset {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      padding: 0 10px 0 12px;
+      gap: 6px;
+      color: rgba(255,255,255,0.72);
+    }
+    .btn.reset .kbd {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 16px;
+      height: 16px;
+      padding: 0 4px;
+      font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      font-size: 10px;
+      line-height: 1;
+      color: rgba(255,255,255,0.88);
+      background: rgba(255,255,255,0.12);
+      border-radius: 4px;
+    }
+
+    .count {
+      font-variant-numeric: tabular-nums;
+      color: #fff;
+      font-weight: 500;
+      padding: 0 8px;
+      min-width: 42px;
+      text-align: center;
+      font-size: 12px;
+    }
+    .count .sep { color: rgba(255,255,255,0.45); margin: 0 3px; font-weight: 400; }
+    .count .total { color: rgba(255,255,255,0.55); }
+
+    .divider {
+      width: 1px;
+      height: 14px;
+      background: rgba(255,255,255,0.18);
+      margin: 0 2px;
+    }
+
+    /* ── Print: one page per slide, no chrome ────────────────────────────
+       The screen layout stacks every slide at inset:0 inside a scaled
+       canvas; for print we want them in document flow at the authored
+       design size so the browser paginates one slide per sheet. The
+       @page size is set from the width/height attributes via the inline
+       <style id="deck-stage-print-page"> that connectedCallback injects
+       into <head> (the @page at-rule has no effect inside shadow DOM). */
+    @media print {
+      :host {
+        position: static;
+        inset: auto;
+        background: none;
+        overflow: visible;
+        color: inherit;
+      }
+      .stage { position: static; display: block; }
+      .canvas {
+        transform: none !important;
+        width: auto !important;
+        height: auto !important;
+        background: none;
+        will-change: auto;
+      }
+      ::slotted(*) {
+        position: relative !important;
+        inset: auto !important;
+        width: var(--deck-design-w) !important;
+        height: var(--deck-design-h) !important;
+        box-sizing: border-box !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto;
+        break-after: page;
+        page-break-after: always;
+        break-inside: avoid;
+        overflow: hidden;
+      }
+      ::slotted(*:last-child) {
+        break-after: auto;
+        page-break-after: auto;
+      }
+      .overlay, .tapzones { display: none !important; }
+    }
+  `;
+
+  class DeckStage extends HTMLElement {
+    static get observedAttributes() { return ['width', 'height', 'noscale']; }
+
+    constructor() {
+      super();
+      this._root = this.attachShadow({ mode: 'open' });
+      this._index = 0;
+      this._slides = [];
+      this._notes = [];
+      this._hideTimer = null;
+      this._mouseIdleTimer = null;
+
+      this._onKey = this._onKey.bind(this);
+      this._onResize = this._onResize.bind(this);
+      this._onSlotChange = this._onSlotChange.bind(this);
+      this._onMouseMove = this._onMouseMove.bind(this);
+      this._onTapBack = this._onTapBack.bind(this);
+      this._onTapForward = this._onTapForward.bind(this);
+    }
+
+    get designWidth() {
+      return parseInt(this.getAttribute('width'), 10) || DESIGN_W_DEFAULT;
+    }
+    get designHeight() {
+      return parseInt(this.getAttribute('height'), 10) || DESIGN_H_DEFAULT;
+    }
+
+    connectedCallback() {
+      this._render();
+      this._loadNotes();
+      this._syncPrintPageRule();
+      window.addEventListener('keydown', this._onKey);
+      window.addEventListener('resize', this._onResize);
+      window.addEventListener('mousemove', this._onMouseMove, { passive: true });
+      // Initial collection + layout happens via slotchange, which fires on mount.
+    }
+
+    disconnectedCallback() {
+      window.removeEventListener('keydown', this._onKey);
+      window.removeEventListener('resize', this._onResize);
+      window.removeEventListener('mousemove', this._onMouseMove);
+      if (this._hideTimer) clearTimeout(this._hideTimer);
+      if (this._mouseIdleTimer) clearTimeout(this._mouseIdleTimer);
+    }
+
+    attributeChangedCallback() {
+      if (this._canvas) {
+        this._canvas.style.width = this.designWidth + 'px';
+        this._canvas.style.height = this.designHeight + 'px';
+        this._canvas.style.setProperty('--deck-design-w', this.designWidth + 'px');
+        this._canvas.style.setProperty('--deck-design-h', this.designHeight + 'px');
+        this._fit();
+        this._syncPrintPageRule();
+      }
+    }
+
+    _render() {
+      const style = document.createElement('style');
+      style.textContent = stylesheet;
+
+      const stage = document.createElement('div');
+      stage.className = 'stage';
+
+      const canvas = document.createElement('div');
+      canvas.className = 'canvas';
+      canvas.style.width = this.designWidth + 'px';
+      canvas.style.height = this.designHeight + 'px';
+      canvas.style.setProperty('--deck-design-w', this.designWidth + 'px');
+      canvas.style.setProperty('--deck-design-h', this.designHeight + 'px');
+
+      const slot = document.createElement('slot');
+      slot.addEventListener('slotchange', this._onSlotChange);
+      canvas.appendChild(slot);
+      stage.appendChild(canvas);
+
+      // Tap zones (mobile): left third = back, right third = forward.
+      const tapzones = document.createElement('div');
+      tapzones.className = 'tapzones export-hidden';
+      tapzones.setAttribute('aria-hidden', 'true');
+      tapzones.setAttribute('data-noncommentable', '');
+      const tzBack = document.createElement('div');
+      tzBack.className = 'tapzone tapzone--back';
+      const tzMid = document.createElement('div');
+      tzMid.className = 'tapzone tapzone--mid';
+      tzMid.style.pointerEvents = 'none';
+      const tzFwd = document.createElement('div');
+      tzFwd.className = 'tapzone tapzone--fwd';
+      tzBack.addEventListener('click', this._onTapBack);
+      tzFwd.addEventListener('click', this._onTapForward);
+      tapzones.append(tzBack, tzMid, tzFwd);
+
+      // Overlay: compact, solid black, with clickable controls.
+      const overlay = document.createElement('div');
+      overlay.className = 'overlay export-hidden';
+      overlay.setAttribute('role', 'toolbar');
+      overlay.setAttribute('aria-label', 'Deck controls');
+      overlay.setAttribute('data-noncommentable', '');
+      overlay.innerHTML = `
+        <button class="btn prev" type="button" aria-label="Previous slide" title="Previous (←)">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3L5 8l5 5"/></svg>
+        </button>
+        <span class="count" aria-live="polite"><span class="current">1</span><span class="sep">/</span><span class="total">1</span></span>
+        <button class="btn next" type="button" aria-label="Next slide" title="Next (→)">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3l5 5-5 5"/></svg>
+        </button>
+        <span class="divider"></span>
+        <button class="btn reset" type="button" aria-label="Reset to first slide" title="Reset (R)">Reset<span class="kbd">R</span></button>
+      `;
+
+      overlay.querySelector('.prev').addEventListener('click', () => this._go(this._index - 1, 'click'));
+      overlay.querySelector('.next').addEventListener('click', () => this._go(this._index + 1, 'click'));
+      overlay.querySelector('.reset').addEventListener('click', () => this._go(0, 'click'));
+
+      this._root.append(style, stage, tapzones, overlay);
+      this._canvas = canvas;
+      this._slot = slot;
+      this._overlay = overlay;
+      this._countEl = overlay.querySelector('.current');
+      this._totalEl = overlay.querySelector('.total');
+    }
+
+    /** @page must live in the document stylesheet — it's a no-op inside
+     *  shadow DOM. Inject/update a single <head> style tag so the print
+     *  sheet matches the design size and Save-as-PDF yields one slide per
+     *  page with no margins. */
+    _syncPrintPageRule() {
+      const id = 'deck-stage-print-page';
+      let tag = document.getElementById(id);
+      if (!tag) {
+        tag = document.createElement('style');
+        tag.id = id;
+        document.head.appendChild(tag);
+      }
+      tag.textContent =
+        '@page { size: ' + this.designWidth + 'px ' + this.designHeight + 'px; margin: 0; } ' +
+        '@media print { html, body { margin: 0 !important; padding: 0 !important; background: none !important; overflow: visible !important; height: auto !important; } ' +
+        '* { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }';
+    }
+
+    _onSlotChange() {
+      this._collectSlides();
+      this._restoreIndex();
+      this._applyIndex({ showOverlay: false, broadcast: true, reason: 'init' });
+      this._fit();
+    }
+
+    _collectSlides() {
+      const assigned = this._slot.assignedElements({ flatten: true });
+      this._slides = assigned.filter((el) => {
+        // Skip template/style/script nodes even if someone slots them.
+        const tag = el.tagName;
+        return tag !== 'TEMPLATE' && tag !== 'SCRIPT' && tag !== 'STYLE';
+      });
+
+      this._slides.forEach((slide, i) => {
+        const n = i + 1;
+        // Determine a label for comment flow: prefer explicit data-label,
+        // then an existing data-screen-label, then first heading, else "Slide".
+        let label = slide.getAttribute('data-label');
+        if (!label) {
+          const existing = slide.getAttribute('data-screen-label');
+          if (existing) {
+            // Strip any leading number the author may have included.
+            label = existing.replace(/^\s*\d+\s*/, '').trim() || existing;
+          }
+        }
+        if (!label) {
+          const h = slide.querySelector('h1, h2, h3, [data-title]');
+          if (h) label = (h.textContent || '').trim().slice(0, 40);
+        }
+        if (!label) label = 'Slide';
+        slide.setAttribute('data-screen-label', `${pad2(n)} ${label}`);
+
+        // Validation attribute for comment flow / auto-checks.
+        if (!slide.hasAttribute('data-om-validate')) {
+          slide.setAttribute('data-om-validate', VALIDATE_ATTR);
+        }
+
+        slide.setAttribute('data-deck-slide', String(i));
+      });
+
+      if (this._totalEl) this._totalEl.textContent = String(this._slides.length || 1);
+      if (this._index >= this._slides.length) this._index = Math.max(0, this._slides.length - 1);
+    }
+
+    _loadNotes() {
+      const tag = document.getElementById('speaker-notes');
+      if (!tag) { this._notes = []; return; }
+      try {
+        const parsed = JSON.parse(tag.textContent || '[]');
+        if (Array.isArray(parsed)) this._notes = parsed;
+      } catch (e) {
+        console.warn('[deck-stage] Failed to parse #speaker-notes JSON:', e);
+        this._notes = [];
+      }
+    }
+
+    _restoreIndex() {
+      // The host's ?slide= param is delivered as a #<int> hash (1-indexed) on
+      // the iframe src. No hash → slide 1; the deck itself keeps no position
+      // state across loads.
+      const h = (location.hash || '').match(/^#(\d+)$/);
+      if (h) {
+        const n = parseInt(h[1], 10) - 1;
+        if (n >= 0 && n < this._slides.length) this._index = n;
+      }
+    }
+
+    _applyIndex({ showOverlay = true, broadcast = true, reason = 'init' } = {}) {
+      if (!this._slides.length) return;
+      const prev = this._prevIndex == null ? -1 : this._prevIndex;
+      const curr = this._index;
+      // Keep the iframe's own hash in sync so an in-iframe location.reload()
+      // (reload banner path in viewer-handle.ts) lands on the current slide,
+      // not the stale deep-link hash from initial load.
+      try { history.replaceState(null, '', '#' + (curr + 1)); } catch (e) {}
+      this._slides.forEach((s, i) => {
+        if (i === curr) s.setAttribute('data-deck-active', '');
+        else s.removeAttribute('data-deck-active');
+      });
+      if (this._countEl) this._countEl.textContent = String(curr + 1);
+
+      if (broadcast) {
+        // (1) Legacy: host-window postMessage for speaker-notes renderers.
+        try { window.postMessage({ slideIndexChanged: curr }, '*'); } catch (e) {}
+
+        // (2) In-page CustomEvent on the <deck-stage> element itself.
+        //     Bubbles and composes out of shadow DOM so slide code can listen:
+        //       document.querySelector('deck-stage').addEventListener('slidechange', e => {
+        //         e.detail.index, e.detail.previousIndex, e.detail.total, e.detail.slide, e.detail.reason
+        //       });
+        const detail = {
+          index: curr,
+          previousIndex: prev,
+          total: this._slides.length,
+          slide: this._slides[curr] || null,
+          previousSlide: prev >= 0 ? (this._slides[prev] || null) : null,
+          reason: reason, // 'init' | 'keyboard' | 'click' | 'tap' | 'api'
+        };
+        this.dispatchEvent(new CustomEvent('slidechange', {
+          detail,
+          bubbles: true,
+          composed: true,
+        }));
+      }
+
+      this._prevIndex = curr;
+      if (showOverlay) this._flashOverlay();
+    }
+
+    _flashOverlay() {
+      if (!this._overlay) return;
+      this._overlay.setAttribute('data-visible', '');
+      if (this._hideTimer) clearTimeout(this._hideTimer);
+      this._hideTimer = setTimeout(() => {
+        this._overlay.removeAttribute('data-visible');
+      }, OVERLAY_HIDE_MS);
+    }
+
+    _fit() {
+      if (!this._canvas) return;
+      // PPTX export sets noscale so the DOM capture sees authored-size
+      // geometry — the scaled canvas is in shadow DOM, so the exporter's
+      // resetTransformSelector can't reach .canvas.style.transform directly.
+      if (this.hasAttribute('noscale')) {
+        this._canvas.style.transform = 'none';
+        return;
+      }
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const s = Math.min(vw / this.designWidth, vh / this.designHeight);
+      this._canvas.style.transform = `scale(${s})`;
+    }
+
+    _onResize() { this._fit(); }
+
+    _onMouseMove() {
+      // Keep overlay visible while mouse moves; hide after idle.
+      this._flashOverlay();
+    }
+
+    _onTapBack(e) {
+      e.preventDefault();
+      this._go(this._index - 1, 'tap');
+    }
+
+    _onTapForward(e) {
+      e.preventDefault();
+      this._go(this._index + 1, 'tap');
+    }
+
+    _onKey(e) {
+      // Ignore when the user is typing.
+      const t = e.target;
+      if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+
+      const key = e.key;
+      let handled = true;
+
+      if (key === 'ArrowRight' || key === 'PageDown' || key === ' ' || key === 'Spacebar') {
+        this._go(this._index + 1, 'keyboard');
+      } else if (key === 'ArrowLeft' || key === 'PageUp') {
+        this._go(this._index - 1, 'keyboard');
+      } else if (key === 'Home') {
+        this._go(0, 'keyboard');
+      } else if (key === 'End') {
+        this._go(this._slides.length - 1, 'keyboard');
+      } else if (key === 'r' || key === 'R') {
+        this._go(0, 'keyboard');
+      } else if (/^[0-9]$/.test(key)) {
+        // 1..9 jump to that slide; 0 jumps to 10.
+        const n = key === '0' ? 9 : parseInt(key, 10) - 1;
+        if (n < this._slides.length) this._go(n, 'keyboard');
+      } else {
+        handled = false;
+      }
+
+      if (handled) {
+        e.preventDefault();
+        this._flashOverlay();
+      }
+    }
+
+    _go(i, reason = 'api') {
+      if (!this._slides.length) return;
+      const clamped = Math.max(0, Math.min(this._slides.length - 1, i));
+      if (clamped === this._index) {
+        this._flashOverlay();
+        return;
+      }
+      this._index = clamped;
+      this._applyIndex({ showOverlay: true, broadcast: true, reason });
+    }
+
+    // Public API ------------------------------------------------------------
+
+    /** Current slide index (0-based). */
+    get index() { return this._index; }
+    /** Total slide count. */
+    get length() { return this._slides.length; }
+    /** Programmatically navigate. */
+    goTo(i) { this._go(i, 'api'); }
+    next() { this._go(this._index + 1, 'api'); }
+    prev() { this._go(this._index - 1, 'api'); }
+    reset() { this._go(0, 'api'); }
+  }
+
+  if (!customElements.get('deck-stage')) {
+    customElements.define('deck-stage', DeckStage);
+  }
+})();
+
+  </script>
+</head>
+<body>
+  <deck-stage id="deck"></deck-stage>
+
+  <script type="text/babel">
+// Shared deck components
+
+const CIRTA_BLUE = '#2631E6';
+const CIRTA_AMBER = '#E6960D';
+const INK = '#111827';
+const MUTE = '#6B7280';
+const PAPER = '#FAFAF7';
+const LINE = '#E5E7EB';
+
+// ---- Slide chrome (logo + slide number) ----
+function SlideChrome({ index, total }) {
+  return (
+    <div className="slide-chrome">
+      <div className="corner-mark corner-mark--left">
+        <CirtaLogoMark />
+        <span style={{ fontWeight: 600, letterSpacing: '-0.01em' }}>Cirta</span>
+        <span style={{ color: MUTE, fontWeight: 400 }}>· FYP 2026</span>
+      </div>
+      <div className="corner-mark corner-mark--right">
+        <span>{String(index).padStart(2, '0')} / {String(total).padStart(2, '0')}</span>
+      </div>
+    </div>
+  );
+}
+
+// Simple logo mark — abstract clock/circle
+function CirtaLogoMark({ size = 22 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" style={{ display: 'block' }}>
+      <rect width="24" height="24" rx="6" fill={CIRTA_BLUE} />
+      <circle cx="12" cy="12" r="6.5" fill="none" stroke="#fff" strokeWidth="1.6" />
+      <path d="M12 7.5 V 12 L 15.2 13.6" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" fill="none" />
+    </svg>
+  );
+}
+
+// ---- Striped placeholder ----
+function Placeholder({ label, height = '100%', width = '100%', stripeAngle = 135 }) {
+  return (
+    <div style={{ width, height, position: 'relative' }}>
+      <div className="placeholder" style={{
+        background: `repeating-linear-gradient(${stripeAngle}deg, #EFEFEA 0 14px, #E6E6DF 14px 28px)`,
+      }}>
+        <div className="placeholder__label">{label}</div>
+      </div>
+    </div>
+  );
+}
+
+// ---- Browser frame (clean, minimal — for screenshots) ----
+function BrowserFrame({ url = 'cirta.app', children, height, width = '100%', accent = false }) {
+  return (
+    <div style={{
+      width, height,
+      background: '#fff',
+      borderRadius: 12,
+      overflow: 'hidden',
+      boxShadow: '0 24px 60px rgba(17,24,39,0.10), 0 2px 6px rgba(17,24,39,0.06), 0 0 0 1px rgba(17,24,39,0.06)',
+      display: 'flex', flexDirection: 'column',
+    }}>
+      <div style={{
+        height: 40,
+        background: '#F4F4EE',
+        borderBottom: `1px solid ${LINE}`,
+        display: 'flex', alignItems: 'center', gap: 8, padding: '0 14px',
+        flexShrink: 0,
+      }}>
+        <div style={{ display: 'flex', gap: 6 }}>
+          <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#E5635A' }} />
+          <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#E5C04A' }} />
+          <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#65C467' }} />
+        </div>
+        <div style={{
+          marginLeft: 14, flex: 1, height: 22,
+          background: '#fff',
+          border: `1px solid ${LINE}`,
+          borderRadius: 6,
+          display: 'flex', alignItems: 'center', padding: '0 10px',
+          fontFamily: 'var(--font-mono)', fontSize: 12, color: MUTE,
+          maxWidth: 320,
+        }}>
+          <span style={{ color: accent ? CIRTA_BLUE : MUTE, marginRight: 6 }}>●</span>
+          {url}
+        </div>
+      </div>
+      <div style={{ flex: 1, background: '#fff', overflow: 'hidden', position: 'relative' }}>
+        {children || <Placeholder label="[ APP SCREENSHOT ]" />}
+      </div>
+    </div>
+  );
+}
+
+// ---- Panel title (uppercase mono with rule) ----
+function PanelTitle({ children, color = CIRTA_BLUE }) {
+  return (
+    <div style={{
+      display: 'inline-flex', alignItems: 'center', gap: 14,
+      fontFamily: 'var(--font-mono)', fontWeight: 500, fontSize: 16,
+      letterSpacing: '0.06em', textTransform: 'uppercase', color,
+    }}>
+      <span style={{ width: 28, height: 2, background: color, display: 'inline-block' }} />
+      {children}
+    </div>
+  );
+}
+
+// ---- Numbered marker ----
+function NumMarker({ n, color = CIRTA_BLUE, size = 36 }) {
+  return (
+    <div style={{
+      width: size, height: size, borderRadius: '50%',
+      background: color, color: '#fff',
+      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      fontFamily: 'var(--font-mono)', fontSize: size * 0.45, fontWeight: 500,
+      flexShrink: 0,
+    }}>{n}</div>
+  );
+}
+
+Object.assign(window, {
+  SlideChrome, CirtaLogoMark, Placeholder, BrowserFrame, PanelTitle, NumMarker,
+  CIRTA_BLUE, CIRTA_AMBER, INK, MUTE, PAPER, LINE,
+});
+
+  </script>
+
+  <script type="text/babel">
+// Slides for Cirta FYP deck — 9 slides total
+
+const TOTAL = 10;
+
+// ============================================================
+// SLIDE 1 — Title / Hero
+// ============================================================
+function Slide01() {
+  return (
+    <section data-screen-label="01 Title">
+      <div style={{ position: 'absolute', inset: 0, display: 'grid', gridTemplateColumns: '720px 1fr', height: '100%' }}>
+
+        {/* LEFT — Title column */}
+        <div style={{
+          padding: '120px 64px 120px 100px',
+          display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+          background: PAPER
+        }}>
+          <div>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 12,
+              padding: '8px 14px', borderRadius: 999,
+              background: 'rgba(38,49,230,0.08)',
+              fontFamily: 'var(--font-mono)', fontSize: 14,
+              color: CIRTA_BLUE, letterSpacing: '0.04em',
+              marginBottom: 56
+            }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: CIRTA_BLUE }} />
+              FINAL YEAR PROJECT · 2026
+            </div>
+
+            <div style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: 220, fontWeight: 600,
+              letterSpacing: '-0.05em',
+              lineHeight: 0.9,
+              color: INK,
+              marginBottom: 32
+            }}>
+              Cirta<span style={{ color: CIRTA_AMBER }}>.</span>
+            </div>
+
+            <div style={{
+              fontSize: 36, lineHeight: 1.2, fontWeight: 400,
+              letterSpacing: '-0.02em', color: '#1F2937',
+              maxWidth: 540, marginBottom: 64,
+              textWrap: 'balance'
+            }}>
+              A productivity &amp; scheduling application for university students.
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
+            <div>
+              <div className="mono-label" style={{ marginBottom: 8 }}>
+</div>
+              <div style={{ fontSize: 22, fontWeight: 500, color: INK, lineHeight: 1.4 }}>
+                Djaoued Safir Boukhalfa
+              </div>
+              <div style={{ fontSize: 18, color: MUTE, lineHeight: 1.5 }}>
+                BSc Software Engineering · University of Salford
+              </div>
+            </div>
+            <div>
+              <div className="mono-label" style={{ marginBottom: 8 }}>Supervisors</div>
+              <div style={{ fontSize: 20, color: INK, lineHeight: 1.5 }}>
+                Maira Alamgir &nbsp;·&nbsp; Lee Griffiths
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT — Hero screenshot */}
+        <div style={{ position: 'relative',
+          background: `linear-gradient(160deg, ${CIRTA_BLUE} 0%, #1A22B8 100%)`,
+          padding: '80px 80px 80px 0',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          overflow: 'hidden'
+        }}>
+          {/* subtle grid */}
+          <div style={{
+            position: 'absolute', inset: 0,
+            backgroundImage: 'radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px)',
+            backgroundSize: '32px 32px',
+            opacity: 0.6
+          }} />
+          {/* amber dot accent */}
+          <div style={{
+            position: 'absolute', top: 80, right: 80,
+            width: 12, height: 12, borderRadius: '50%', background: CIRTA_AMBER
+          }} />
+          <div style={{
+            position: 'absolute', top: 80, right: 110,
+            fontFamily: 'var(--font-mono)', fontSize: 13, color: 'rgba(255,255,255,0.6)',
+            letterSpacing: '0.06em'
+          }}>LIVE · cirta.io</div>
+
+          <div style={{ width: '100%', maxWidth: 1080, position: 'relative', zIndex: 1 }}>
+            <BrowserFrame url="cirta.io/dashboard" height={620} accent>
+              <img src="assets/dashboard-hero.png" alt="Cirta dashboard"
+              style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top left', display: 'block' }} />
+            </BrowserFrame>
+          </div>
+        </div>
+      </div>
+
+      <SlideChrome index={1} total={TOTAL} />
+    </section>);
+
+}
+
+// ============================================================
+// SLIDE 2 — The Problem
+// ============================================================
+function Slide02() {
+  const competitors = [
+  { name: 'Google Calendar', critique: 'Assumes you already know how to plan.', logo: 'assets/logo-google-calendar.png' },
+  { name: 'Pomofocus', critique: 'No tasks. No scheduling.', logo: 'assets/logo-pomofocus.png' },
+  { name: 'Amazing Marvin', critique: 'Too complex for the average student.', logo: 'assets/logo-amazing-marvin.png' }];
+
+
+  return (
+    <section data-screen-label="02 Problem">
+      <div style={{ padding: '110px 100px 140px', height: '100%', display: 'flex', flexDirection: 'column' }}>
+
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 24, marginBottom: 60 }}>
+          <PanelTitle>01 · The Problem</PanelTitle>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 100, flex: 1 }}>
+
+          {/* LEFT — bold statements */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 40 }}>
+            <div style={{
+              fontSize: 60, fontWeight: 600, lineHeight: 1.08,
+              letterSpacing: '-0.028em', color: INK, textWrap: 'balance'
+            }}>
+              Students underperform not from lack of ability,{' '}
+              <span style={{ color: CIRTA_BLUE }}>but from poor self-regulated learning.</span>
+            </div>
+
+            <div style={{ height: 1, background: LINE, marginTop: 4 }} />
+
+            <ul className="clean" style={{ display: 'flex', flexDirection: 'column', gap: 32, fontSize: 38, fontWeight: 500, color: '#1F2937', lineHeight: 1.3, letterSpacing: '-0.012em' }}>
+              <li style={{ display: 'flex', gap: 22 }}>
+                <span style={{ color: CIRTA_BLUE, fontFamily: 'var(--font-mono)', fontSize: 28, paddingTop: 8 }}>—</span>
+                <span>Existing tools address one thing at a time</span>
+              </li>
+              <li style={{ display: 'flex', gap: 22 }}>
+                <span style={{ color: CIRTA_BLUE, fontFamily: 'var(--font-mono)', fontSize: 28, paddingTop: 8 }}>—</span>
+                <span>Students without productivity experience face too steep a learning curve</span>
+              </li>
+            </ul>
+          </div>
+
+          {/* RIGHT — competitor cards */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 22 }}>
+            <div className="mono-label" style={{ marginBottom: 4 }}>What's out there</div>
+            {competitors.map((c, i) =>
+            <div key={i} style={{
+              background: '#fff',
+              border: `1px solid ${LINE}`,
+              borderRadius: 14,
+              padding: '34px 40px',
+              display: 'grid',
+              gridTemplateColumns: '120px 1fr',
+              gap: 36, alignItems: 'center',
+              flex: 1, minHeight: 0
+            }}>
+                <div style={{
+                width: 120, height: 120, borderRadius: 22,
+                background: '#fff',
+                overflow: 'hidden',
+                display: 'flex', alignItems: 'center', justifyContent: 'center'
+              }}>
+                  <img src={c.logo} alt={c.name + ' logo'}
+                style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }} />
+                </div>
+                <div>
+                  <div style={{ fontSize: 40, fontWeight: 600, color: INK, marginBottom: 10, letterSpacing: '-0.025em', lineHeight: 1.05 }}>{c.name}</div>
+                  <div style={{ fontSize: 24, color: MUTE, lineHeight: 1.4 }}>{c.critique}</div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Bottom callout */}
+        <div style={{
+          marginTop: 56,
+          padding: '32px 44px',
+          background: INK,
+          borderRadius: 8,
+          display: 'flex', alignItems: 'center', gap: 28
+        }}>
+          <div style={{
+            width: 4, alignSelf: 'stretch', background: CIRTA_AMBER, borderRadius: 2
+          }} />
+          <div style={{ fontSize: 32, fontWeight: 500, color: '#fff', lineHeight: 1.3, letterSpacing: '-0.015em' }}>
+            None of them implement a user centric design.
+          </div>
+        </div>
+      </div>
+
+      <SlideChrome index={2} total={TOTAL} />
+    </section>);
+
+}
+
+// ============================================================
+// SLIDE 3 — Aim
+// ============================================================
+function Slide03() {
+  const aims = [
+  'Help students manage academic time without prior productivity experience',
+  'Integrate focus techniques, task management, and scheduling in one place',
+  'Lower the barrier to self-regulated learning'];
+
+
+  return (
+    <section data-screen-label="03 Aim">
+      <div style={{ padding: '110px 140px 140px', height: '100%', display: 'flex', flexDirection: 'column' }}>
+
+        <div style={{ marginBottom: 80 }}>
+          <PanelTitle>02 · Project Aim</PanelTitle>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 1fr', gap: 120, flex: 1, alignItems: 'center' }}>
+
+          <div>
+            <div style={{
+              fontSize: 84, fontWeight: 600, lineHeight: 1.0,
+              letterSpacing: '-0.035em', color: INK, textWrap: 'balance',
+              marginBottom: 32
+            }}>
+              Make self-regulated learning <span style={{ color: CIRTA_BLUE }}>approachable</span>.
+            </div>
+            <div style={{ fontSize: 24, color: MUTE, lineHeight: 1.45, maxWidth: 520 }}>
+              Bring focus, tasks, and scheduling into one workflow that meets students where they are.
+            </div>
+          </div>
+
+          <ul className="clean" style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
+            {aims.map((a, i) =>
+            <li key={i} style={{ display: 'grid', gridTemplateColumns: '52px 1fr', gap: 24, alignItems: 'start' }}>
+                <div style={{
+                fontFamily: 'var(--font-mono)', fontSize: 16, color: CIRTA_BLUE,
+                paddingTop: 8, fontWeight: 500, letterSpacing: '0.04em'
+              }}>0{i + 1}</div>
+                <div style={{
+                fontSize: 28, lineHeight: 1.35, color: INK,
+                letterSpacing: '-0.015em', fontWeight: 500, textWrap: 'pretty',
+                paddingBottom: 24, borderBottom: i < aims.length - 1 ? `1px solid ${LINE}` : 'none'
+              }}>
+                  {a}
+                </div>
+              </li>
+            )}
+          </ul>
+        </div>
+      </div>
+
+      <SlideChrome index={3} total={TOTAL} />
+    </section>);
+
+}
+
+// ============================================================
+// SLIDE 4 — The Solution (feature grid)
+// ============================================================
+function Slide04Panels({ slideIndex, slice, partLabel }) {
+  const allFeatures = [
+  {
+    n: '01', name: 'Focus Sessions',
+    bullets: ['Pomodoro · Flowtime · Time Blocking', 'Multiple strategies for one timer'],
+    img: 'assets/feature-sessions.png'
+  },
+  {
+    n: '02', name: 'Analytics',
+    bullets: ['Daily · weekly · monthly breakdowns', 'Strategy usage + study patterns'],
+    img: 'assets/feature-analytics.png'
+  },
+  {
+    n: '03', name: 'Calendar',
+    bullets: ['Visual scheduling of deadlines + study blocks', 'Drag-and-drop event editing'],
+    img: 'assets/feature-calendar.png'
+  },
+  {
+    n: '04', name: 'To-Do List',
+    bullets: ['Create, edit, delete tasks', 'Grouped: Today · Upcoming · No Date'],
+    img: 'assets/feature-todo-v2.png'
+  }];
+  const features = allFeatures.slice(slice[0], slice[1]);
+
+  return (
+    <section data-screen-label={`0${slideIndex} Solution ${partLabel}`}>
+      <div style={{ padding: '90px 100px 130px', height: '100%', display: 'flex', flexDirection: 'column' }}>
+
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 50 }}>
+          <div>
+            <PanelTitle>03 · The Solution &nbsp;·&nbsp; {partLabel}</PanelTitle>
+            <div style={{
+              fontSize: 64, fontWeight: 600, letterSpacing: '-0.03em',
+              color: INK, marginTop: 18, lineHeight: 1.0
+            }}>
+              Four panels. <span style={{ color: MUTE }}>One workflow.</span>
+            </div>
+          </div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 14, color: MUTE, letterSpacing: '0.06em' }}>
+            cirta.io/dashboard
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 36, flex: 1 }}>
+          {features.map((f, i) =>
+          <div key={i} style={{
+            background: '#fff',
+            border: `1px solid ${LINE}`,
+            borderRadius: 14,
+            padding: 32,
+            display: 'flex', flexDirection: 'column', gap: 22,
+            minHeight: 0
+          }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+                  <div style={{
+                  fontFamily: 'var(--font-mono)', fontSize: 18, color: CIRTA_BLUE,
+                  letterSpacing: '0.06em', fontWeight: 500
+                }}>{f.n}</div>
+                  <div style={{ fontSize: 40, fontWeight: 600, color: INK, letterSpacing: '-0.025em' }}>
+                    {f.name}
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ flex: 1, minHeight: 0, borderRadius: 10, overflow: 'hidden', border: `1px solid ${LINE}`, background: '#0F172A' }}>
+                {f.img &&
+              <img src={f.img} alt={f.name}
+              style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block', background: '#0F172A' }} />
+              }
+              </div>
+
+              <ul className="clean" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {f.bullets.map((b, j) =>
+              <li key={j} style={{
+                fontSize: 22, color: '#1F2937', display: 'flex', gap: 12, alignItems: 'baseline'
+              }}>
+                    <span style={{ color: CIRTA_BLUE, fontFamily: 'var(--font-mono)', fontSize: 14 }}>●</span>
+                    {b}
+                  </li>
+              )}
+              </ul>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <SlideChrome index={slideIndex} total={TOTAL} />
+    </section>);
+
+}
+
+function Slide04() {return <Slide04Panels slideIndex={4} slice={[0, 2]} partLabel="Part 1 of 2" />;}
+function Slide04b() {return <Slide04Panels slideIndex={5} slice={[2, 4]} partLabel="Part 2 of 2" />;}
+
+// ============================================================
+// SLIDE 5 — Technical Implementation (stack)
+// ============================================================
+function Slide05() {
+  const stack = [
+  { layer: 'Frontend', tech: 'React', note: 'CSS Custom Properties · Component-driven UI', logo: 'assets/tech-react.png' },
+  { layer: 'Backend', tech: 'Symfony 7.2', note: 'PHP · Doctrine ORM · REST endpoints', logo: 'assets/tech-symfony.png' },
+  { layer: 'Database', tech: 'MariaDB', note: 'Railway-hosted · Doctrine migrations', logo: 'assets/tech-mariadb.png' },
+  { layer: 'Auth', tech: 'Google OAuth 2.0', note: 'Single sign-on · Token refresh', logo: 'assets/tech-google.png' }];
+
+  const deployment = [
+  { name: 'Docker', note: 'Containerisation', logo: 'assets/tech-docker.png' },
+  { name: 'Railway', note: 'Hosting + DB', logo: 'assets/tech-railway.png' },
+  { name: 'Cloudflare', note: 'HTTPS + DNS', logo: 'assets/tech-cloudflare.png' }];
+
+
+
+  return (
+    <section data-screen-label="05 Tech Stack">
+      <div style={{ padding: '90px 100px 130px', height: '100%', display: 'flex', flexDirection: 'column' }}>
+
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 50 }}>
+          <div>
+            <PanelTitle>04 · Technical Implementation</PanelTitle>
+            <div style={{
+              fontSize: 72, fontWeight: 600, letterSpacing: '-0.03em',
+              color: INK, marginTop: 18, lineHeight: 1.0
+            }}>
+              How it was built.
+            </div>
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 480px', gap: 40, flex: 1, minHeight: 0 }}>
+          {/* LEFT — 4 stack cards in 2x2 grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 1fr', gap: 20 }}>
+            {stack.map((s, i) =>
+            <div key={i} style={{
+              background: '#fff', border: `1px solid ${LINE}`,
+              borderRadius: 14, overflow: 'hidden',
+              display: 'flex', flexDirection: 'column', minHeight: 0
+            }}>
+                <div style={{
+                padding: '10px 24px',
+                background: i === 0 ? CIRTA_BLUE : '#F4F4EE',
+                color: i === 0 ? '#fff' : MUTE,
+                fontFamily: 'var(--font-mono)', fontSize: 16, letterSpacing: '0.06em',
+                textTransform: 'uppercase', fontWeight: 500,
+                borderBottom: `1px solid ${LINE}`
+              }}>{s.layer}</div>
+                <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 160px', minHeight: 0, width: "388px" }}>
+                  <div style={{ padding: '20px 28px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 8, width: "328px" }}>
+                    <div style={{ fontSize: 34, fontWeight: 600, color: INK, letterSpacing: '-0.025em', lineHeight: 1.0 }}>{s.tech}</div>
+                    <div style={{ color: MUTE, lineHeight: 1.35, fontSize: "23px" }}>{s.note}</div>
+                  </div>
+                  <div style={{
+                  display: 'flex', justifyContent: 'center',
+                  borderLeft: `1px solid ${LINE}`, background: '#FAFAF7', borderWidth: "0px", borderLeftStyle: "solid", borderLeftColor: "rgb(229, 231, 235)", height: "325px", flexDirection: "row", alignItems: "center", padding: "0px 0px 0px 16px", borderRadius: "0px", width: "271px", gap: "9px"
+                }}>
+                    <img src={s.logo} alt={s.tech + ' logo'}
+                  style={{ maxHeight: 90, maxWidth: 130, opacity: "1", margin: "0px", borderWidth: "0px", borderStyle: "solid", objectFit: "contain", height: "228px", width: "297px", padding: "0px 37.5859px 0px 0px" }} />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* RIGHT — vertical Deployment card */}
+          <div style={{
+            background: INK, color: '#fff',
+            borderRadius: 14, padding: '32px 32px 36px',
+            display: 'flex', flexDirection: 'column', minHeight: 0
+          }}>
+            <div style={{
+              padding: '6px 14px', borderRadius: 999, alignSelf: 'flex-start',
+              background: CIRTA_AMBER, color: INK,
+              fontFamily: 'var(--font-mono)', fontSize: 14, letterSpacing: '0.06em',
+              textTransform: 'uppercase', fontWeight: 600, marginBottom: 18
+            }}>Deployment</div>
+
+            <div style={{
+              fontFamily: 'var(--font-mono)', fontSize: 32, color: CIRTA_AMBER,
+              letterSpacing: '0.02em', marginBottom: 6
+            }}>cirta.io</div>
+            <div style={{ fontSize: 18, color: '#9CA3AF', lineHeight: 1.45, marginBottom: 24 }}>
+              HTTPS · Continuous deploy
+            </div>
+
+            {/* vertical pipeline */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, flex: 1, minHeight: 0 }}>
+              {deployment.map((d, i) =>
+              <React.Fragment key={i}>
+                  <div style={{
+                  display: 'grid', gridTemplateColumns: '92px 1fr',
+                  background: 'rgba(255,255,255,0.04)',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  borderRadius: 12, padding: '14px 18px',
+                  alignItems: 'center', gap: 18, flex: 1, minHeight: 0
+                }}>
+                    <div style={{
+                    background: '#fff', borderRadius: 10,
+                    width: 92, height: 92,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    padding: 10, fontSize: "23px"
+                  }}>
+                      <img src={d.logo} alt={d.name + ' logo'}
+                    style={{ maxWidth: '100%', maxHeight: '100%', height: "56px", width: "205px", objectFit: "contain" }} />
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 26, fontWeight: 600, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1.0, marginBottom: 4 }}>{d.name}</div>
+                      <div style={{ color: '#9CA3AF', lineHeight: 1.3, fontSize: "23px" }}>{d.note}</div>
+                    </div>
+                  </div>
+                  {i < deployment.length - 1 &&
+                <div style={{ display: 'flex', justifyContent: 'center', color: CIRTA_AMBER, fontSize: 22, lineHeight: 1, opacity: 0.7 }}>↓</div>
+                }
+                </React.Fragment>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <SlideChrome index={6} total={TOTAL} />
+    </section>);
+
+}
+
+// ============================================================
+// SLIDE 6 — System Modeling (Class + ER diagrams)
+// ============================================================
+function Slide06() {
+  return (
+    <section data-screen-label="06 System Modeling">
+      <div style={{ padding: '110px 100px 130px', height: '100%', display: 'flex', flexDirection: 'column' }}>
+
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 50 }}>
+          <div>
+            <PanelTitle>05 · System Modeling</PanelTitle>
+            <div style={{
+              fontSize: 64, fontWeight: 600, letterSpacing: '-0.03em',
+              color: INK, marginTop: 18, lineHeight: 1.0
+            }}>The Foundation and Documentation.
+
+            </div>
+          </div>
+          <div style={{ maxWidth: 420, fontSize: 18, color: MUTE, lineHeight: 1.5, paddingBottom: 8, textWrap: 'pretty' }}>
+            UML class and entity-relationship diagrams drove the data model and the Strategy pattern behind Sessions.
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32, flex: 1, minHeight: 0 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14, minHeight: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ fontSize: 22, fontWeight: 600, color: INK, letterSpacing: '-0.015em' }}> UML: Class Diagram
+
+              </div>
+              <div className="mono-label">CLASS DIAGRAM</div>
+            </div>
+            <div style={{
+              flex: 1, minHeight: 0,
+              background: '#fff', border: `1px solid ${LINE}`, borderRadius: 10, overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20
+            }}>
+              <img src="assets/diagram-class.svg" alt="Cirta UML class diagram"
+              style={{ maxWidth: '100%', maxHeight: '100%', width: 'auto', height: 'auto', display: 'block' }} />
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14, minHeight: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ fontSize: 22, fontWeight: 600, color: INK, letterSpacing: '-0.015em' }}>Database: Entity-Relationship
+
+              </div>
+              <div className="mono-label">ER DIAGRAM</div>
+            </div>
+            <div style={{
+              flex: 1, minHeight: 0,
+              background: '#fff', border: `1px solid ${LINE}`, borderRadius: 10, overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20
+            }}>
+              <img src="assets/diagram-er-v3.png" alt="Cirta entity-relationship diagram"
+              style={{ maxWidth: '100%', maxHeight: '100%', width: 'auto', height: 'auto', display: 'block' }} />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <SlideChrome index={7} total={TOTAL} />
+    </section>);
+
+}
+
+// ============================================================
+// SLIDE 7 — Agile / Increments
+// ============================================================
+function Slide07() {
+  const incs = [
+  {
+    n: '01', label: 'MVP',
+    title: 'Core features + public deployment',
+    bullets: ['Sessions, tasks, calendar', 'Google OAuth', 'Live on cirta.app'],
+    tone: 'primary'
+  },
+  {
+    n: '02', label: 'Expansion',
+    title: 'Strategies, panel system, analytics',
+    bullets: ['Flowtime + Time Blocking', 'Configurable panels', 'Session analytics'],
+    tone: 'neutral'
+  },
+  {
+    n: '03', label: 'Polish',
+    title: 'Settings, dark mode, onboarding',
+    bullets: ['Settings screen', 'Dark mode', 'Onboarding + bug fixes'],
+    tone: 'accent'
+  }];
+
+
+  return (
+    <section data-screen-label="07 Increments">
+      <div style={{ padding: '110px 100px 130px', height: '100%', display: 'flex', flexDirection: 'column' }}>
+
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 60 }}>
+          <div>
+            <PanelTitle>06 · Execution</PanelTitle>
+            <div style={{
+              fontSize: 64, fontWeight: 600, letterSpacing: '-0.03em',
+              color: INK, marginTop: 18, lineHeight: 1.0
+            }}>
+              Agile development — three increments.
+            </div>
+          </div>
+        </div>
+
+        {/* timeline rail */}
+        <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'stretch' }}>
+          <div style={{
+            position: 'absolute', left: 0, right: 0, top: 56, height: 2,
+            background: `repeating-linear-gradient(90deg, ${LINE} 0 12px, transparent 12px 22px)`
+          }} />
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 36, width: '100%' }}>
+            {incs.map((inc, i) => {
+              const dotColor = inc.tone === 'primary' ? CIRTA_BLUE : inc.tone === 'accent' ? CIRTA_AMBER : '#9CA3AF';
+              return (
+                <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                  <div style={{
+                    width: 32, height: 32, borderRadius: '50%', background: '#fff',
+                    border: `3px solid ${dotColor}`, position: 'relative', zIndex: 1,
+                    marginBottom: 28, marginTop: 40, marginLeft: 0,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  }}>
+                    <span style={{ width: 10, height: 10, borderRadius: '50%', background: dotColor }} />
+                  </div>
+
+                  <div style={{
+                    fontFamily: 'var(--font-mono)', fontSize: 14, color: MUTE,
+                    letterSpacing: '0.06em', marginBottom: 8
+                  }}>INCREMENT {inc.n}</div>
+
+                  <div style={{
+                    fontSize: 44, fontWeight: 600, letterSpacing: '-0.025em',
+                    color: dotColor === '#9CA3AF' ? INK : dotColor, marginBottom: 16, lineHeight: 1.0
+                  }}>{inc.label}</div>
+
+                  <div style={{
+                    fontSize: 24, fontWeight: 500, color: INK, lineHeight: 1.3,
+                    marginBottom: 24, letterSpacing: '-0.015em', textWrap: 'balance'
+                  }}>{inc.title}</div>
+
+                  <ul className="clean" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    {inc.bullets.map((b, j) =>
+                    <li key={j} style={{
+                      fontSize: 18, color: '#1F2937', display: 'flex', gap: 12,
+                      paddingLeft: 0
+                    }}>
+                        <span style={{ color: dotColor, fontFamily: 'var(--font-mono)', fontSize: 14, paddingTop: 2 }}>—</span>
+                        {b}
+                      </li>
+                    )}
+                  </ul>
+                </div>);
+
+            })}
+          </div>
+        </div>
+      </div>
+
+      <SlideChrome index={8} total={TOTAL} />
+    </section>);
+
+}
+
+// ============================================================
+// SLIDE 8 — Testing (Usability + Functional + Cross-Browser)
+// ============================================================
+function Slide08() {
+  return (
+    <section data-screen-label="08 Testing">
+      <div style={{ padding: '90px 100px 130px', height: '100%', display: 'flex', flexDirection: 'column' }}>
+
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 40 }}>
+          <div>
+            <PanelTitle>07 · Evaluation</PanelTitle>
+            <div style={{
+              fontSize: 64, fontWeight: 600, letterSpacing: '-0.03em',
+              color: INK, marginTop: 18, lineHeight: 1.0
+            }}>
+              Tested with real students.
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 40, paddingBottom: 8 }}>
+            <Stat n="3" label="INCREMENTS TESTED" />
+            <Stat n="4" label="BROWSERS" />
+            <Stat n="0" label="VISUAL DEFECTS" color={CIRTA_BLUE} />
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 32, flex: 1, minHeight: 0 }}>
+
+          {/* LEFT — usability with photo */}
+          <div style={{
+            background: '#fff', border: `1px solid ${LINE}`, borderRadius: 12,
+            padding: 32, display: 'flex', flexDirection: 'column', gap: 20, minHeight: 0
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ fontSize: 28, fontWeight: 600, letterSpacing: '-0.02em', color: INK }}>
+                Usability Testing
+              </div>
+              <div className="mono-label">QUALITATIVE</div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, flex: 1, minHeight: 0 }}>
+              <ul className="clean" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                {[
+                'Pilot study + 2 formal sessions',
+                'Core interactions learnable without guidance',
+                'Feedback shaped each increment',
+                'Found well-organised, flexible, approachable'].
+                map((b, i) =>
+                <li key={i} style={{ display: 'flex', gap: 12, fontSize: 18, color: '#1F2937', lineHeight: 1.4 }}>
+                    <span style={{ color: CIRTA_BLUE, fontFamily: 'var(--font-mono)', fontSize: 14, paddingTop: 3 }}>—</span>
+                    {b}
+                  </li>
+                )}
+              </ul>
+
+              <div style={{ borderRadius: 8, overflow: 'hidden', border: `1px solid ${LINE}`, minHeight: 0 }}>
+                <Placeholder label="[ PHOTO — usability testing session, participants interacting with Cirta ]" />
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT — functional + cross-browser */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20, minHeight: 0 }}>
+            <div style={{
+              background: '#fff', border: `1px solid ${LINE}`, borderRadius: 12,
+              padding: '24px 28px', flex: 1, display: 'flex', flexDirection: 'column', gap: 12
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ fontSize: 22, fontWeight: 600, color: INK, letterSpacing: '-0.015em' }}>
+                  API &amp; Validation
+                </div>
+                <div className="mono-label">FUNCTIONAL</div>
+              </div>
+              <ul className="clean" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <li style={{ fontSize: 17, color: '#1F2937', lineHeight: 1.45 }}>
+                  ▸ Endpoints tested for valid/invalid input, auth, ownership
+                </li>
+                <li style={{ fontSize: 17, color: '#1F2937', lineHeight: 1.45 }}>
+                  ▸ One gap: event end-time accepted before start — flagged for next iteration
+                </li>
+              </ul>
+            </div>
+
+            <div style={{
+              background: INK, color: '#fff', borderRadius: 12,
+              padding: '24px 28px', flex: 1, display: 'flex', flexDirection: 'column', gap: 14
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ fontSize: 22, fontWeight: 600, letterSpacing: '-0.015em' }}>
+                  Cross-Browser
+                </div>
+                <div className="mono-label" style={{ color: '#9CA3AF' }}>4 BROWSERS</div>
+              </div>
+              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                {['Brave', 'Chrome', 'Firefox', 'Safari'].map((b) =>
+                <span key={b} style={{
+                  padding: '8px 14px', borderRadius: 999,
+                  background: 'rgba(255,255,255,0.08)',
+                  border: '1px solid rgba(255,255,255,0.14)',
+                  fontSize: 16, color: '#fff'
+                }}>{b}</span>
+                )}
+              </div>
+              <div style={{ fontSize: 17, color: '#9CA3AF', lineHeight: 1.4, marginTop: 'auto' }}>
+                No visual or functional inconsistencies across any browser.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <SlideChrome index={9} total={TOTAL} />
+    </section>);
+
+}
+
+function Stat({ n, label, color = INK }) {
+  return (
+    <div style={{ textAlign: 'right' }}>
+      <div style={{
+        fontSize: 56, fontWeight: 600, letterSpacing: '-0.03em', lineHeight: 1.0, color
+      }}>{n}</div>
+      <div style={{
+        fontSize: 12, fontFamily: 'var(--font-mono)', color: MUTE,
+        letterSpacing: '0.08em', marginTop: 4
+      }}>{label}</div>
+    </div>);
+
+}
+
+// ============================================================
+// SLIDE 9 — Conclusions & Future Work
+// ============================================================
+function Slide09() {
+  const conclusions = [
+  { bold: 'Aim achieved.', body: 'Cirta is a publicly deployed, fully functional productivity application used and evaluated by real students.' },
+  { bold: 'Measurable improvement.', body: 'Usability scores increased between increments — iterative development worked.' },
+  { bold: 'Lessons learned.', body: 'Browser throttling, OAuth as a single point of failure, the importance of self-testing for timing-sensitive bugs.' }];
+
+
+  const future = [
+  'Subtask decomposition',
+  'Session → Calendar event consolidation',
+  'Longitudinal testing in academic context',
+  'Fallback authentication method'];
+
+
+  return (
+    <section data-screen-label="09 Conclusions">
+      <div style={{ padding: '90px 100px 0', height: '100%', display: 'flex', flexDirection: 'column' }}>
+
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 44 }}>
+          <div>
+            <PanelTitle>08 · Conclusions</PanelTitle>
+            <div style={{
+              fontSize: 64, fontWeight: 600, letterSpacing: '-0.03em',
+              color: INK, marginTop: 18, lineHeight: 1.0
+            }}>
+              What Cirta is, today.
+            </div>
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 1fr', gap: 60, flex: 1, minHeight: 0 }}>
+
+          {/* LEFT — conclusions */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+            {conclusions.map((c, i) =>
+            <div key={i} style={{
+              padding: '22px 24px',
+              background: '#fff', border: `1px solid ${LINE}`, borderRadius: 10,
+              display: 'grid', gridTemplateColumns: '40px 1fr', gap: 18, alignItems: 'baseline'
+            }}>
+                <div style={{
+                fontFamily: 'var(--font-mono)', fontSize: 14, color: CIRTA_BLUE,
+                letterSpacing: '0.06em', fontWeight: 500
+              }}>0{i + 1}</div>
+                <div style={{ fontSize: 21, lineHeight: 1.4, color: INK, textWrap: 'pretty' }}>
+                  <span style={{ fontWeight: 600 }}>{c.bold}</span>{' '}
+                  <span style={{ color: '#374151' }}>{c.body}</span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* RIGHT — future + screenshot */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16, minHeight: 0 }}>
+            <div style={{ flex: '0 0 auto', borderRadius: 10, overflow: 'hidden', border: `1px solid ${LINE}`, height: 240 }}>
+              <Placeholder label="[ Analytics panel — week's worth of session data ]" />
+            </div>
+
+            <div style={{
+              background: '#fff', border: `1px solid ${LINE}`, borderRadius: 10,
+              padding: '20px 24px', flex: 1, display: 'flex', flexDirection: 'column', gap: 12, minHeight: 0
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ fontSize: 20, fontWeight: 600, color: INK, letterSpacing: '-0.015em' }}>
+                  Future Work
+                </div>
+                <div className="mono-label">NEXT</div>
+              </div>
+              <ul className="clean" style={{ display: 'flex', flexDirection: 'column', gap: 8, flex: 1 }}>
+                {future.map((f, i) =>
+                <li key={i} style={{
+                  fontSize: 17, color: '#1F2937', display: 'flex', gap: 12, alignItems: 'baseline',
+                  paddingBottom: 8, borderBottom: i < future.length - 1 ? `1px solid ${LINE}` : 'none'
+                }}>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: CIRTA_AMBER }}>→</span>
+                    {f}
+                  </li>
+                )}
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom banner — full width */}
+        <div style={{
+          margin: '40px -100px 0',
+          padding: '36px 100px 56px',
+          background: CIRTA_BLUE,
+          color: '#fff',
+          display: 'flex', alignItems: 'center', gap: 32
+        }}>
+          <div style={{
+            fontFamily: 'var(--font-mono)', fontSize: 14, letterSpacing: '0.08em',
+            color: 'rgba(255,255,255,0.7)', writingMode: 'vertical-rl', transform: 'rotate(180deg)',
+            paddingTop: 8
+          }}>FINAL STATEMENT</div>
+          <div style={{
+            fontSize: 38, fontWeight: 500, lineHeight: 1.25, letterSpacing: '-0.02em',
+            textWrap: 'balance', maxWidth: 1400
+          }}>
+            Cirta in its current state is a complete application that addresses{' '}
+            <span style={{ color: CIRTA_AMBER }}>the problem it set out to solve.</span>
+          </div>
+        </div>
+      </div>
+
+      <SlideChrome index={10} total={TOTAL} />
+    </section>);
+
+}
+
+Object.assign(window, {
+  Slide01, Slide02, Slide03, Slide04, Slide04b, Slide05, Slide06, Slide07, Slide08, Slide09
+});
+  </script>
+
+  <script type="text/babel">
+    function Deck() {
+      return (
+        <>
+          <Slide01 />
+          <Slide02 />
+          <Slide03 />
+          <Slide04 />
+          <Slide04b />
+          <Slide05 />
+          <Slide06 />
+          <Slide07 />
+          <Slide08 />
+          <Slide09 />
+        </>
+      );
+    }
+    ReactDOM.createRoot(document.getElementById('deck')).render(<Deck />);
+  </script>
+</body>
+</html>
