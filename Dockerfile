@@ -23,9 +23,11 @@ COPY . /app
 # Create minimal .env for build (real values come from Railway env vars)
 RUN echo "APP_ENV=prod" > /app/.env
 
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
 # Install composer dependencies (skip scripts to avoid cache:clear during build)
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader --no-scripts
 
 # Build assets
 RUN npm ci && npm run build
