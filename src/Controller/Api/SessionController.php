@@ -2,15 +2,15 @@
 
 namespace App\Controller\Api;
 
-use App\Entity\Event;
 use App\Entity\Flowtime;
 use App\Entity\Pomodoro;
 use App\Entity\Session;
-use App\Entity\Task;
 use App\Entity\TimeBlocking;
 use App\Repository\SessionRepository;
+use App\Service\EventService;
 use App\Service\SessionService;
 use App\Service\SessionStrategy;
+use App\Service\TaskService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -24,6 +24,8 @@ final class SessionController extends AbstractController
     public function __construct(
         private SessionRepository $sessionRepository,
         private ServiceLocator $strategies,
+        private TaskService $taskService,
+        private EventService $eventService,
     ) {}
 
     /**
@@ -91,14 +93,14 @@ final class SessionController extends AbstractController
         $task  = null;
 
         if (!empty($data['eventId'])) {
-            $event = $this->entityManager->getRepository(Event::class)->find($data['eventId']);
+            $event = $this->eventService->findById($data['eventId']);
             if (!$event || $event->getUser() !== $user) {
                 return $this->json(['error' => 'Event not found'], Response::HTTP_NOT_FOUND);
             }
         }
 
         if (!empty($data['taskId'])) {
-            $task = $this->entityManager->getRepository(Task::class)->find($data['taskId']);
+            $task = $this->taskService->findById($data['taskId']);
             if (!$task || $task->getUser() !== $user) {
                 return $this->json(['error' => 'Task not found'], Response::HTTP_NOT_FOUND);
             }
