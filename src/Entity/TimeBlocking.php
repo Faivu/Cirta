@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * TimeBlocking is an unstructured work session with no time constraints.
- * Simply track when you start and stop working.
+ * Simply tracks when start and stop working.
  */
 #[ORM\Entity(repositoryClass: TimeBlockingRepository::class)]
 class TimeBlocking extends Session

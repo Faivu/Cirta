@@ -59,7 +59,7 @@ class PomodoroService extends SessionService
     }
 
     /**
-     * End/complete the session
+     * End the session
      */
     public function endSession(Session $session, ?int $actualDuration = null): void
     {

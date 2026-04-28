@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 /**
- * ConfirmModal - A simple confirmation dialog
+ * ConfirmModal:A simple confirmation dialog
  */
 function ConfirmModal({ isOpen, title, message, onConfirm, onCancel, confirmText, cancelText, destructive }) {
     if (!isOpen) return null;

@@ -120,7 +120,7 @@ class Task extends BaseEntity
     public function removeSession(Session $session): static
     {
         if ($this->sessions->removeElement($session)) {
-            // set the owning side to null (unless already changed)
+            // set the owning side to null 
             if ($session->getTask() === $this) {
                 $session->setTask(null);
             }

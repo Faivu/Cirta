@@ -3,13 +3,7 @@ import PropTypes from 'prop-types';
 import SquareTimer from './SquareTimer';
 
 /**
- * Timer - Displays the session timer with circular progress
- *
- * Props:
- * - elapsedSeconds: total seconds elapsed
- * - remainingSeconds: seconds remaining (for countdown modes)
- * - mode: 'pomodoro', 'flowtime', 'time_blocking', or 'break'
- * - isPaused: whether the timer is paused
+ * Timer: Displays the session timer
  */
 function Timer({ elapsedSeconds, remainingSeconds, mode, isPaused }) {
     // Format seconds into MM:SS or HH:MM:SS

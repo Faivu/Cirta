@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 /**
- * TimerPreview - Reusable timer circle preview component
+ * TimerPreview: Reusable timer circle preview component
  * Shows a static timer circle with configurable mode and time
  */
 function TimerPreview({ mode, minutes, editable, onMinutesChange }) {

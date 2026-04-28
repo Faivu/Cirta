@@ -187,7 +187,7 @@ final class SessionController extends AbstractController
     }
 
     /**
-     * End/complete a session normally
+     * End a session normally
      */
     #[Route('/{id}/end', name: 'end', methods: ['POST'])]
     public function end(string $id, Request $request): JsonResponse

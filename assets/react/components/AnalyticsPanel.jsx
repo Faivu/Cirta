@@ -287,7 +287,7 @@ function DailyChart({ data, range, from, to }) {
         stratByDay[r.date][r.strategy] = r.minutes;
     });
 
-    // Build display items — days for week view, weeks for month view
+    // Build display items: days for week view, weeks for month view
     let items;
     if (range === 'month') {
         items = buildMonthChunks(from).map(w => {

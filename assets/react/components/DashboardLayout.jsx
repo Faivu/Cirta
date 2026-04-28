@@ -140,7 +140,7 @@ function DashboardContent() {
     const setIsPrimaryLeft  = setField('isPrimaryLeft');
     const setSidebarWidth   = setField('sidebarWidth');
 
-    // taskFilter is a startup default from settings — not persisted in localStorage
+    // taskFilter is a startup default from settings, not persisted in localStorage like the settings
     const [taskFilter, setTaskFilter] = useState(todoDefaultFilter);
 
     const { handleDragStart, handleDrag } = useResize(sidebarWidth, setSidebarWidth);

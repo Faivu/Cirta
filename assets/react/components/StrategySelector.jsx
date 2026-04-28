@@ -23,12 +23,7 @@ const strategies = [
 ];
 
 /**
- * StrategySelector - Allows user to choose between session strategies
- *
- * Props:
- * - selected: currently selected strategy ('pomodoro', 'flowtime', 'time_blocking')
- * - onSelect: callback when a strategy is selected
- * - compact: whether to show compact mode with arrows
+ * StrategySelector: Allows user to choose between session strategies
  */
 function StrategySelector({ selected, onSelect, compact }) {
     const currentIndex = strategies.findIndex(s => s.id === selected);

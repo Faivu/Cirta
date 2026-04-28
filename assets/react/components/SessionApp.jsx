@@ -5,7 +5,7 @@ import { IdleState, ActiveState, CompletedState, BreakState } from './states';
 import { useSession } from '../context/SessionContext';
 
 /**
- * SessionApp - Main component for the session timer
+ * SessionApp: Main component for the session timer
  * Now uses SessionContext for state management
  */
 function SessionApp({ compact = false, fullPanel = false, onFullscreen = null }) {

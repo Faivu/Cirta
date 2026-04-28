@@ -2,8 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 /**
- * SquareTimer - Four square digit blocks showing MM:SS (or HH:MM:SS).
- * In idle mode, accepts letter chars instead of digits.
+ * SquareTimer: square digit blocks showing MM:SS or HH:MM:SS
  */
 function SquareTimer({ chars, isPaused, idle, color, bgColor, labels }) {
     const groups = chars.length === 6

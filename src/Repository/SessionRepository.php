@@ -60,13 +60,14 @@ class SessionRepository extends ServiceEntityRepository
 
     /**
      * Aggregate analytics data for a user within a date range.
-     * Returns summary stats, per-day focus minutes, and strategy breakdown.
+     * Returns summary stats, focus minutes of the day, and strategy breakdown.
      */
     public function getAnalytics(User $user, ?\DateTime $from, ?\DateTime $to): array
     {
         $conn = $this->getEntityManager()->getConnection();
 
-        // Use raw SQL for performance — JOINED inheritance requires joining session + subtype tables
+        // Use raw SQL for performance.
+        // JOINED inheritance requires joining session and subtype tables
         $rangeWhere  = 's.started_at IS NOT NULL';
         $params      = ['user' => $user->getId()];
         $types       = ['user' => 'string'];

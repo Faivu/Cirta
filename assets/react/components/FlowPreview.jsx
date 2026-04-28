@@ -1,9 +1,8 @@
 import React from 'react';
 
 /**
- * FlowPreview - Static ring preview for Flowtime and TimeBlocking strategies.
- * Shows the same circular ring aesthetic as TimerPreview but with a label
- * instead of a time, since these strategies have no fixed duration.
+ * FlowPreview: Static ring preview for Flowtime and TimeBlocking strategies, for now
+ * Shows the same circular ring aesthetic as TimerPreview but with a label for flowtime
  */
 function FlowPreview({ label = 'Flow' }) {
     return (

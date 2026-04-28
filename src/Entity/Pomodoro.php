@@ -21,7 +21,7 @@ class Pomodoro extends Session
     private int $breakDuration = 5;
 
     /**
-     * Transient: break type determined at completion time, not persisted
+     * Transient: break type determined at completion time
      */
     private ?string $breakType = null;
 

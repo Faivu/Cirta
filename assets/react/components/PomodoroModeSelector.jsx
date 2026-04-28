@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { useSettings } from '../context/SettingsContext';
 
 /**
- * PomodoroModeSelector - Buttons to switch between Pomodoro, Short Break, and Long Break
+ * PomodoroModeSelector: Buttons to switch between Pomodoro, Short Break, and Long Break
  */
 function PomodoroModeSelector({ mode, onChange, disabled }) {
     const { pomodoroSeriousMode } = useSettings();

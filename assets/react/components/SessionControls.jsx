@@ -2,16 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 /**
- * SessionControls - Buttons to control the session (pause, resume, complete, interrupt)
- *
- * Props:
- * - strategy: current strategy type
- * - status: current session status ('running', 'paused')
- * - loading: whether an API call is in progress
- * - onPause: callback for pause button
- * - onResume: callback for resume button
- * - onComplete: callback for complete button
- * - onInterrupt: callback for interrupt/stop button
+ * SessionControls: Buttons to control the session (pause, resume, complete, interrupt)
  */
 function SessionControls({ strategy, status, loading, onPause, onResume, onComplete, onInterrupt }) {
     return (

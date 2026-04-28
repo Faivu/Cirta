@@ -102,7 +102,7 @@ CustomToolbar.propTypes = {
 };
 
 /**
- * Custom event component - shows title, and time only if duration >= 45 min (not for all-day)
+ * Custom event component, it shows title, and time only if duration >= 45 min (not for all-day ones)
  */
 function CustomEvent({ event, onMouseEnter, onMouseLeave }) {
     const { calendarTimeFormat } = useSettings();
@@ -142,7 +142,7 @@ function Calendar() {
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    // Initialize directly from (localStorage-cached) settings, no flash
+    // Initialize directly from (localStorage-cached) settings
     const [view, setView] = useState(calendarDefaultView);
     const [date, setDate] = useState(new Date());
     const [dateRange, setDateRange] = useState(null);
@@ -334,7 +334,7 @@ function Calendar() {
         ),
     }), [handleEventMouseEnter, handleEventMouseLeave]);
 
-    // Handle event click - show event details modal
+    // Handle event click: show event details modal
     const handleSelectEvent = (event) => {
         setTooltip({ visible: false, event: null, x: 0, y: 0 });
         setSelectedEvent(event);
@@ -385,7 +385,7 @@ function Calendar() {
         setNewEventAllDay(false);
     };
 
-    // Handle slot selection - open create modal
+    // Handle slot selection: open create modal
     const handleSelectSlot = ({ start, end }) => {
         setSelectedSlot({ start, end });
         setNewEventTitle('');

@@ -311,7 +311,7 @@ function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
             return tasks.filter(t => isScheduledForToday(t) && (todoKeepFinishedVisible || !t.isChecked));
         }
 
-        // 'all' filter: only unchecked tasks
+        // "all" filter: only unchecked tasks
         return tasks.filter((t) => !t.isChecked);
     };
 
@@ -325,7 +325,7 @@ function TodoList({ view = 'tasks', filter = 'all', onFilterChange }) {
         ? filteredTasks.filter((t) => t.isChecked)
         : [];
 
-    // For 'all' filter: split into 4 groups
+    // For "all" filter: split into 4 groups
     // noDate, due, upcoming show only unchecked; today shows all (checked + unchecked)
     const noDateTasks = (view === 'tasks' && filter === 'all')
         ? tasks.filter((t) => !t.isChecked && !t.scheduleDate)

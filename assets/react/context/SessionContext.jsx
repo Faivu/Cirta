@@ -64,7 +64,7 @@ const apiCall = async (url, method = 'GET', body = null) => {
 };
 
 /**
- * SessionProvider - Provides session state to the entire app
+ * SessionProvider: Provides session state to the entire app
  */
 const STRATEGY_LABEL = {
     pomodoro:      'Pomodoro',
@@ -76,7 +76,7 @@ export function SessionProvider({ children }) {
     const { showToast } = useToast();
     const settings = useSettings();
 
-    // Session state — initialized directly from (localStorage-cached) settings, no flash
+    // Session state: initialized directly from (localStorage-cached) settings
     const [strategy, setStrategy] = useState(settings.defaultStrategy);
     const [status, setStatus] = useState('idle');
     const [sessionId, setSessionId] = useState(null);
@@ -177,7 +177,7 @@ export function SessionProvider({ children }) {
         };
     }, [status]);
 
-    // Flowtime pause counter — live ticker shown to user while paused
+    // Flowtime pause counter:live ticker shown to user while paused
     useEffect(() => {
         if (status !== 'paused' || strategy !== 'flowtime') {
             setFlowPauseSeconds(0);
@@ -225,7 +225,7 @@ export function SessionProvider({ children }) {
         }
     }, [status, breakSeconds]);
 
-    // Suggest break when pomodoro completes — use backend's breakDuration as source of truth
+    // Suggest break when pomodoro completes and use backend's breakDuration as source of truth
     useEffect(() => {
         if (status === 'completed' && strategy === 'pomodoro' && sessionId && lastProcessedSessionRef.current !== sessionId) {
             lastProcessedSessionRef.current = sessionId;
